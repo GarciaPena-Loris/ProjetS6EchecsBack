@@ -1,5 +1,5 @@
 # ProjetS6Echecs
-Jeu d'echec à l'aveugle semestre 6 projet de programmation
+                                              Jeu d'echec à l'aveugle semestre 6 projet de programmation
 
 
 Étapes à suivre pour pouvoir contribuer au projet
