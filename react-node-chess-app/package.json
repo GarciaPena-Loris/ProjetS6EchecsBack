@@ -1,0 +1,23 @@
+{
+  "name": "projets6echecs",
+  "version": "1.0.0",
+  "description": "Site web d'apprentissage d'échec à l'aveugle",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node back-chess-app/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaulMedout-Marere/ProjetS6Echecs.git"
+  },
+  "author": "Romano Tom, Medout-Marrere Paul, Garcia-Pena Loris, Mazrand Elliot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PaulMedout-Marere/ProjetS6Echecs/issues"
+  },
+  "homepage": "https://github.com/PaulMedout-Marere/ProjetS6Echecs#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
