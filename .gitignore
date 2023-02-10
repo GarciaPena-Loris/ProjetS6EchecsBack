@@ -2,6 +2,7 @@
 
 # dependencies
 react-node-chess-app/front-chess-app/node_modules
+react-node-chess-app/node_modules
 /.pnp
 .pnp.js
 
