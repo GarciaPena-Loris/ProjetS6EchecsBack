@@ -10,4 +10,4 @@ Pour démarrer un projet de site web d'échecs en utilisant Node.js pour le back
 
 -Installez les dépendances nécessaires pour le back-end, telles que Express et Axios, à l'aide de la commande ‘npm install express axios’.
 
--Installez les dépendances nécessaires pour le front-end, telles que React et React-DOM, à l'aide de la commande ‘npm install react react-dom.’
+-Installez les dépendances nécessaires pour le front-end, telles que React et React-DOM, à l'aide de la commande ‘npm install react react-dom’.
