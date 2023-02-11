@@ -14,17 +14,11 @@ class User {
     }
 
     static async getUserByName(name) {
-        console.log('je cherche');
         return new Promise((resolve, reject) => {
-            console.log('je cherche plus');
-
             connection.query("SELECT * FROM users WHERE name = ?", [name], (error, results) => {
-                console.log('je cherche encore plus');
-
                 if (error) {
                     return reject(error);
                 }
-                console.log(results);
 
                 resolve(results[0]);
             });
@@ -37,8 +31,7 @@ class User {
                 if (error) {
                     return reject(error);
                 }
-
-                resolve(result.insertId);
+                resolve(result);
             });
         });
     }

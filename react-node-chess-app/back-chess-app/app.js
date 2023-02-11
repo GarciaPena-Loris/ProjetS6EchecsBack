@@ -3,6 +3,8 @@ var express = require('express'); //framework utilisé pour développer des appl
 var path = require('path'); //bibliothèque Node.js utilisée pour manipuler les chemins de fichiers.
 var cookieParser = require('cookie-parser'); //utilisé pour parser les cookies envoyés avec les requêtes.
 var logger = require('morgan'); // bibliothèque morgan est utilisé pour journaliser les requêtes entrantes.
+var bodyParser = require('body-parser'); //middlaware utilisé pour extraire les données du corps de la requête et les stocker dans req.body.
+
 
 //Importation des routes
 var indexRouter = require('./routes/index');
@@ -14,6 +16,8 @@ app.use(logger('dev')); //utilise Morgan pour journaliser les requêtes entrante
 app.use(express.json()); //utilise le middleware json pour parser le corps des requêtes entrantes en tant que JSON.
 app.use(express.urlencoded({ extended: false })); //utilise le middleware urlencoded pour parser le corps des requêtes entrantes avec une syntaxe x-www-form-urlencoded.
 app.use(cookieParser()); //utilise cookie-parser pour parser les cookies envoyés avec les requêtes.
+app.use(bodyParser.urlencoded({ extended: false })); 
+app.use(bodyParser.json()); //utilise bodyParser pour extraire les données du corps de la requête.
 app.use(express.static(path.join(__dirname, 'public'))); //utilise le middleware static pour servir des fichiers statiques du dossier public.
 
 app.use('/', indexRouter);

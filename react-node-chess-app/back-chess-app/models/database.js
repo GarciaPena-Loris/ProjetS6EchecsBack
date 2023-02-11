@@ -1,9 +1,10 @@
 const mysql = require('mysql');
+require('dotenv').config();
 
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'blindChessAdmin',
-  password: 'a/Wad!*NTosbRrS5',
+  password: process.env.DB_PASSWORD,
   database: 'chessblinddb'
 });
 
