@@ -1,6 +1,7 @@
 import React from "react";
 import "./Connexion.css"
-function Connexion(){
+
+export default function Connexion(){
     return(
         <div className="form">
             <header>
@@ -18,5 +19,3 @@ function Connexion(){
         </div>
     );
 }
-
-export default Connexion;

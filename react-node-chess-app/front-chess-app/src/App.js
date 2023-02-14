@@ -1,17 +1,19 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import Acceuil from "./scenes/acceuil/Acceuil"
-import Connexion from "./scenes/connexion/Connexion";
-
+import {Routes, Route } from 'react-router-dom';
+import Accueil from "./components/Accueil/Accueil";
+import Connexion from "./components/Connexion/Connexion";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-Header">
-          <Connexion/>
-      </header>
+      <Routes>
+          <Route path="/" element={<Accueil/>} />
+          <Route path="/connexion" element={<Connexion/>} />
+      </Routes>
     </div>
   );
 }
+
 export default App;
