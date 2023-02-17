@@ -59,6 +59,29 @@ class User {
             });
         });
     }
+
+    //other functions
+    static async changePassword(userId, currentPassword, newPassword) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Récupérer l'utilisateur avec son ID
+            const user = await getUserById(userId);
+            // Vérifier que le mot de passe actuel est correct
+            const isPasswordCorrect = await comparePassword(currentPassword, user.password);
+            if (!isPasswordCorrect) {
+                return reject(new Error('Le mot de passe actuel est incorrect.'));
+            }
+            // Hasher le nouveau mot de passe
+            const hashedPassword = await hashPassword(newPassword);
+            // Mettre à jour le mot de passe de l'utilisateur dans la base de données
+            const result = await updatePassword(userId, hashedPassword);
+            resolve(result);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+      
 }
 
 module.exports = User;
