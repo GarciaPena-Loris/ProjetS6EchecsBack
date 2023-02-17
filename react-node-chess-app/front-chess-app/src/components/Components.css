@@ -17,7 +17,9 @@ input {
     font-display: center;
 }
 
-
+.divAccueil{
+    margin-top: 0%;
+}
 
 .form{
     margin-top: 50px;
