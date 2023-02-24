@@ -1,5 +1,9 @@
 label{
-    color:black;
+    color:whitesmoke;
+}
+
+h1{
+    color: #EDEFF2;
 }
 
 input {
@@ -17,23 +21,17 @@ input {
     font-display: center;
 }
 
-.divAccueil{
-    margin-top: 0%;
-}
-
-.form{
-    margin-top: 50px;
-    margin:0 auto;
-    justify-content: center;
-    display: flex;
-    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-
-}
 
 .divMargin{
     margin-top: 20px;
 }
-/* CSS */
+
+.space{
+    width: 50px;
+    height: auto;
+    display: inline-block;
+}
+
 .button-4 {
     appearance: none;
     background-color: #FAFBFC;
@@ -45,7 +43,7 @@ input {
     cursor: pointer;
     display: inline-block;
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    font-size: 14px;
+    font-size: 24px;
     font-weight: 500;
     line-height: 20px;
     list-style: none;
