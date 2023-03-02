@@ -10,7 +10,7 @@ export default function Inscription(){
                     <div>
                         <input placeholder="Nom de compte"></input>
                     </div>
-                    <div>
+                    <div className="passwordInscription">
                         <input type="password" placeholder="Mot de passe" className="input100"></input>
                     </div>
                     <div>

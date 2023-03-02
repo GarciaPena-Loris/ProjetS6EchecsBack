@@ -16,6 +16,7 @@ input {
     font-size: 24px;
     font-display: center;
     background-color: #312e2b;
+    margin-bottom: 20px;
 }
 
 
@@ -28,6 +29,10 @@ input {
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: #262421;
     max-width: 20%;
+}
+
+.passwordInscription{
+    margin-top: 10px;
 }
 
 .button-4{

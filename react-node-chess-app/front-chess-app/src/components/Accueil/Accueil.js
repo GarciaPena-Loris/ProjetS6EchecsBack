@@ -19,15 +19,15 @@ export default function Accueil() {
 
   return (
     <div>
-        <div>
-          <h1 className="titre">BLIND CHESS</h1>
-          <img src={imageAccueil} alt="imgAcceuil" width="600" height="600"></img>
-        </div>  
-        <div className="divMargin">
-          <button onClick={handleClickConnexion} className="button-4">Se connecter</button>
-          <div class="space"></div>
-          <button onClick={handleClickInscription} className="button-4">S'inscrire</button>
-        </div>
+      <div>
+        <h1 className="titre">BLIND CHESS</h1>
+        <img src={imageAccueil} alt="imgAcceuil" width="600" height="600"></img>
+      </div>
+      <div className="divMargin">
+        <button onClick={handleClickConnexion} className="button-4">Se connecter</button>
+        <div class="space"></div>
+        <button onClick={handleClickInscription} className="button-4">S'inscrire</button>
+      </div>
     </div>
   );
 }
