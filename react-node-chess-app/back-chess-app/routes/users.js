@@ -55,7 +55,7 @@ router.post('/signup', (req, res) => {
   });
 });
 
-// User connection
+// User signin
 router.post('/signin', (req, res) => {
   const { name, password } = req.body;
 
@@ -98,7 +98,7 @@ router.post('/signin', (req, res) => {
 
 
 // Update an existing user
-router.put('/:id', async (req, res) => {
+router.put('/:name', async (req, res) => {
   try {
     const name = req.params.name;
     const user = req.body;
@@ -116,7 +116,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a user
-router.delete('/:id', async (req, res) => {
+router.delete('/:name', async (req, res) => {
   try {
     const name = req.params.name;
     const removedUser = await User.deleteUser(name);

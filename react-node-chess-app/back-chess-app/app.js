@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken'); //middleware qui gere les tokens
 const unless = require('express-unless'); //middleware qui est utilisé pour définir les routes à ne pas utiliser
 
 acl.config({
-  filename: 'acl.json',
+  filename: 'policies.json',
   path: 'config',
   baseUrl: '/',
   defaultRole: 'user',
@@ -23,7 +23,7 @@ const verifToken = (req, res, next) => {
   if (!token) {
     return res.status(401).json({ message: 'Invalid token' });
   }
-  
+
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(401).json({ message: 'Authentication failed' });
     console.log(decoded);
@@ -37,6 +37,8 @@ verifToken.unless = unless;
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var exercisesRouter = require('./routes/exercises');
+var gamesRouter = require('./routes/games');
+var progressRouter = require('./routes/progress');
 
 var app = express(); //initialise une nouvelle application Express.
 
@@ -47,20 +49,40 @@ app.use(cookieParser()); //utilise cookie-parser pour parser les cookies envoyé
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); //utilise bodyParser pour extraire les données du corps de la requête.
 app.use(express.static(path.join(__dirname, 'public'))); //utilise le middleware static pour servir des fichiers statiques du dossier public.
-app.use(verifToken.unless({ path: ['/', '/users/signin', '/users/signup'] })); //vérification du token a chaque appel 
+
+// définit un gestionnaire d'erreur pour les cas où aucune route ne correspond à la requête entrante. 
+function validateUrl(req, res, next) {
+  console.log(req.path);
+  const allowedRoutes = [
+    /^\/$/,
+    /^\/users$/,
+    /^\/users\/\d+$/,
+    /^\/exercises$/,
+    /^\/exercises\/\d+$/,
+    /^\/games$/,
+    /^\/games\/\d+$/,
+    /^\/progress$/,
+    /^\/progress\/\d+$/
+  ];
+  if (!allowedRoutes.some((pattern) => pattern.test(req.path))) {
+    // Il utilise createError pour créer une erreur 404 et la passe au prochain gestionnaire d'erreur.
+    res.status(404).send('Page not found');
+  } else {
+    next();
+  }
+}
+
+// Effectue les vérifications nécessaire
+app.use(validateUrl);
+app.use(verifToken.unless({ path: ['/', '/users/signin', '/users/signup'] })); //vérification du token a chaque appel sauf signin et signup
 app.use(acl.authorize); //configurer les autorisations pour les utilisateurs connectés 
 
 // Les routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/exercises', exercisesRouter);
-
-// définit un gestionnaire d'erreur pour les cas où aucune route ne correspond à la requête entrante. 
-// Il utilise createError pour créer une erreur 404 et la passe au prochain gestionnaire d'erreur.
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
+app.use('/games', gamesRouter);
+app.use('/progress', progressRouter);
 
 // définit un gestionnaire d'erreur générique qui gère les erreurs produites par les routes et les middlewares précédents. 
 // Il définit un message d'erreur et une erreur en mode développement

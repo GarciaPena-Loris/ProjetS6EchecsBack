@@ -27,14 +27,21 @@
                 "action": "allow"
             },
             {
-                "resource": "users/",
+                "resource": "users/*",
                 "methods": [
                     "PUT"
                 ],
                 "action": "allow"
             },
             {
-                "resource": "exercises/",
+                "resource": "exercises/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "games/*",
                 "methods": [
                     "GET"
                 ],

@@ -1,47 +1,48 @@
 var express = require('express');
 
 var router = express.Router();
-var Exercise = require('../models/exercisesModel');
+var Game = require('../models/exercisesModel');
 
-// Get all exercises
+// Get all games
 router.get('/', async (req, res) => {
   try {
-    const exercises = await Exercise.getAllExercises();
-    res.json(exercises);
+    const games = await Game.getAllGames();
+    res.json(games);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get a single Exercise by id
-router.get('/:id', async (req, res) => {
+// Get a single Game by Name
+router.get('/:name', async (req, res) => {
   try {
-    const exercises = await Exercise.getExerciseById(req.params.id);
-    res.json(exercises);
+    const games = await Game.getGameById(req.params.id);
+    res.json(games);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 });
 
 
-// Update an existing Exercise
+// Update an existing Game
 router.put('/:id', async (req, res) => {
   try {
     const name = req.params.name;
-    const exercises = req.body;
-    const updatedExercise = await Exercise.updateExercise(id, exercises);
-    res.json(updatedExercise);
+    const games = req.body;
+    const updatedGame = await Game.updateGame(id, games);
+    res.json(updatedGame);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Delete a Exercise
+// Delete a Game
 router.delete('/:id', async (req, res) => {
   try {
     const name = req.params.name;
-    const removedExercise = await Exercise.deleteExercise(name);
-    res.json(removedExercise);
+    const removedGame = await Game.deleteGame(name);
+    res.json(removedGame);
 
   } catch (error) {
     res.status(500).json({ error: error.message });
