@@ -1,0 +1,12 @@
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200em;
+  }
+  
+  .chesscenter {
+    background-color: lightblue;
+    width:50%;
+    height: 50%;
+  }
