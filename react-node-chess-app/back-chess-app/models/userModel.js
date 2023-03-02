@@ -36,9 +36,9 @@ class User {
         });
     }
 
-    static async updateUser(id, user) {
+    static async updateUser(name, user) {
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE users SET ? WHERE id = ?", [user, id], (error, result) => {
+            connection.query("UPDATE users SET ? WHERE name = ?", [user, name], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -48,9 +48,9 @@ class User {
         });
     }
 
-    static async deleteUser(id) {
+    static async deleteUser(name) {
         return new Promise((resolve, reject) => {
-            connection.query("DELETE FROM users WHERE id = ?", [id], (error, result) => {
+            connection.query("DELETE FROM users WHERE name = ?", [name], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -64,7 +64,7 @@ class User {
     static async changePassword(userId, currentPassword, newPassword) {
     return new Promise(async (resolve, reject) => {
         try {
-            // Récupérer l'utilisateur avec son ID
+            // Récupérer l'utilisateur avec son name
             const user = await getUserById(userId);
             // Vérifier que le mot de passe actuel est correct
             const isPasswordCorrect = await comparePassword(currentPassword, user.password);

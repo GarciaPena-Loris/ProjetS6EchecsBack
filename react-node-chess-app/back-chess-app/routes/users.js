@@ -23,12 +23,12 @@ router.get('/:name', async (req, res) => {
     const user = await User.getUserByName(req.params.name);
     res.json(user);
   } catch (error) {
-    return res.status(403).json({ error: 'Token generation problem' });
+    return res.status(500).json({ error: error.message });
   }
 });
 
 // Create a new user //gerer les nom de joueur trop long ou trop court ou deja utilisé.
-router.post('/', (req, res) => {
+router.post('/signup', (req, res) => {
   const user = req.body;
 
   // Check if all required fields are present
@@ -56,7 +56,7 @@ router.post('/', (req, res) => {
 });
 
 // User connection
-router.post('/login', (req, res) => {
+router.post('/signin', (req, res) => {
   const { name, password } = req.body;
 
   // Check if all required fields are present
@@ -83,7 +83,7 @@ router.post('/login', (req, res) => {
 
       try {
         // If the name and password are correct, return a JWT to the client
-        const token = jwt.sign({ name: user.nale, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        const token = jwt.sign({ name: user.name, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
         console.log(token);
         res.json({ token });
       }
@@ -100,10 +100,16 @@ router.post('/login', (req, res) => {
 // Update an existing user
 router.put('/:id', async (req, res) => {
   try {
-    const id = req.params.id;
+    const name = req.params.name;
     const user = req.body;
-    const updatedUser = await User.updateUser(id, user, {});
-    res.json(updatedUser);
+    // Permissions verification 
+    if (res.decoded.role == "admin" || req.decoded.name == name) {
+      const updatedUser = await User.updateUser(id, user);
+      res.json(updatedUser);
+    }
+    else {
+      res.status(405).json({ error: "Permission denied" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -112,8 +118,10 @@ router.put('/:id', async (req, res) => {
 // Delete a user
 router.delete('/:id', async (req, res) => {
   try {
-    const removedUser = await User.removeUser(req.params.id);
+    const name = req.params.name;
+    const removedUser = await User.deleteUser(name);
     res.json(removedUser);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

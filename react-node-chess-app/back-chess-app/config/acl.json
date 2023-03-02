@@ -13,13 +13,32 @@
         "group": "user",
         "permissions": [
             {
+                "resource": "users/signin",
+                "methods": [
+                    "POST"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/signup",
+                "methods": [
+                    "POST"
+                ],
+                "action": "allow"
+            },
+            {
                 "resource": "users/",
                 "methods": [
-                    "POST",
-                    "GET",
                     "PUT"
                 ],
-                "action": "deny"
+                "action": "allow"
+            },
+            {
+                "resource": "exercises/",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
             }
         ]
     }
