@@ -1,0 +1,35 @@
+label{
+    color:black;
+}
+
+input {
+    height: 50px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    display: block;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #000000;
+    padding: 2px 5px;
+    color: #24292E;
+    font-size: 24px;
+    font-display: center;
+    background-color: #312e2b;
+}
+
+
+.form{
+    border-radius: 30px;
+    margin-top: 100px;
+    margin:0 auto;
+    justify-content: center;
+    display: flex;
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background-color: #262421;
+    max-width:30%;
+}
+
+.button-4{
+    margin-bottom: 20px;
+}

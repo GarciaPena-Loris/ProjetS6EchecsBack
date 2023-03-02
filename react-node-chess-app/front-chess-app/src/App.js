@@ -1,22 +1,18 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
+import {Routes, Route } from 'react-router-dom';
+import Accueil from "./components/Accueil/Accueil";
+import Connexion from "./components/Connexion/Connexion";
+import Inscription from "./components/Inscription/Inscription";
 
 function App() {
-  const [data, setData] = React.useState(null);
-
-  React.useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message));
-  }, []);
-
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>{!data ? "Loading..." : data}</p>
-      </header>
+      <Routes>
+          <Route path="/" element={<Accueil/>} />
+          <Route path="/connexion" element={<Connexion/>} />
+          <Route path="/inscription" element={<Inscription/>} />
+      </Routes>
     </div>
   );
 }
