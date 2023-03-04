@@ -1,9 +1,9 @@
 const connection = require('./database');
 
-class Progress {
-    static async getAllProgress() {
+class ProgressGame {
+    static async getAllProgressGame() {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM progress", (error, results) => {
+            connection.query("SELECT * FROM progressgame", (error, results) => {
                 if (error) {
                     return reject(error);
                 }
@@ -12,9 +12,9 @@ class Progress {
         });
     }
 
-    static async getProgressByNameId(UserName, ExerciseId) {
+    static async getProgressGameByNameId(UserName, GameId) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM progress WHERE name = ? AND id = ?", [UserName, ExerciseId], (error, results) => {
+            connection.query("SELECT * FROM progressgame WHERE name = ? AND id = ?", [UserName, GameId], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
@@ -23,9 +23,9 @@ class Progress {
         });
     }
 
-    static async getPointsProgressByNameId(UserName, ExerciseId) {
+    static async getPointsProgressGameByNameId(UserName, GameId) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT points FROM progress WHERE name = ? AND id = ?", [UserName, ExerciseId], (error, results) => {
+            connection.query("SELECT points FROM progressgame WHERE name = ? AND id = ?", [UserName, GameId], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
@@ -34,9 +34,9 @@ class Progress {
         });
     }
 
-    static async updateProgress(Exercise, UserName, ExerciseId) {
+    static async updateProgressGame(Game, UserName, GameId) {
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE progress SET ? WHERE name = ? AND id = ?", [Exercise, UserName, ExerciseId], (error, result) => {
+            connection.query("UPDATE progressgame SET ? WHERE name = ? AND id = ?", [Game, UserName, GameId], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -45,9 +45,9 @@ class Progress {
         });
     }
 
-    static async addPointsExercise(ExerciseId, UserName, points) {
+    static async changePointsGame(GameId, UserName, points) {
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE progress SET points = ? WHERE name = ? AND id = ?", [points, UserName, ExerciseId], (error, result) => {
+            connection.query("UPDATE progressgame SET points = points + ? WHERE name = ? AND id = ?", [points, UserName, GameId], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -58,4 +58,4 @@ class Progress {
 
 }
 
-module.exports = Progress;
+module.exports = ProgressGame;

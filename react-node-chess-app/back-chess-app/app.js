@@ -38,7 +38,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var exercisesRouter = require('./routes/exercises');
 var gamesRouter = require('./routes/games');
-var progressRouter = require('./routes/progress');
+var progressExerciseRouter = require('./routes/progress');
+var progressGameRouter = require('./routes/progress');
 
 var app = express(); //initialise une nouvelle application Express.
 
@@ -61,8 +62,10 @@ function validateUrl(req, res, next) {
     /^\/exercises\/\d+$/,
     /^\/games$/,
     /^\/games\/\d+$/,
-    /^\/progress$/,
-    /^\/progress\/\d+$/
+    /^\/progressExercise$/,
+    /^\/progressExercise\/\d+$/,
+    /^\/progressGame$/,
+    /^\/progressGame\/\d+$/
   ];
   if (!allowedRoutes.some((pattern) => pattern.test(req.path))) {
     // Il utilise createError pour créer une erreur 404 et la passe au prochain gestionnaire d'erreur.
@@ -75,16 +78,17 @@ function validateUrl(req, res, next) {
 // Effectue les vérifications nécessaire
 app.use(validateUrl);
 app.use(verifToken.unless({ path: ['/', '/users/signin', '/users/signup'] })); //vérification du token a chaque appel sauf signin et signup
-app.use(acl.authorize); //configurer les autorisations pour les utilisateurs connectés 
+app.use(acl.authorize); //configurer les autorisations pour les utilisateurs connectés
 
 // Les routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/exercises', exercisesRouter);
 app.use('/games', gamesRouter);
-app.use('/progress', progressRouter);
+app.use('/progressExercise', progressExerciseRouter);
+app.use('/progressGame', progressGameRouter);
 
-// définit un gestionnaire d'erreur générique qui gère les erreurs produites par les routes et les middlewares précédents. 
+// définit un gestionnaire d'erreur générique qui gère les erreurs produites par les routes et les middlewares précédents.
 // Il définit un message d'erreur et une erreur en mode développement
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
