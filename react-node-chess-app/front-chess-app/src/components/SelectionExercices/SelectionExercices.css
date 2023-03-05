@@ -32,12 +32,15 @@ li:not(:last-child) {
     }
     
     .imgExo {
-    width: 100%;
-    max-width: 200px;
+    width: 12em;
+    height: 12em;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;  /* Ajout de la transition */
     }
     
     .imgExo:hover {
+    width: 12.3em;
+    height: 12.3em;
     border-color: #fff;
     }
     

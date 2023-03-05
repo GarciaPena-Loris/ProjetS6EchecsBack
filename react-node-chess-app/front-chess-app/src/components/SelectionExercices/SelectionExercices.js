@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import "../Components.css"
 import "./SelectionExercices.css"
-import exercice1 from './imagesExercices/exercice1.png';
-import exercice2 from './imagesExercices/exercice2.png';
-import exercice3 from './imagesExercices/exercice3.png';
-import exercice4 from './imagesExercices/exercice4.png';
-import exercice5 from './imagesExercices/exercice5.png';
 
 export default function SelectionExercices() {
     const [selectedExercice, setSelectedExercice] = useState(null);
     const [dataExo, setDataExo] = useState([]);
     const token = sessionStorage.getItem('token');
+    const navigate=useNavigate();
 
     const handleExerciceClick = (exercice) => {
         setSelectedExercice(exercice);
@@ -38,22 +35,21 @@ export default function SelectionExercices() {
             });
     }, []);
 
+    //verifie si la personne est bien connecté avant de charger la page
+    useEffect(()=>{
+        if(!token){(navigate("/connexion"))}
+    });
+
+
     return (
         <div>
-            <nav>
-                <ul>
-                    <li><Link to="/">Accueil</Link></li>
-                    <li>|</li>
-                    <li><Link to="/compte">Mon compte</Link></li>
-                </ul>
-            </nav>
             <h1>Sélectionnez un exercice :</h1>
             <div className="image-container">
                 {dataExo.map((exercice) => (
                     <div className="img-wrapper" key={exercice.id}>
                         <img
                             className="imgExo"
-                            src={exercice1}
+                            src="https://i.imgur.com/vUdf7mG.png"
                             alt={`Exercice ${exercice.id}`}
                             onClick={() => handleExerciceClick(exercice)}
                         />
