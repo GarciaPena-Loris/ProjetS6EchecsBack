@@ -27,18 +27,20 @@ class User {
 
     static async createUser(user) {
         return new Promise((resolve, reject) => {
-            connection.query("INSERT INTO users SET ?", user, (error, result) => {
+            const { name, password } = user;
+            connection.query("INSERT INTO users SET name = ?, password = ?", [name, password], (error, result) => {
                 if (error) {
-                    return reject(error);
+                    reject(error);
+                } else {
+                    resolve(result);
                 }
-                resolve(result);
             });
         });
     }
 
-    static async updateUser(name, user) {
+    static async updateNameUser(oldName, newName) {
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE users SET ? WHERE name = ?", [user, name], (error, result) => {
+            connection.query("UPDATE users SET name = ? WHERE name = ?", [newName, oldName], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -60,7 +62,6 @@ class User {
         });
     }
 
-    //other functions
     static async changePassword(userId, currentPassword, newPassword) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -84,7 +85,7 @@ class User {
 
     static async changeEloUser(name, points) {
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE user SET elo = elo + ? WHERE name = ?", [points, name], (error, result) => {
+            connection.query("UPDATE users SET global_elo = global_elo + ? WHERE name = ?", [points, name], (error, result) => {
                 if (error) {
                     return reject(error);
                 }

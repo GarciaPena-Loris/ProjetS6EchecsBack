@@ -2,24 +2,24 @@ var express = require('express');
 const CryptoJS = require('crypto-js');
 
 var router = express.Router();
-var ProgressGame = require('../models/progressGameModel');
+var eloExercise = require('../models/eloExerciseModel');
 var User = require('../models/userModel');
 const e = require('express');
 
 // Get all progress
 router.get('/', async (req, res) => {
   try {
-    const progress = await ProgressGame.getAllProgressGame();
+    const progress = await eloExercise.getAlleloExercise();
     res.json(progress);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get a single ProgressGame by Name
+// Get a single eloExercise by Name
 router.get('/:name/:id', async (req, res) => {
   try {
-    const progress = await ProgressGame.getProgressGameByNameId(req.params.name, req.params.id);
+    const progress = await eloExercise.geteloExerciseByNameId(req.params.name, req.params.id);
     res.json(progress);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -27,14 +27,14 @@ router.get('/:name/:id', async (req, res) => {
 });
 
 
-// Update an existing ProgressGame
+// Update an existing eloExercise
 router.put('/:name/:id', async (req, res) => {
   try {
     const progress = req.body;
     const name = req.params.name;
     const id = req.params.id;
-    const updatedProgressGame = await ProgressGame.updateProgressGame(req.params.name, req.params.id, progress);
-    res.json(updatedProgressGame);
+    const updatedeloExercise = await eloExercise.updateeloExercise(req.params.name, req.params.id, progress);
+    res.json(updatedeloExercise);
     res.status(405).json({ error: "Permission denied" });
 
   } catch (error) {
@@ -42,7 +42,7 @@ router.put('/:name/:id', async (req, res) => {
   }
 });
 
-// change points to playeur in game Id
+// change points to playeur in exercice Id
 router.put('/change/:name/:id', async (req, res) => {
   try {
     const decoded = res.decoded;
@@ -61,17 +61,17 @@ router.put('/change/:name/:id', async (req, res) => {
 
     // Verification validity
     if (decoded.role == "admin") {
-      const updatedProgressGame = await ProgressGame.changePointsGame(req.params.id, req.params.name, points);
-      res.json(updatedProgressGame);
+      const updatedeloExercise = await eloExercise.changePointsExercise(req.params.id, req.params.name, points);
+      res.json(updatedeloExercise);
     }
     else if (nameParam == nameMessage == decoded.name && idParam == idMessage) { // Verif name and id
-      const pointsProgressGame = await ProgressGame.getPointsProgressGameByNameId(req.params.id, req.params.name);
-      if ((pointsProgressGame == actualPointsMessage) && (points == newPointsMessage)) { // Verif points
+      const pointseloExercise = await eloExercise.getPointseloExerciseByNameId(req.params.id, req.params.name);
+      if ((pointseloExercise == actualPointsMessage) && (points == newPointsMessage)) { // Verif points
         // change points to progress
-        const changePoints = await ProgressGame.changePointsGame(req.params.id, req.params.name, pointsProgressGame + points);
+        const changePoints = await eloExercise.changePointsExercise(req.params.id, req.params.name, pointseloExercise + points);
 
         // change points to user elo
-        const changeEloUser = await ProgressGame.changePointsGame(req.params.id, req.params.name, (newPointsMessage * 5) / 100);
+        const changeEloUser = await eloExercise.changePointsExercise(req.params.id, req.params.name, (newPointsMessage * 5) / 100);
 
         res.json({ changePoints, changeEloUser });
       }
