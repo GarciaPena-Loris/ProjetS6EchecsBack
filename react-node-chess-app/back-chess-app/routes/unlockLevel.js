@@ -63,7 +63,6 @@ router.put('/save/:name/:id', async (req, res) => {
     // Verification validity
     if ((nameParam == nameCode && nameCode == decoded.name) && (idParam == idCode)) { // Verif name and id
       const actuelEloExercise = await EloExercise.getEloFromEloExerciseBIdyName(idParam, nameParam);
-      console.log("actuelEloExercise: '" + actuelEloExercise + "'");
 
       if ((actuelEloExercise == actualEloCode) && (pointsParam == pointsCode)) { // Verif points
         // get actuel exercise from level id

@@ -27,23 +27,11 @@ const verifToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(401).json({ message: 'Authentication failed' });
-    console.log(decoded);
     req.decoded = decoded;
     next();
   });
 };
 verifToken.unless = unless;
-
-// -----------------
-const CryptoJS = require('crypto-js');
-//id_level/name/eloActuel/newelo(- or +)
-const message = "1/userTest/5/-2";
-const secretKey = "U2FsdG0VkX1+3u2lGiD+8uOnC6tfaE$7AJzvKU";
-
-const encrypted = CryptoJS.AES.encrypt(message, secretKey).toString();
-
-console.log(encrypted);
-// -----------------
 
 //Importation des routes
 var indexRouter = require('./routes/index');
