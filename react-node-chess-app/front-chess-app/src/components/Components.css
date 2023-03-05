@@ -107,9 +107,7 @@ input {
         margin: auto 15px;
 }
 
-.imgExo:hover{
-        border-color: #fff;
-}
+
 
 nav {
     height: 40px;
@@ -144,3 +142,21 @@ nav a {
     color: #fff;
     text-decoration: none;
 } 
+.logout {
+    margin-left: auto;
+}
+
+.logout {
+    background-color: #fff;
+    color: #262421;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.logout:hover {
+    background-color: #262421;
+    color: #fff;
+}
