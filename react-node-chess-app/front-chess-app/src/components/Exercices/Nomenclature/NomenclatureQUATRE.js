@@ -427,7 +427,6 @@ class NomenclatureQUATRE extends React.Component {
                         arePiecesDraggable={false}
                         width={400}
                         animationDuration={800}	
-                        snapToCursor
                     />
                 </div>
                 <div className="elementsDroite">

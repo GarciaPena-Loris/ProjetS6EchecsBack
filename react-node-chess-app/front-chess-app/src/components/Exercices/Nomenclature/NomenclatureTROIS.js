@@ -284,15 +284,17 @@ class NomenclatureTROIS extends React.Component {
 
         if (piece === 'p') this.state.nomPiece = `le pion en ${alpha[colonneP - 1]}${ligneP}`
         else if (piece === 'r') this.state.nomPiece = `la tour en ${alpha[colonneP - 1]}${ligneP}`
-        else this.state.nomPiece = `le cavalier en ${alpha[colonneP - 1]}${ligneP}`
+        else if (piece === 'n') this.state.nomPiece = `le cavalier en ${alpha[colonneP - 1]}${ligneP}`
+        else if (piece === 'q') this.state.nomPiece = `la reine en ${alpha[colonneP - 1]}${ligneP}`
+
 
         this.state.pos = `${alpha[colonneM - 1]}${ligneM}`;
 
         var coup = '';
-        if (couleur === 'b') {
+        if (couleur === 'b' && piece !== 'p') {
             coup += piece;
         }
-        else {
+        else if (piece !== 'p'){
             coup += piece.toUpperCase();
         }
 
@@ -316,7 +318,7 @@ class NomenclatureTROIS extends React.Component {
     handleClick = () => {
         const { inputValue, chess } = this.state;
         
-        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p'+ this.coup)) {
+        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
             const text = "Bravo c'était ça !";
             this.setState({ chess: chess, correctMessage: text, incorrectMessage: '', inputValue: '' });
             chess.move(inputValue);
