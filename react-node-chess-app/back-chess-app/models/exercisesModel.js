@@ -1,9 +1,9 @@
 const connection = require('./database');
 
 class Exercises {
-    static async getAllExercises() {
+    static async getAllExercise() {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM exercises", (error, results) => {
+            connection.query("SELECT * FROM exercise", (error, results) => {
                 if (error) {
                     return reject(error);
                 }
@@ -12,9 +12,9 @@ class Exercises {
         });
     }
 
-    static async getExerciseById(id) {
+    static async getExerciseById(ExerciseId) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM exercises WHERE id = ?", [id], (error, results) => {
+            connection.query("SELECT * FROM exercise WHERE AND id_exercice = ?", [ExerciseId], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
@@ -24,8 +24,9 @@ class Exercises {
     }
 
     static async createExercise(exercise) {
+        const { name, description } = exercise;
         return new Promise((resolve, reject) => {
-            connection.query("INSERT INTO exercises SET ?", exercise, (error, result) => {
+            connection.query("INSERT INTO exercises SET name = ?, description = ?", [name, description], (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -35,13 +36,16 @@ class Exercises {
     }
 
     static async updateExercise(id, exercise) {
+        const { name, description } = exercise;
         return new Promise((resolve, reject) => {
-            connection.query("UPDATE exercises SET ? WHERE id = ?", [exercise, id], (error, result) => {
-                if (error) {
-                    return reject(error);
+            connection.query(
+                "UPDATE exercises SET name = ?, description = ? WHERE id = ?", [name, description, id], (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result.affectedRows);
                 }
-                resolve(result.affectedRows);
-            });
+            );
         });
     }
 

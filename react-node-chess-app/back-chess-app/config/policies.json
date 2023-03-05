@@ -41,9 +41,16 @@
                 "action": "allow"
             },
             {
-                "resource": "games/*",
+                "resource": "levels/*",
                 "methods": [
                     "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "unlockLevel/save/*",
+                "methods": [
+                    "PUT"
                 ],
                 "action": "allow"
             }

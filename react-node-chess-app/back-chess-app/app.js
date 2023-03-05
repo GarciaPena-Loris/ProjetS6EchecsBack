@@ -7,6 +7,7 @@ var bodyParser = require('body-parser'); //middlaware utilisé pour extraire les
 var acl = require('express-acl'); //middleware qui permet de définir des autorisations pour des utilisateurs et des groupes d'utilisateurs.
 const jwt = require('jsonwebtoken'); //middleware qui gere les tokens
 const unless = require('express-unless'); //middleware qui est utilisé pour définir les routes à ne pas utiliser
+const cors = require('cors'); //middleware pour autoriser les requêtes de react
 
 acl.config({
   filename: 'policies.json',
@@ -19,7 +20,7 @@ acl.config({
 // Middleware pour vérifier les token
 const verifToken = (req, res, next) => {
   // Vérification du token
-  const token = req.headers.authorization;
+  const token = req.headers.authorization.split(' ')[1];
   if (!token) {
     return res.status(401).json({ message: 'Invalid token' });
   }
@@ -33,13 +34,24 @@ const verifToken = (req, res, next) => {
 };
 verifToken.unless = unless;
 
+// -----------------
+const CryptoJS = require('crypto-js');
+//id_level/name/eloActuel/newelo(- or +)
+const message = "1/userTest/5/-2";
+const secretKey = "U2FsdG0VkX1+3u2lGiD+8uOnC6tfaE$7AJzvKU";
+
+const encrypted = CryptoJS.AES.encrypt(message, secretKey).toString();
+
+console.log(encrypted);
+// -----------------
+
 //Importation des routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var exercisesRouter = require('./routes/exercises');
-var gamesRouter = require('./routes/games');
-var progressExerciseRouter = require('./routes/progress');
-var progressGameRouter = require('./routes/progress');
+var levelsRouter = require('./routes/levels');
+var eloExercise = require('./routes/eloExercise');
+var unlockLevel = require('./routes/unlockLevel');
 
 var app = express(); //initialise une nouvelle application Express.
 
@@ -50,33 +62,9 @@ app.use(cookieParser()); //utilise cookie-parser pour parser les cookies envoyé
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); //utilise bodyParser pour extraire les données du corps de la requête.
 app.use(express.static(path.join(__dirname, 'public'))); //utilise le middleware static pour servir des fichiers statiques du dossier public.
-
-// définit un gestionnaire d'erreur pour les cas où aucune route ne correspond à la requête entrante. 
-function validateUrl(req, res, next) {
-  console.log(req.path);
-  const allowedRoutes = [
-    /^\/$/,
-    /^\/users$/,
-    /^\/users\/\d+$/,
-    /^\/exercises$/,
-    /^\/exercises\/\d+$/,
-    /^\/games$/,
-    /^\/games\/\d+$/,
-    /^\/progressExercise$/,
-    /^\/progressExercise\/\d+$/,
-    /^\/progressGame$/,
-    /^\/progressGame\/\d+$/
-  ];
-  if (!allowedRoutes.some((pattern) => pattern.test(req.path))) {
-    // Il utilise createError pour créer une erreur 404 et la passe au prochain gestionnaire d'erreur.
-    res.status(404).send('Page not found');
-  } else {
-    next();
-  }
-}
+app.use(cors()); //utilise le middleware cors pour pouvoir faire des échange avec react.
 
 // Effectue les vérifications nécessaire
-app.use(validateUrl);
 app.use(verifToken.unless({ path: ['/', '/users/signin', '/users/signup'] })); //vérification du token a chaque appel sauf signin et signup
 app.use(acl.authorize); //configurer les autorisations pour les utilisateurs connectés
 
@@ -84,9 +72,14 @@ app.use(acl.authorize); //configurer les autorisations pour les utilisateurs con
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/exercises', exercisesRouter);
-app.use('/games', gamesRouter);
-app.use('/progressExercise', progressExerciseRouter);
-app.use('/progressGame', progressGameRouter);
+app.use('/levels', levelsRouter);
+app.use('/eloExercise', eloExercise);
+app.use('/unlockLevel', unlockLevel);
+
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
 
 // définit un gestionnaire d'erreur générique qui gère les erreurs produites par les routes et les middlewares précédents.
 // Il définit un message d'erreur et une erreur en mode développement
