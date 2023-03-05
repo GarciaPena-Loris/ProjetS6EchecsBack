@@ -1,7 +1,7 @@
 var express = require('express');
 
 var router = express.Router();
-var Level = require('../models/exercisesModel');
+var Level = require('../models/levelsModel');
 
 // Get all levels
 router.get('/', async (req, res) => {
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get a single Level by Name
-router.get('/:name', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const levels = await Level.getLevelById(req.params.id);
     res.json(levels);
@@ -27,11 +27,10 @@ router.get('/:name', async (req, res) => {
 // Update an existing Level
 router.put('/:id', async (req, res) => {
   try {
-    const name = req.params.name;
-    const levels = req.body;
-    const updatedLevel = await Level.updateLevel(id, levels);
+    const id = req.params.id;
+    const level = req.body;
+    const updatedLevel = await Level.updateLevel(id, level);
     res.json(updatedLevel);
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -40,9 +39,20 @@ router.put('/:id', async (req, res) => {
 // Delete a Level
 router.delete('/:id', async (req, res) => {
   try {
-    const name = req.params.name;
-    const removedLevel = await Level.deleteLevel(name);
+    const id = req.params.id;
+    const removedLevel = await Level.deleteLevel(id);
     res.json(removedLevel);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all level From exercise Id
+router.get('/allLevels/:id_exercise', async (req, res) => {
+  try {
+    const id_exercise = req.params.id_exercise;
+    const levels = await Level.getLevelByExerciseId(id_exercise);
+    res.json(levels);
 
   } catch (error) {
     res.status(500).json({ error: error.message });

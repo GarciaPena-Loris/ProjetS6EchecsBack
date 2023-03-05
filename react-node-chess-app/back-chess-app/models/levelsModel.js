@@ -83,6 +83,16 @@ class Levels {
         });
     }
 
+    static async getLevelByExerciseId(id_exercise) {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM levels WHERE id_exercise = ?", [id_exercise], (error, results) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    }
 }
 
 module.exports = Levels;

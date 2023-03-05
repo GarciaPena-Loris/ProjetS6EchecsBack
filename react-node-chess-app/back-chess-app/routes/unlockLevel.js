@@ -69,7 +69,7 @@ router.put('/save/:name/:id', async (req, res) => {
         const id_exercise_obj = await Levels.getExerciseByLevelId(idCode);
 
         // change elo exercise
-        await EloExercise.changeEloExercise(id_exercise_obj.id_exercise, nameParam, pointsCode);
+        await EloExercise.updateEloExercise(id_exercise_obj.id_exercise, nameParam, pointsCode);
 
         if (pointsCode > 0) {
           // get level unlockable

@@ -1,9 +1,9 @@
 const connection = require('./database');
 
 class Exercises {
-    static async getAllExercise() {
+    static async getAllExercises() {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM exercise", (error, results) => {
+            connection.query("SELECT * FROM exercises", (error, results) => {
                 if (error) {
                     return reject(error);
                 }
@@ -14,7 +14,7 @@ class Exercises {
 
     static async getExerciseById(ExerciseId) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM exercise WHERE AND id_exercice = ?", [ExerciseId], (error, results) => {
+            connection.query("SELECT * FROM exercises WHERE AND id_exercice = ?", [ExerciseId], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
