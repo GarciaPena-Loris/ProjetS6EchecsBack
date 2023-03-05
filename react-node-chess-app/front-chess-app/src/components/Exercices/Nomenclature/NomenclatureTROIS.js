@@ -291,12 +291,10 @@ class NomenclatureTROIS extends React.Component {
         this.state.pos = `${alpha[colonneM - 1]}${ligneM}`;
 
         var coup = '';
-        if (couleur === 'b' && piece !== 'p') {
-            coup += piece;
-        }
-        else if (piece !== 'p'){
+        if (piece !== 'p') {
             coup += piece.toUpperCase();
         }
+       
 
         if (colonneA === colonneP) {
             coup += ligneP;
@@ -307,6 +305,7 @@ class NomenclatureTROIS extends React.Component {
         coup += alpha[colonneM - 1] + ligneM;
 
         console.log(coup);
+        console.log(this.state.chess.moves({ verbose: true }))
         this.coup = coup;   
 
     }

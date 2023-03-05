@@ -38,19 +38,19 @@ class Nomenclature extends React.Component {
         this.usePieceString = "";
         break;
       case "bK":
-        this.usePieceString = "k";
+        this.usePieceString = "K";
         break;
       case "bN":
-        this.usePieceString = "n";
+        this.usePieceString = "N";
         break;
       case "bB":
-        this.usePieceString = "b";
+        this.usePieceString = "B";
         break;
       case "bR":
-        this.usePieceString = "r";
+        this.usePieceString = "R";
         break;
       case "bQ":
-        this.usePieceString = "q";
+        this.usePieceString = "Q";
         break;
       default:
         this.usePieceString=this.movePieceObj[Object.keys(this.movePieceObj)[0]].substring(1);

@@ -346,11 +346,7 @@ class NomenclatureQUATRE extends React.Component {
         this.state.pos = `${alpha[colonneM - 1]}${ligneM}`;
 
         var coup = '';
-        if (couleur === 'b' && piece !== 'b' && piece !== 'q'
-            && piece !== 'k' && piece !== 'p' && piece !== 'r' && piece !== 'n') {
-            coup += piece;
-        }
-        else if (piece !== 'p') {
+        if (piece !== 'p') {
             coup += piece.toUpperCase();
         }
 
