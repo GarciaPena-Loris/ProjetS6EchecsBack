@@ -1,9 +1,8 @@
 import React from "react";
 import './Bombe.css';
 import '../../Components.css';
-import { Chessboard } from 'react-chessboard'
-import { Chess } from 'chess.js'
-import { text } from "express";
+import { Chessboard } from 'react-chessboard';
+import { Chess } from 'chess.js';
 
 class Bombe extends React.Component {
     constructor() {
