@@ -96,7 +96,7 @@ class Nomenclature extends React.Component {
 
   render() {
     return (
-      <div className="container">
+      <div className="containerNom">
         <div className="chesscenter">
           <h2>Ecrivez le coup de la pièce</h2>
           <Chessboard

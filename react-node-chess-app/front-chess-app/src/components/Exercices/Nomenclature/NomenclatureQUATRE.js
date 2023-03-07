@@ -414,7 +414,7 @@ class NomenclatureQUATRE extends React.Component {
 
     render() {
         return (
-            <div className="container">
+            <div className="containerNom">
                 <div className="chesscenter">
                     <h2 id="txt">Ecrivez le coup pour que {this.state.nomPiece} aille en {this.state.pos}</h2>
                     <Chessboard

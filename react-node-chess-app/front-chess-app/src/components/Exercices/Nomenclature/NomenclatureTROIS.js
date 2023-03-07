@@ -332,7 +332,7 @@ class NomenclatureTROIS extends React.Component {
 
     render() {
         return (
-            <div className="container">
+            <div className="containerNom">
                 <div className="chesscenter">
                     <h2 id="txt">Ecrivez le coup pour que {this.state.nomPiece} mange la reine en {this.state.pos}</h2>
                     <Chessboard
