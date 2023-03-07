@@ -34,12 +34,12 @@ input {
 
 .button-4 {
     appearance: none;
-    background-color: #FAFBFC;
+    background-color: #202020;
     border: 1px solid rgba(27, 31, 35, 0.15);
-    border-radius: 6px;
+    border-radius: 8px;
     box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
     box-sizing: border-box;
-    color: #24292E;
+    color: #eeeeee;
     cursor: pointer;
     display: inline-block;
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
@@ -47,7 +47,7 @@ input {
     font-weight: 500;
     line-height: 20px;
     list-style: none;
-    padding: 6px 16px;
+    padding: 10px 30px;
     position: relative;
     transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
     user-select: none;
@@ -59,15 +59,16 @@ input {
 }
 
 .button-4:hover {
-    background-color: #F3F4F6;
+    background-color: #505050;
     text-decoration: none;
     transition-duration: 0.1s;
 }
 
 .button-4:disabled {
-    background-color: #FAFBFC;
+    background-color: #202020;
     border-color: rgba(27, 31, 35, 0.15);
-    color: #959DA5;
+    opacity: 40%;
+    color: #eeeeee;
     cursor: default;
 }
 
@@ -95,7 +96,7 @@ input {
     justify-content: center;
     align-items: center;
     height: 80vh;
-  }
+}
 
 .imgExo{
         cursor: pointer;
@@ -106,9 +107,7 @@ input {
         margin: auto 15px;
 }
 
-.imgExo:hover{
-        border-color: #fff;
-}
+
 
 nav {
     height: 40px;
@@ -143,3 +142,21 @@ nav a {
     color: #fff;
     text-decoration: none;
 } 
+.logout {
+    margin-left: auto;
+}
+
+.logout {
+    background-color: #fff;
+    color: #262421;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.logout:hover {
+    background-color: #262421;
+    color: #fff;
+}

@@ -1,5 +1,30 @@
-label{
-    color:black;
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.connexion {
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background-color: #262421;
+    width: 23em;
+    border-radius: 30px;
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2%;
+}
+
+.form {
+    width: 100%;
+    max-width: 600px;
+}
+
+label {
+    color: black;
 }
 
 input {
@@ -12,29 +37,17 @@ input {
     border: none;
     border-bottom: 1px solid #000000;
     padding: 2px 5px;
-    color: #24292E;
+    color: #ffffff;
     font-size: 24px;
     font-display: center;
     background-color: #312e2b;
-    margin-bottom: 20px;
 }
 
-
-.form{
-    border-radius: 30px;
-    margin-top: 100px;
-    margin:0 auto;
-    justify-content: center;
-    display: flex;
-    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    background-color: #262421;
-    max-width: 20%;
-}
-
-.passwordInscription{
-    margin-top: 10px;
-}
-
-.button-4{
-    margin-bottom: 20px;
+.errors {
+    font-size: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ece9ea;
+    color: #a31927;
+    padding: 8px;
+    border-radius: 20px;
 }

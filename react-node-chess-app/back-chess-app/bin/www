@@ -1,0 +1,61 @@
+var app = require('../app'); //instance de l'application Express définie dans le fichier app.js.
+var debug = require('debug')('back-chess-app:server'); // bibliothèque pour le débogage qui permet de générer des messages de débogage avec un nom de module spécifique.
+var http = require('http');
+
+
+var port = normalizePort(process.env.PORT || '3001'); //défini le port à utiliser en utilisant la fonction normalizePort.
+app.set('port', port); //valeur du port est affectée à l'instance de l'application avec app.set('port', port).
+
+var server = http.createServer(app); //Un nouveau serveur HTTP est créé en passant l'instance de l'application Express à la fonction http.createServer.
+
+server.listen(port, () => { //le serveur est démarré en appelant la méthode listen et en lui passant le port d'écoute.
+  console.log(`Server listening on ${port}`);
+});
+server.on('error', onError);
+server.on('listening', onListening);
+
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    return val;
+  }
+
+  if (port >= 0) {
+    return port;
+  }
+
+  return false;
+}
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  switch (error.code) {
+    case 'EACCES': //Le port requiert des privilèges élevés pour être écouté.
+      console.error(bind + ' necessite des privilèges élevés.');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE': //Le port est déjà en utilisation.
+      console.error(bind + ' est déjà en utilisation.');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('En écoute sur ' + bind);
+}

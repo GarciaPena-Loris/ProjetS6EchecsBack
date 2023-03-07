@@ -25,7 +25,7 @@ export default function Accueil() {
       </div>
       <div className="divMargin">
         <button onClick={handleClickConnexion} className="button-4">Se connecter</button>
-        <div class="space"></div>
+        <div className="space"></div>
         <button onClick={handleClickInscription} className="button-4">S'inscrire</button>
       </div>
     </div>

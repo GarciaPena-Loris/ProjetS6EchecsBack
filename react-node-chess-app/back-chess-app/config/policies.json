@@ -1,0 +1,59 @@
+[
+    {
+        "group": "admin",
+        "permissions": [
+            {
+                "resource": "*",
+                "methods": "*",
+                "action": "allow"
+            }
+        ]
+    },
+    {
+        "group": "user",
+        "permissions": [
+            {
+                "resource": "users/signin",
+                "methods": [
+                    "POST"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/signup",
+                "methods": [
+                    "POST"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "exercises/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "levels/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "unlockLevel/save/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            }
+        ]
+    }
+]
