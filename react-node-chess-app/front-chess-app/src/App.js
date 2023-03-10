@@ -9,7 +9,7 @@ import Nomenclature from "./components/Exercices/Nomenclature/Nomenclature";
 import NomenclatureTROIS from "./components/Exercices/Nomenclature/NomenclatureTROIS";
 import NomenclatureDEUX from "./components/Exercices/Nomenclature/NomenclatureDEUX";
 import NomenclatureQuatre from "./components/Exercices/Nomenclature/NomenclatureQUATRE";
-
+import SelectionExercices from "./components/SelectionExercices/SelectionExercices";
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
           <Route path="/" element={<Accueil/>} />
           <Route path="/connexion" element={<Connexion/>} />
           <Route path="/inscription" element={<Inscription/>} />
+          <Route path="/selectionExercices" element={<SelectionExercices/>}/>
           <Route path="/Exercices/Nomenclature" element={<Nomenclature/>}/>
           <Route path="/Exercices/NomenclatureDEUX" element={<NomenclatureDEUX/>}/>
           <Route path="/Exercices/NomenclatureTROIS" element={<NomenclatureTROIS/>}/>
