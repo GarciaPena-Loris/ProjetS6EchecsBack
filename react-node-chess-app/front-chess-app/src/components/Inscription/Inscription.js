@@ -30,7 +30,6 @@ export default function Inscription() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const qs = require('qs');
         const formData = {
             'name': username,
             'password': password
@@ -104,9 +103,8 @@ export default function Inscription() {
                             <button
                                 className="button-4"
                                 type="submit"
-                                role="button"
-                                disabled={buttonDisabled} // utilisez la variable buttonDisabled ici
-                            >
+                                disabled={buttonDisabled} // utilisez la variable buttonDisabled ici   
+                                > 
                                 S'inscrire
                             </button>
                         </form>

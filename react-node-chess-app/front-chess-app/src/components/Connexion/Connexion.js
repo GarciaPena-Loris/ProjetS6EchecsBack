@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../Components.css"
 import "./Connexion.css"
 
@@ -17,7 +17,6 @@ export default function Connexion() {
 
     const handleConnexion = async (event) => {
         event.preventDefault();
-        const qs = require('qs');
         const formData = {
             'name': nomCompte,
             'password': motDePasse
@@ -38,6 +37,8 @@ export default function Connexion() {
                 setReponseServeur(response.data);
                 // Pour stocker le token dans la variable de session
                 sessionStorage.setItem('token', response.data.token);
+                console.log(sessionStorage.token);
+                console.log(sessionStorage.getItem('token'));
 
                 navigate("/selectionExercices");
             })
@@ -59,7 +60,7 @@ export default function Connexion() {
                         <div>
                             <input type="password" placeholder="Mot de passe" value={motDePasse} onChange={(event) => setMotDePasse(event.target.value)} />
                         </div>
-                        <button className="button-4" role="button">Se connecter</button>
+                        <button className="button-4">Se connecter</button>
                     </form>
                 </div>
             </div>

@@ -1,49 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "../Components.css"
 import "./ExercicePage.css"
 
-export default function ExercicePage({id_exercice}) {
+export default function ExercicePage() {
     const [dataLevels, setDataLevels] = useState([]);
-    const [dataExo, setDataExo] = useState([]);
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
-    const exerciceid = sessionStorage.getItem('exerciceSelectionne');
-    
+    const location = useLocation();
+    const exercice = location.state.exercice;
+    const exerciceId = exercice.id;
+
     //fonction pour les boutons 
     const handleLevelClick = (level) => {
-        navigate("/"+dataExo.name.toLowerCase()+"/niveau"+level.id);
+        // navigate("/"+dataExo.name.toLowerCase()+"/niveau"+level.id);
+        navigate('/niveaux', { state: { exerciceId: exerciceId, niveauId: level.id } });
     };
 
-    //Pour récuperer les data de l'exo
-    useEffect(() => {
-        var config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: 'http://localhost:3001/exercises/'+exerciceid,
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        };
-
-        axios(config)
-            .then(function (response) {
-                console.log(JSON.stringify(response.data));
-                setDataExo(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }, []);
-
+    
     //useEffect recupere les info de chaques levels au chargement de la page
     useEffect(() => {
         var config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: 'http://localhost:3001/levels/allLevels/'+exerciceid,
+            url: 'http://localhost:3001/levels/allLevels/' + exerciceId,
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -59,14 +40,12 @@ export default function ExercicePage({id_exercice}) {
             });
     }, []);
 
-    
-
     return (
-        <div className="exercise-page">
+        <div className="exercice-page">
             <div>
-                <h1 className="exercise-title">{dataExo.name}</h1>
-                <i className="exercise-description-name">Règles du jeu :</i>
-                <p className="exercise-description">{dataExo.description}</p>
+                <h1 className="exercice-title">{exercice.name}</h1>
+                <i className="exercice-description-name">Règles du jeu :</i>
+                <p className="exercice-description">{exercice.description}</p>
             </div>
             <div className="levels-container">
                 <div className="level-header">
