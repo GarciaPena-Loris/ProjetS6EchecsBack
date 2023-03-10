@@ -105,7 +105,7 @@ class Nomenclature extends React.Component {
             width={400}
           />
         </div>
-        <div class="elementsDroite">
+        <div className="elementsDroite">
           <input id="saisieposition" type="text" placeholder="Entrez le coup..." value={this.state.inputValue} onChange={this.handleInputChange}></input>
           <button id="checkposition" onClick={this.handleClick}>Valider</button>
           <div id="correctMessage">{this.state.correctMessage} </div>

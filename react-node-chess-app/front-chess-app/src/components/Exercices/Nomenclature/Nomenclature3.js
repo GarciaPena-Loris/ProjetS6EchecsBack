@@ -4,7 +4,7 @@ import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
 
-class NomenclatureDEUX extends React.Component {
+class Nomenclature3 extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -18,7 +18,7 @@ class NomenclatureDEUX extends React.Component {
 
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        var colonneP, colonneM, ligneP, ligneM, coul, coulM, couleur;
+        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coul, coulM, couleur;
         this.state.chess.clear();
 
         //choix couleur
@@ -37,17 +37,21 @@ class NomenclatureDEUX extends React.Component {
         }
 
         // premiere etape choisir piece
-        const pieces = ['p', 'r', 'n', 'b', 'q', 'k'];
+        const pieces = ['p', 'r', 'n', 'q'];
         const piece = pieces[Math.floor(Math.random() * pieces.length)];
         this.piece = piece;
+
         // 3 cas
-        if (piece === 'p') { // pions
+        if (piece === 'p' || piece === 'q') { // pions
             if (couleur === 'b') {
                 // position piece qui mange
                 colonneP = Math.floor(Math.random() * 6) + 1;
                 ligneP = Math.floor(Math.random() * 7) + 2;
-
-
+                
+                // position piece ambigue
+                colonneA = colonneP + 2;
+                ligneA = ligneP;
+                
                 // position piece mangé
                 colonneM = colonneP + 1;
                 ligneM = ligneP - 1;
@@ -56,7 +60,11 @@ class NomenclatureDEUX extends React.Component {
                 // position piece qui mange
                 colonneP = Math.floor(Math.random() * 5) + 1;
                 ligneP = Math.floor(Math.random() * 7) + 1;
-
+                
+                // position piece ambigue
+                colonneA = colonneP + 2;
+                ligneA = ligneP;
+                
                 // position piece mangé
                 colonneM = colonneP + 1;
                 ligneM = ligneP + 1;
@@ -77,6 +85,15 @@ class NomenclatureDEUX extends React.Component {
                         ligneM = Math.floor(Math.random() * 6) + 2;
                     }
                     while (ligneM === ligneP);
+
+                    // position piece ambigue
+                    colonneA = colonneP;
+                    if (ligneM < ligneP) { // position en dessous
+                        ligneA = Math.floor(Math.random() * (ligneM - 1)) + 1;
+                    }
+                    else { // position au dessus
+                        ligneA = Math.floor(Math.random()) + (ligneM + 1);
+                    }
                 }
                 else { // meme ligne
                     // position piece mangé
@@ -85,6 +102,15 @@ class NomenclatureDEUX extends React.Component {
                         colonneM = Math.floor(Math.random() * 6) + 2; ///// warning
                     }
                     while (colonneM === colonneP);
+
+                    // position piece ambigue
+                    ligneA = ligneP;
+                    if (colonneM < colonneP) { // position à gauche
+                        colonneA = Math.floor(Math.random() * (colonneM - 1)) + 1;
+                    }
+                    else { // position à droite
+                        colonneA = Math.floor(Math.random()) + (colonneM + 1);
+                    }
                 }
             }
             else { // position L
@@ -97,6 +123,13 @@ class NomenclatureDEUX extends React.Component {
                         ligneM = Math.floor(Math.random() * 8) + 1;
                     }
                     while (ligneM === ligneP);
+
+                    // position piece ambigue
+                    ligneA = ligneM;
+                    do {
+                        colonneA = Math.floor(Math.random() * 8) + 1;
+                    }
+                    while (colonneA === colonneM);
                 }
                 else { // meme ligne
 
@@ -106,10 +139,17 @@ class NomenclatureDEUX extends React.Component {
                         colonneM = Math.floor(Math.random() * 8) + 1;
                     }
                     while (colonneM === colonneP);
+
+                    // position piece ambigue
+                    colonneA = colonneM;
+                    do {
+                        ligneA = Math.floor(Math.random() * 8) + 1;
+                    }
+                    while (ligneA === ligneM);
                 }
             }
         }
-        else if (piece === 'n') {
+        else {
             // position piece qui mange
             colonneP = Math.floor(Math.random() * 8) + 1;
             ligneP = Math.floor(Math.random() * 8) + 1;
@@ -120,11 +160,29 @@ class NomenclatureDEUX extends React.Component {
                     // position piece mangé
                     colonneM = colonneP + 2
                     ligneM = ligneP + 1
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        // position piece ambigue
+                        colonneA = colonneM + 2
+                        ligneA = ligneM + 1
+                    }
+                    else {
+                        colonneA = colonneM + 1
+                        ligneA = ligneM + 2
+                    }
                 }
                 else {
                     // position piece mangé
                     colonneM = colonneP + 1
                     ligneM = ligneP + 2
+                    // position piece ambigue
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        colonneA = colonneM + 2
+                        ligneA = ligneM + 1
+                    }
+                    else {
+                        colonneA = colonneM + 1
+                        ligneA = ligneM + 2
+                    }
                 }
             }
             if (colonneP > 4 && ligneP <= 4) {  // bas droite
@@ -132,11 +190,29 @@ class NomenclatureDEUX extends React.Component {
                     // position piece mangé
                     colonneM = colonneP - 2
                     ligneM = ligneP + 1
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        // position piece ambigue
+                        colonneA = colonneM - 2
+                        ligneA = ligneM + 1
+                    }
+                    else {
+                        colonneA = colonneM - 1
+                        ligneA = ligneM + 2
+                    }
                 }
                 else {
                     // position piece mangé
                     colonneM = colonneP - 1
                     ligneM = ligneP + 2
+                    // position piece ambigue
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        colonneA = colonneM - 2
+                        ligneA = ligneM + 1
+                    }
+                    else {
+                        colonneA = colonneM - 1
+                        ligneA = ligneM + 2
+                    }
                 }
             }
             if (colonneP <= 4 && ligneP > 4) { // haut gauche
@@ -144,11 +220,29 @@ class NomenclatureDEUX extends React.Component {
                     // position piece mangé
                     colonneM = colonneP + 2
                     ligneM = ligneP - 1
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        // position piece ambigue
+                        colonneA = colonneM + 2
+                        ligneA = ligneM - 1
+                    }
+                    else {
+                        colonneA = colonneM + 1
+                        ligneA = ligneM - 2
+                    }
                 }
                 else {
                     // position piece mangé
                     colonneM = colonneP + 1
                     ligneM = ligneP - 2
+                    // position piece ambigue
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        colonneA = colonneM + 2
+                        ligneA = ligneM - 1
+                    }
+                    else {
+                        colonneA = colonneM + 1
+                        ligneA = ligneM - 2
+                    }
                 }
             }
             if (colonneP > 4 && ligneP > 4) { // haut droite
@@ -156,66 +250,43 @@ class NomenclatureDEUX extends React.Component {
                     // position piece mangé
                     colonneM = colonneP - 2
                     ligneM = ligneP - 1
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        // position piece ambigue
+                        colonneA = colonneM - 2
+                        ligneA = ligneM - 1
+                    }
+                    else {
+                        colonneA = colonneM - 1
+                        ligneA = ligneM - 2
+                    }
                 }
                 else {
                     // position piece mangé
                     colonneM = colonneP - 1
                     ligneM = ligneP - 2
+                    // position piece ambigue
+                    if (Math.random() < 0.5) { // x+2 y+1
+                        colonneA = colonneM - 2
+                        ligneA = ligneM - 1
+                    }
+                    else {
+                        colonneA = colonneM - 1
+                        ligneA = ligneM - 2
+                    }
                 }
             }
 
         }
-        else if (piece === 'b') {
-            //piece qui mange 
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-            //piece qui sera mangé 
-            do {
-                do {
-                    colonneM = Math.floor(Math.random() * 8) + 1;
-                }
-                while (colonneM === colonneP);
-                ligneM = ligneP + Math.abs(colonneP - colonneM);
-                if (ligneM > 8) {
-                    ligneM = ligneP - Math.abs(colonneP - colonneM);
-                }
-            } while (ligneM < 0 || ligneM > 8);
-        }
-        else if (piece === 'q') {
-            //piece qui mange 
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-            //piece qui sera mangé 
-            colonneM = Math.floor(Math.random() * 8) + 1;
-            do { ligneM = Math.floor(Math.random() * 8) + 1; }
-            while ((colonneM === colonneP && ligneM === ligneP) || (ligneM !== ligneP && colonneM !== colonneP
-                && ligneM !== (ligneP + Math.abs(colonneP - colonneM) || ligneP - Math.abs(colonneP - colonneM))));
-
-
-        }
-        else if (piece === 'k') {
-            //piece qui mange 
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-            //piece qui sera mangé 
-            do {
-                colonneM = Math.floor(Math.random() * 3) + (colonneP - 1);
-                ligneM = Math.floor(Math.random() * 3) + (ligneP - 1);
-            }
-            while (colonneM > 8 || colonneM < 1 || ligneM > 8 || ligneM < 1 ||
-                (ligneM === ligneP && colonneM === colonneP));
-        }
-
 
         this.state.chess.put({ type: `${piece}`, color: `${coul}` }, `${alpha[colonneP - 1]}${ligneP}`) // P
+        this.state.chess.put({ type: `${piece}`, color: `${coul}` }, `${alpha[colonneA - 1]}${ligneA}`) // A
         this.state.chess.put({ type: `q`, color: `${coulM}` }, `${alpha[colonneM - 1]}${ligneM}`) // M
 
         if (piece === 'p') this.state.nomPiece = `le pion en ${alpha[colonneP - 1]}${ligneP}`
         else if (piece === 'r') this.state.nomPiece = `la tour en ${alpha[colonneP - 1]}${ligneP}`
         else if (piece === 'n') this.state.nomPiece = `le cavalier en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'b') this.state.nomPiece = `le fou en ${alpha[colonneP - 1]}${ligneP}`
         else if (piece === 'q') this.state.nomPiece = `la reine en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'k') this.state.nomPiece = `le roi en ${alpha[colonneP - 1]}${ligneP}`
+
 
         this.state.pos = `${alpha[colonneM - 1]}${ligneM}`;
 
@@ -223,16 +294,19 @@ class NomenclatureDEUX extends React.Component {
         if (piece !== 'p') {
             coup += piece.toUpperCase();
         }
-        if (piece === 'p') {
-            coup += alpha[colonneP - 1];
-        }
+       
 
+        if (colonneA === colonneP) {
+            coup += ligneP;
+        }
+        else coup += alpha[colonneP - 1];
+        
         coup += 'x';
         coup += alpha[colonneM - 1] + ligneM;
 
         console.log(coup);
-        console.log(this.state.chess.moves({ verbose: true }));
-        this.coup = coup;
+        console.log(this.state.chess.moves({ verbose: true }))
+        this.coup = coup;   
 
     }
 
@@ -242,8 +316,8 @@ class NomenclatureDEUX extends React.Component {
 
     handleClick = () => {
         const { inputValue, chess } = this.state;
-
-        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p'+ this.coup)) {
+        
+        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
             const text = "Bravo c'était ça !";
             this.setState({ chess: chess, correctMessage: text, incorrectMessage: '', inputValue: '' });
             chess.move(inputValue);
@@ -279,4 +353,4 @@ class NomenclatureDEUX extends React.Component {
     }
 }
 
-export default NomenclatureDEUX;
+export default Nomenclature3;

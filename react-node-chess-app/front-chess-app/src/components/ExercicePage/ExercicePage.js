@@ -13,12 +13,12 @@ export default function ExercicePage() {
     const exerciceId = exercice.id;
 
     //fonction pour les boutons 
-    const handleLevelClick = (level) => {
+    const handleLevelClick = (level, index) => {
         // navigate("/"+dataExo.name.toLowerCase()+"/niveau"+level.id);
-        navigate('/niveaux', { state: { exerciceId: exerciceId, niveauId: level.id } });
+        navigate('/niveaux', { state: { exercice: exercice, niveau: level, index: index } });
     };
 
-    
+
     //useEffect recupere les info de chaques levels au chargement de la page
     useEffect(() => {
         var config = {
@@ -56,7 +56,7 @@ export default function ExercicePage() {
                     <div key={level.id} className="level-row">
                         <div className="level-name-container">
                             <div className="level-name">{level.name}</div>
-                            <button className="level-button" onClick={() => handleLevelClick(level)}>Niveau {index + 1} </button>
+                            <button className="level-button" onClick={() => handleLevelClick(level, (index + 1))}>Niveau {index + 1} </button>
                         </div>
                         <div className="level-name-container">
                             <div className="level-description">{level.rules}</div>
