@@ -19,9 +19,9 @@ function Navbar() {
                 <li>|</li>
                 {token ? (
                     <>
-                        <li><Link to="/compte">Mon compte</Link></li>
-                        <li>|</li>
                         <li><Link to="/selectionExercices">Exercices</Link></li>
+                        <li>|</li>
+                        <li><Link to="/compte">Mon compte</Link></li>
                     </>
                 ) : (
                     <li><Link to="/connexion">Connexion</Link></li>

@@ -13,8 +13,9 @@ export default function SelectionExercices() {
 
     const handleExerciceClick = (exercice) => {
         setSelectedExercice(exercice);
+        navigate("/"+exercice.name.toLowerCase());
     };
-
+    
     //useEffect recupere les info de chaques exercices au chargement de la page
     useEffect(() => {
         var config = {
@@ -49,7 +50,7 @@ export default function SelectionExercices() {
                     <div className="img-wrapper" key={exercice.id}>
                         <img
                             className="imgExo"
-                            src="https://i.imgur.com/vUdf7mG.png"
+                            src={`${exercice.image}`}
                             alt={`Exercice ${exercice.id}`}
                             onClick={() => handleExerciceClick(exercice)}
                         />

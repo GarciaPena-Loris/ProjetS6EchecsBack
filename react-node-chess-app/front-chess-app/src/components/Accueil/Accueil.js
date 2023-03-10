@@ -6,6 +6,7 @@ import { redirect } from "react-router-dom";
 
 
 export default function Accueil() {
+  
   //fonction utile pour le router (plus particulièrement les boutons)
   const navigate = useNavigate();
   //partie fonctionnel du bouton 'se connecter'

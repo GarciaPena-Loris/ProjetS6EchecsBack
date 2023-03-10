@@ -101,15 +101,9 @@ router.post('/signin', (req, res) => {
 router.put('/:name', async (req, res) => {
   try {
     const name = req.params.name;
-    const user = req.body;
-    // Permissions verification 
-    if (res.decoded.role == "admin" || req.decoded.name == name) {
-      const updatedUser = await User.updateUser(id, user);
-      res.json(updatedUser);
-    }
-    else {
-      res.status(405).json({ error: "Permission denied" });
-    }
+    const newName = req.body;
+    const updatedUser = await User.updateNameUser(name, newName);
+    res.json(updatedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -121,7 +115,6 @@ router.delete('/:name', async (req, res) => {
     const name = req.params.name;
     const removedUser = await User.deleteUser(name);
     res.json(removedUser);
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -28,8 +28,8 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const name = req.params.name;
-    const exercises = req.body;
-    const updatedExercise = await Exercise.updateExercise(id, exercises);
+    const exercise = req.body;
+    const updatedExercise = await Exercise.updateExercise(id, exercise);
     res.json(updatedExercise);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -39,8 +39,8 @@ router.put('/:id', async (req, res) => {
 // Delete a Exercise
 router.delete('/:id', async (req, res) => {
   try {
-    const name = req.params.name;
-    const removedExercise = await Exercise.deleteExercise(name);
+    const id = req.params.id;
+    const removedExercise = await Exercise.deleteExercise(id);
     res.json(removedExercise);
 
   } catch (error) {
