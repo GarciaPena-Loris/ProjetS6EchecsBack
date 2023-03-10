@@ -13,7 +13,8 @@ export default function SelectionExercices() {
 
     const handleExerciceClick = (exercice) => {
         setSelectedExercice(exercice);
-        navigate("/"+exercice.name.toLowerCase());
+        sessionStorage.setItem('exerciceSelectionne', exercice.id);
+        navigate("/exercices");
     };
     
     //useEffect recupere les info de chaques exercices au chargement de la page

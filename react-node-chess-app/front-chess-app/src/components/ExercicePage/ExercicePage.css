@@ -1,0 +1,86 @@
+.exercise-page {
+  margin: 0 30em;
+  font-weight: 600;
+}
+
+.exercise-title {
+  font-size: 4em;
+  margin: 0;
+  margin-bottom: 2%;
+}
+
+.exercise-description-name {
+  font-size: 2em;
+  color: #7e9d4e;
+}
+
+.exercise-description {
+  font-size: 1.5em;
+  margin: 0;
+  margin-top: 2%;
+}
+
+.levels-container {
+  margin-top: 10%;
+  padding: 2% 2%;
+  display: flex;
+  flex-direction: column;
+  background-color: #282522;
+}
+
+.level-header {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.level-title {
+  font-size: 2em;
+  font-weight: bold;
+  color: #fff;
+  width: 50%;
+}
+
+.level-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 1.3em;
+  margin-bottom: 4%;
+}
+
+.level-name, .level-description {
+  letter-spacing: 1.3px;
+}
+
+.level-name-container {
+  margin-top: 2%;
+  width: 50%;
+}
+
+.level-description {
+  padding: 0 20%;
+}
+
+.level-button {
+  margin-top: 2%;
+  width: 40%;
+  height: 45px;
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  font-weight: 800;
+  color: #fff;
+  background-color: #7e9d4e;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+}
+
+.level-button:hover {
+  background-color: #7e9d4e;
+  color: #fff;
+  transform: translateY(-7px);
+}

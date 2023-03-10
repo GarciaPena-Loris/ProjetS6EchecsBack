@@ -7,11 +7,11 @@ import Accueil from "./components/Accueil/Accueil";
 import Connexion from "./components/Connexion/Connexion";
 import Inscription from "./components/Inscription/Inscription";
 import SelectionExercices from "./components/SelectionExercices/SelectionExercices.js";
-import NomenclaturePage from "./components/NomenclatureExo/NomenclatureExo";
-import Nomenclature from "./components/Exercices/Nomenclature/Nomenclature";
-import NomenclatureTROIS from "./components/Exercices/Nomenclature/NomenclatureTROIS";
-import NomenclatureDEUX from "./components/Exercices/Nomenclature/NomenclatureDEUX";
-import NomenclatureQuatre from "./components/Exercices/Nomenclature/NomenclatureQUATRE";
+import Exercices from "./components/ExercicePage/ExercicePage";
+import Nomenclature1 from "./components/Exercices/Nomenclature/Nomenclature";
+import Nomenclature3 from "./components/Exercices/Nomenclature/NomenclatureTROIS";
+import Nomenclature2 from "./components/Exercices/Nomenclature/NomenclatureDEUX";
+import Nomenclature4 from "./components/Exercices/Nomenclature/NomenclatureQUATRE";
 
 function App() {
   return (
@@ -22,11 +22,11 @@ function App() {
           <Route path="/connexion" element={<Connexion/>} />
           <Route path="/inscription" element={<Inscription/>} />
           <Route path="/selectionExercices" element={RequireAuth(SelectionExercices)} />
-          <Route path="/nomenclature" element={RequireAuth(NomenclaturePage)}/>
-          <Route path="/Exercices/Nomenclature" element={RequireAuth(Nomenclature)}/>
-          <Route path="/Exercices/NomenclatureDEUX" element={RequireAuth(NomenclatureDEUX)}/>
-          <Route path="/Exercices/NomenclatureTROIS" element={RequireAuth(NomenclatureTROIS)}/>
-          <Route path="/Exercices/NomenclatureQuatre" element={RequireAuth(NomenclatureQuatre)}/>
+          <Route path="/exercices" element={RequireAuth(Exercices)}/>
+          <Route path="/nomenclature/niveau1" element={RequireAuth(Nomenclature1)}/>
+          <Route path="/nomenclature/niveau2" element={RequireAuth(Nomenclature2)}/>
+          <Route path="/nomenclature/niveau3" element={RequireAuth(Nomenclature3)}/>
+          <Route path="/nomenclature/niveau4" element={RequireAuth(Nomenclature4)}/>
       </Routes>
     </div>
   );

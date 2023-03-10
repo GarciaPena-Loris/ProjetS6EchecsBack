@@ -14,7 +14,7 @@ class Exercises {
 
     static async getExerciseById(ExerciseId) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM exercises WHERE AND id_exercice = ?", [ExerciseId], (error, results) => {
+            connection.query("SELECT * FROM exercises WHERE id = ?", [ExerciseId], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
