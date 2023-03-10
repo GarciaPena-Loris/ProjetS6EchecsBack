@@ -84,7 +84,10 @@ router.put('/save/:name/:id', async (req, res) => {
         // change elo user 
         await User.changeEloUser(nameCode, Math.ceil((pointsCode * 5) / 100));
 
-        res.json({ newEloExercise: (actualEloCode + pointsCode) });
+        // get new elo
+        const newEloUser = await User.getEloUserByName(nameCode);
+
+        res.json({ newEloExercise: (actualEloCode + pointsCode), newEloGlobal: (newEloUser) });
       }
       else {
         res.status(406).json({ error: "Points do not correspond" });

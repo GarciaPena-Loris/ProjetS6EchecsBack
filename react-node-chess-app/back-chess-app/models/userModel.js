@@ -7,7 +7,6 @@ class User {
                 if (error) {
                     return reject(error);
                 }
-
                 resolve(results);
             });
         });
@@ -19,7 +18,17 @@ class User {
                 if (error) {
                     return reject(error);
                 }
+                resolve(results[0]);
+            });
+        });
+    }
 
+    static async getEloUserByName(name) {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT global_elo FROM users WHERE name = ?", [name], (error, results) => {
+                if (error) {
+                    return reject(error);
+                }
                 resolve(results[0]);
             });
         });
@@ -44,7 +53,6 @@ class User {
                 if (error) {
                     return reject(error);
                 }
-
                 resolve(result.affectedRows);
             });
         });
@@ -56,7 +64,6 @@ class User {
                 if (error) {
                     return reject(error);
                 }
-
                 resolve(result.affectedRows);
             });
         });
