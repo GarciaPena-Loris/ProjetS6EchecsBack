@@ -7,6 +7,10 @@ import Connexion from "./components/Connexion/Connexion";
 import Inscription from "./components/Inscription/Inscription";
 import SelectionExercices from "./components/SelectionExercices/SelectionExercices.js";
 import NomenclatureExo from "./components/NomenclatureExo/NomenclatureExo";
+import Nomenclature from "./components/Exercices/Nomenclature/Nomenclature";
+import NomenclatureTROIS from "./components/Exercices/Nomenclature/NomenclatureTROIS";
+import NomenclatureDEUX from "./components/Exercices/Nomenclature/NomenclatureDEUX";
+import NomenclatureQuatre from "./components/Exercices/Nomenclature/NomenclatureQUATRE";
 
 function App() {
   return (
@@ -18,6 +22,10 @@ function App() {
           <Route path="/inscription" element={<Inscription/>} />
           <Route path="/selectionExercices" element={<SelectionExercices/>}/>
           <Route path="/nomenclature" element={<NomenclatureExo/>}/>
+          <Route path="/Exercices/Nomenclature" element={<Nomenclature/>}/>
+          <Route path="/Exercices/NomenclatureDEUX" element={<NomenclatureDEUX/>}/>
+          <Route path="/Exercices/NomenclatureTROIS" element={<NomenclatureTROIS/>}/>
+          <Route path="/Exercices/NomenclatureQuatre" element={<NomenclatureQuatre/>}/>
       </Routes>
     </div>
   );
