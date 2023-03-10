@@ -37,9 +37,9 @@ export default function SelectionExercices() {
     }, []);
 
     //verifie si la personne est bien connecté avant de charger la page
-    useEffect(()=>{
-        if(!token){(navigate("/connexion"))}
-    });
+    // useEffect(()=>{
+    //     if(!token){(navigate("/connexion"))}
+    // });
 
 
     return (

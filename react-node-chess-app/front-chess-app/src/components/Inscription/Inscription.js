@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import "./Inscription.css"
 import axios from "axios";
@@ -11,6 +11,10 @@ export default function Inscription() {
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [reponseServeur, setReponseServeur] = useState("");
 
+    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice
+    useEffect(()=>{
+        if(sessionStorage.token){(navigate("/selectionExercices"))}
+    });
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);

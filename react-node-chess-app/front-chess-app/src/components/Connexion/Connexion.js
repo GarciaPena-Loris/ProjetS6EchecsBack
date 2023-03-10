@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import "../Components.css"
@@ -10,6 +10,10 @@ export default function Connexion() {
     const [motDePasse, setMotDePasse] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
 
+    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice 
+    useEffect(()=>{
+        if(sessionStorage.token){(navigate("/selectionExercices"))}
+    });
 
     const handleConnexion = async (event) => {
         event.preventDefault();
