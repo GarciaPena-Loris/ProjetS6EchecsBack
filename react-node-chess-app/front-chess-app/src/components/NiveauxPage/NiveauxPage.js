@@ -1,4 +1,7 @@
 import { useLocation } from 'react-router-dom';
+import "./NiveauxPage.css"
+
+// imporation des composants de chaque niveau
 import Nomenclature from '../Exercices/Nomenclature/Nomenclature';
 import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
 import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
@@ -34,7 +37,9 @@ export default function NiveauxPage() {
             <h1>Exercice {exercice.id}</h1>
             <h1>Niveau {index}</h1>
             {/* Affichez le composant récupéré */}
-            {NiveauComponent}
+            <div className="level-container">
+                {NiveauComponent}
+            </div>
         </div>
     );
-    }
+}

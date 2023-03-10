@@ -14,7 +14,6 @@ export default function ExercicePage() {
 
     //fonction pour les boutons 
     const handleLevelClick = (level, index) => {
-        // navigate("/"+dataExo.name.toLowerCase()+"/niveau"+level.id);
         navigate('/niveaux', { state: { exercice: exercice, niveau: level, index: index } });
     };
 
