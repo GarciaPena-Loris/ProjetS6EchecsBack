@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Inscription.css"
 import axios from "axios";
 
 export default function Inscription() {
+    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice
     const navigate = useNavigate();
+    if (sessionStorage.token) { (navigate("/selectionExercices")) }
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
     const passwordIsValid = /^(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/.test(password);
 
-    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice
-    useEffect(() => {
-        if (sessionStorage.token) { (navigate("/selectionExercices")) }
-    }, [navigate]);
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);

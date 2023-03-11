@@ -33,11 +33,10 @@ export default function NiveauxPage() {
     const NiveauComponent = niveaux[exercice.id][index];
 
     return (
-        <div>
-            <h1>Exercice {exercice.id}</h1>
-            <h1>Niveau {index}</h1>
+        <div className="level-container">
+            <h1>Exercice {exercice.id} Niveau {index}</h1>
             {/* Affichez le composant récupéré */}
-            <div className="level-container">
+            <div className="level-jeux">
                 {NiveauComponent}
             </div>
         </div>

@@ -53,7 +53,7 @@ class Nomenclature extends React.Component {
         this.usePieceString = "Q";
         break;
       default:
-        this.usePieceString=this.movePieceObj[Object.keys(this.movePieceObj)[0]].substring(1);
+        this.usePieceString = this.movePieceObj[Object.keys(this.movePieceObj)[0]].substring(1);
         break;
     }
     //this.pointsgagnes=0;                                        ####En attente du back####
@@ -71,18 +71,18 @@ class Nomenclature extends React.Component {
     console.log(str);
     console.log(inputValue);
     if (inputValue === str) {
-      const text = "Bravo c'était ça !";
+      const text = "Bonne réponse, vous gagnez 5 points !";
       //this.pointsgagnes=5;                                       ####En attente du back####
       this.setState({ chess: chess, correctMessage: text, incorrectMessage: '', inputValue: '' });
 
     }
     else {
-      const text = "NON ! TU ES NUL ! TOUT LE MONDE A REUSSI SAUF TOI !"
+      const text = "Mauvaise réponse, vous perdez 5 points."
       //this.pointsgagnes=-5;                                        ####En attente du back####
       this.setState({ chess: chess, incorrectMessage: text, correctMessage: '', inputValue: '' });
 
     }
-    this.handleUpdate();
+    //this.handleUpdate();                                        ####En attente du back####
   }
 
   /*handleUpdate = async () => {                                               ####En attente du back####
@@ -96,20 +96,40 @@ class Nomenclature extends React.Component {
 
   render() {
     return (
-      <div className="containerNom">
-        <div className="chesscenter">
-          <h2>Ecrivez le coup de la pièce</h2>
-          <Chessboard
-            position={this.state.chess.fen()}
-            arePiecesDraggable={false}
-            width={400}
-          />
-        </div>
-        <div className="elementsDroite">
-          <input id="saisieposition" type="text" placeholder="Entrez le coup..." value={this.state.inputValue} onChange={this.handleInputChange}></input>
-          <button id="checkposition" onClick={this.handleClick}>Valider</button>
-          <div id="correctMessage">{this.state.correctMessage} </div>
-          <div id="incorrectMessage">{this.state.incorrectMessage} </div>
+      <div className="container-general">
+        <i className="consigne">
+          Ecrivez la position de la pièce :
+        </i>
+        <div className="jeu">
+          <div className="plateau-gauche">
+            <Chessboard
+              position={this.state.chess.fen()}
+              arePiecesDraggable={false}
+            />
+          </div>
+          <div className="elements-droite">
+            <input className="reponse-input"
+              type="text"
+              placeholder="Entrez la position..."
+              value={this.state.inputValue}
+              onChange={this.handleInputChange} />
+            <button className="valider-bouton"
+              onClick={this.handleClick}
+              {...(this.state.inputValue === "" && { disabled: true })}
+              >
+              Valider
+            </button>
+            {this.state.correctMessage &&
+              <div className="response correct-response">
+                {this.state.correctMessage}
+              </div>
+            }
+            {this.state.incorrectMessage &&
+              <div className="response incorrect-response">
+                {this.state.incorrectMessage}
+              </div>
+            }
+          </div>
         </div>
       </div>
     );
