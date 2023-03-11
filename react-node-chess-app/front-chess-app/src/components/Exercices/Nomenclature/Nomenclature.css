@@ -6,16 +6,9 @@
   width: 100%;
 }
 
-.consigne {
-  font-size: 2em;
-  font-weight: bold;
-  color: #fff;
-  margin-bottom: 1%;
-}
 
 .jeu {
   display: flex;
-  justify-content: center;
   width: 100%;
 }
 
@@ -26,20 +19,29 @@
 
 .elements-droite {
   width: 40%;
+  background-color: #282522;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
 
+.consigne {
+  margin-top: 2%;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--couleur-theme);
+  margin-bottom: 1%;
+}
 
 .reponse-input {
+  margin-top: 90%;
   padding: 10px;
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
   border: 3px solid #ccc;
-  border-radius: 30px;
-  width: 15em;
+  border-radius: 5px;
+  width: 80%;
   outline: none;
   transition: border-color 0.3s ease-in-out;
 }
@@ -50,8 +52,8 @@
 
 
 .valider-bouton {
-  width: 140px;
-  height: 45px;
+  width: 30%;
+  height: 5%;
   margin-top: 3%;
   font-family: 'Roboto', sans-serif;
   font-size: 15px;
@@ -61,7 +63,7 @@
   color: #fff8f8;
   background-color: var(--couleur-theme);
   border: none;
-  border-radius: 45px;
+  border-radius: 5px;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease 0s;
   cursor: pointer;
@@ -82,17 +84,22 @@
   transform: none;
 }
 
-
 .response {
-  position: absolute;
-  margin-top: 12%;
+  margin-top: 5%;
+  width: 80%;
   font-family: var(--police-ecriture);
   color: white;
-  font-size: 1.5em;
-  font-weight: 500;
+  font-size: 1.1em;
   padding: 5px 15px;
   border-radius: 2px;
+  opacity: 0;
+  transition: all 0.5s ease-in-out;
 }
+
+.show {
+  opacity: 1;
+}
+
 
 .correct-response {
   background-color: var(--couleur-theme);

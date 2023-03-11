@@ -7,14 +7,18 @@ import { Chess } from 'chess.js'
 import axios from 'axios';*/
 
 class Nomenclature extends React.Component {
-  constructor() {
+  constructor(args) {
     super();
     this.state = {
       inputValue: '',
-      correctMessage: '',
-      incorrectMessage: '',
+      correctMessage: ' ',
+      incorrectMessage: ' ',
+      showCorrect: false,
+      showIncorrect: false,
       chess: new Chess(),
     };
+    this.pointsGagne = args.pointsGagnes;
+    this.pointsPerdu = args.pointsPerdus;
     this.colors = ['b', 'w'];
     this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
     this.pieces = ['P', 'N', 'B', 'R', 'Q', 'K'];
@@ -71,15 +75,28 @@ class Nomenclature extends React.Component {
     console.log(str);
     console.log(inputValue);
     if (inputValue === str) {
-      const text = "Bonne réponse, vous gagnez 5 points !";
+      const text = `Bonne réponse ! La pièce est en ${this.state.inputValue}, vous gagné ${this.pointsGagne} points.`;
       //this.pointsgagnes=5;                                       ####En attente du back####
-      this.setState({ chess: chess, correctMessage: text, incorrectMessage: '', inputValue: '' });
+      this.setState({ chess: chess, 
+        correctMessage: text, 
+        incorrectMessage: '',
+        inputValue: '',
+        showCorrect: true, 
+        showIncorrect: false });
 
     }
     else {
-      const text = "Mauvaise réponse, vous perdez 5 points."
+      const text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez ${this.pointsPerdu} points.`;
       //this.pointsgagnes=-5;                                        ####En attente du back####
-      this.setState({ chess: chess, incorrectMessage: text, correctMessage: '', inputValue: '' });
+      this.setState({ chess: chess, 
+        incorrectMessage: text, 
+        correctMessage: '',
+        inputValue: '',
+        showCorrect: false, 
+        showIncorrect: true });
+      setTimeout(() => {
+        this.setState({ showIncorrect: false });
+      }, 8000); // Efface le message après 3 secondes
 
     }
     //this.handleUpdate();                                        ####En attente du back####
@@ -97,9 +114,6 @@ class Nomenclature extends React.Component {
   render() {
     return (
       <div className="container-general">
-        <i className="consigne">
-          Ecrivez la position de la pièce :
-        </i>
         <div className="jeu">
           <div className="plateau-gauche">
             <Chessboard
@@ -108,6 +122,9 @@ class Nomenclature extends React.Component {
             />
           </div>
           <div className="elements-droite">
+            <i className="consigne">
+              Ecrivez la position de la pièce
+            </i>
             <input className="reponse-input"
               type="text"
               placeholder="Entrez la position..."
@@ -115,17 +132,17 @@ class Nomenclature extends React.Component {
               onChange={this.handleInputChange} />
             <button className="valider-bouton"
               onClick={this.handleClick}
-              {...(this.state.inputValue === "" && { disabled: true })}
-              >
+              {...(this.state.inputValue.length < 3 && { disabled: true })}
+            >
               Valider
             </button>
             {this.state.correctMessage &&
-              <div className="response correct-response">
+              <div className={`response correct-response ${this.state.showCorrect ? 'show' : ''}`}>
                 {this.state.correctMessage}
               </div>
             }
             {this.state.incorrectMessage &&
-              <div className="response incorrect-response">
+              <div className={`response incorrect-response ${this.state.showIncorrect ? 'show' : ''}`}>
                 {this.state.incorrectMessage}
               </div>
             }

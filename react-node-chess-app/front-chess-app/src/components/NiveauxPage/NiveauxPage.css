@@ -1,9 +1,29 @@
 .level-container {
-    margin: 0 27em;
+    margin: 0 25em;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.level-header {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 1% 0;
+}
+
+.level-label {
+    font-size: 2em;
+    font-weight: bold;
+    color: #fff;
+    width: 50%;
+    margin-left: 10%;
+}
+
+.back-button {
+    height: 20%;
 }
 
 .level-jeux {
