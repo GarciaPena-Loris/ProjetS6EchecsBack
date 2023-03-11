@@ -130,7 +130,7 @@ class Nomenclature extends React.Component {
               placeholder="Entrez la position..."
               value={this.state.inputValue}
               onChange={this.handleInputChange} />
-            <button className="valider-bouton"
+            <button className="valider-bouton actual-bouton"
               onClick={this.handleClick}
               {...(this.state.inputValue.length < 3 && { disabled: true })}
             >

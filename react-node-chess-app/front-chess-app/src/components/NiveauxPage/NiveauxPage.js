@@ -36,7 +36,7 @@ export default function NiveauxPage() {
     return (
         <div className="level-container">
             <div className="level-header">
-                <button className="back-button bouton-custom" onClick={() => navigate(-1)}>← Retour</button> {/* Retourne à la page précédente */}
+                <button className="valider-bouton back-button" onClick={() => navigate(-1)}>← Retour</button> {/* Retourne à la page précédente */}
                 <div className="level-label">Exercice <i>{exercice.name}</i> : <i>niveau {index}</i></div>
             </div>
             {/* Affichez le composant récupéré */}

@@ -75,6 +75,36 @@ h1 {
     display: none;
 }
 
+.valider-bouton {
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+    color: #fff8f8;
+    background-color: var(--couleur-theme);
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+}
+
+.valider-bouton:hover {
+    background-color: var(--couleur-theme);
+    box-shadow: 0px 5px 5px rgba(255, 255, 255, 0.4);
+    color: #ffffffad;
+    transform: translateY(-2px);
+}
+
+.valider-bouton:disabled {
+    cursor: default;
+    background-color: #ccc;
+    box-shadow: none;
+    transform: none;
+}
+
 
 .image-container {
     display: flex;
@@ -149,6 +179,6 @@ nav a {
 
 :root {
     --couleur-theme: #7e9d4e;
-    --couleur-erreur : #c63935;
+    --couleur-erreur: #c63935;
     --police-ecriture: 'Helvetica Neue', sans-serif;
 }
