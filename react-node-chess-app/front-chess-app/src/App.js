@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import Navbar from "./components/Navbar/Navbar";
 import Accueil from "./components/Accueil/Accueil";
@@ -15,12 +15,12 @@ function App() {
     <div className="App">
       <Navbar />
       <Routes>
-          <Route path="/" element={<Accueil/>} />
-          <Route path="/connexion" element={<Connexion/>} />
-          <Route path="/inscription" element={<Inscription/>} />
-          <Route path="/selectionExercices" element={RequireAuth(SelectionExercices)} />
-          <Route path="/exercices" element={RequireAuth(Exercices)}/>
-          <Route path="/niveaux" element={RequireAuth(Niveaux)}/>
+        <Route path="/" element={<Accueil />} />
+        <Route path="/connexion" element={<Connexion />} />
+        <Route path="/inscription" element={<Inscription />} />
+        <Route path="/selectionExercices" element={RequireAuth(SelectionExercices)} />
+        <Route path="/exercices" element={RequireAuth(Exercices)} />
+        <Route path="/niveaux" element={RequireAuth(Niveaux)} />
       </Routes>
     </div>
   );

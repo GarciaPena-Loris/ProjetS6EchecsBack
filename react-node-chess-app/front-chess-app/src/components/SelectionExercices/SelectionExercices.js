@@ -5,14 +5,11 @@ import "../Components.css"
 import "./SelectionExercices.css"
 
 export default function SelectionExercices() {
-    const [selectedExercice, setSelectedExercice] = useState(null);
     const [dataExo, setDataExo] = useState([]);
     const token = sessionStorage.getItem('token');
     const navigate=useNavigate();
 
     const handleExerciceClick = (exercice) => {
-        setSelectedExercice(exercice);
-        
         navigate('/exercices', { state: {exercice: exercice} });
     };
     
@@ -34,7 +31,7 @@ export default function SelectionExercices() {
             .catch(error => {
                 console.log(error);
             });
-    }, []);
+    }, [token]);
 
     return (
         <div>

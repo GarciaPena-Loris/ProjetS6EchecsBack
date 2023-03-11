@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../Components.css"
 import "./Connexion.css"
 
 export default function Connexion() {
-    const navigate = useNavigate();
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
+    const navigate = useNavigate();
 
     // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice 
-    useEffect(()=>{
-        if(sessionStorage.token){(navigate("/selectionExercices"))}
-    });
+    useEffect(() => {
+        if (sessionStorage.token) { (navigate("/selectionExercices")) }
+    }, [navigate]);
 
     const handleConnexion = async (event) => {
         event.preventDefault();
@@ -30,44 +29,56 @@ export default function Connexion() {
             },
             data: formData
         };
-        console.log(formData);
         axios(config)
             .then(function (response) {
                 console.log(response.data);
-                setReponseServeur(response.data);
                 // Pour stocker le token dans la variable de session
                 sessionStorage.setItem('token', response.data.token);
-                console.log(sessionStorage.token);
-                console.log(sessionStorage.getItem('token'));
 
-                navigate("/selectionExercices");
+                navigate('/selectionExercices');
             })
             .catch(function (error) {
-                console.log(error.response.data);
-                setReponseServeur(error.response.data);
+                if (error.response) {
+                    console.log(error.response.data);
+                    setReponseServeur(error.response.data.error);
+                }
+                else {
+                    setReponseServeur(error.message);
+                }
             });
     };
 
     return (
-        <div className="container">
-            <div className="connexion">
-                <div className="form">
-                    <form onSubmit={handleConnexion} action="" methode="post">
-                        <h1>Connexion</h1>
-                        <div>
-                            <input placeholder="Nom de compte" value={nomCompte} onChange={(event) => setNomCompte(event.target.value)} />
-                        </div>
-                        <div>
-                            <input type="password" placeholder="Mot de passe" value={motDePasse} onChange={(event) => setMotDePasse(event.target.value)} />
-                        </div>
-                        <button className="button-4">Se connecter</button>
-                    </form>
-                </div>
-            </div>
+        <div className="container-connexion">
+            <form className="form-connexion" onSubmit={handleConnexion} >
+                <h1>Connexion</h1>
+                <input
+                    className="input-connexion"
+                    placeholder="Nom de compte"
+                    value={nomCompte}
+                    onChange={(event) => setNomCompte(event.target.value)} />
+                <input
+                    className="input-connexion"
+                    type="password"
+                    placeholder="Mot de passe"
+                    value={motDePasse}
+                    onChange={(event) => setMotDePasse(event.target.value)} />
+                {nomCompte !== "" && motDePasse !== "" ? (
+                    <button
+                        className="bouton-custom bouton-custom-form">
+                        Se connecter
+                    </button>) : (
+                    <button
+                        className="bouton-custom bouton-custom-form"
+                        disabled>
+                        Se connecter
+                    </button>
+                )}
+            </form>
             <div>
-                {reponseServeur.error && (
+                {reponseServeur && (
                     <div className="errors">
-                        <b>{reponseServeur.error}</b>
+                        <b>{reponseServeur}</b>
                     </div>
                 )}
             </div>

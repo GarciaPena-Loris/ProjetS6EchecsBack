@@ -6,21 +6,6 @@ h1{
     color: #EDEFF2;
 }
 
-input {
-    height: 50px;
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 30px;
-    display: block;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #000000;
-    padding: 2px 5px;
-    color: #24292E;
-    font-size: large;
-    font-display: center;
-}
-
 
 .divMargin{
     margin-top: 20px;
@@ -32,7 +17,7 @@ input {
     display: inline-block;
 }
 
-.button-4 {
+.bouton-custom {
     appearance: none;
     background-color: #202020;
     border: 1px solid rgba(27, 31, 35, 0.15);
@@ -58,13 +43,13 @@ input {
     word-wrap: break-word;
 }
 
-.button-4:hover {
+.bouton-custom:hover {
     background-color: #505050;
     text-decoration: none;
     transition-duration: 0.1s;
 }
 
-.button-4:disabled {
+.bouton-custom:disabled {
     background-color: #202020;
     border-color: rgba(27, 31, 35, 0.15);
     opacity: 40%;
@@ -72,21 +57,21 @@ input {
     cursor: default;
 }
 
-.button-4:active {
+.bouton-custom:active {
     background-color: #EDEFF2;
     box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
     transition: none 0s;
 }
 
-.button-4:focus {
+.bouton-custom:focus {
     outline: 1px transparent;
 }
 
-.button-4:before {
+.bouton-custom:before {
     display: none;
 }
 
-.button-4:-webkit-details-marker {
+.bouton-custom:-webkit-details-marker {
     display: none;
 }
 
@@ -159,4 +144,8 @@ nav a {
 .logout:hover {
     background-color: #262421;
     color: #fff;
+}
+
+:root {
+    --couleur-theme: #7e9d4e;
 }
