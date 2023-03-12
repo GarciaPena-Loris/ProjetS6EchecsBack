@@ -6,6 +6,7 @@ import UnRequireAuth from "./components/RequireAuth/UnRequireAuth";
 import ErrorBoundary from "./components/RequireAuth/ErrorBoundary";
 import Navbar from "./components/Navbar/Navbar";
 import Accueil from "./components/Accueil/Accueil";
+import NoPage from "./components/NoPage/NoPage";
 import Connexion from "./components/Connexion/Connexion";
 import Inscription from "./components/Inscription/Inscription";
 import SelectionExercices from "./components/SelectionExercices/SelectionExercices.js";
@@ -24,7 +25,7 @@ function App() {
           <Route path="/selectionExercices" element={<RequireAuth component={SelectionExercices} />} />
           <Route path="/exercices" element={<RequireAuth component={Exercices} />} />
           <Route path="/niveaux" element={<RequireAuth component={Niveaux} />} />
-          <Route path="*" element={<Accueil />} />
+          <Route path="*" element={<NoPage />} />
         </Routes>
       </ErrorBoundary>
     </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import "../Components.css"
 import { useNavigate } from "react-router-dom";
-import imageAccueil from "../../imageAccueil.png"
+import imageAccueil from "../../files/imageAccueil.png"
 
 
 export default function Accueil() {
