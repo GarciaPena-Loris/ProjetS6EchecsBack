@@ -19,21 +19,40 @@ class Nomenclature extends React.Component {
     };
     this.pointsGagne = args.pointsGagnes;
     this.pointsPerdu = args.pointsPerdus;
-    this.colors = ['b', 'w'];
-    this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
-    this.pieces = ['P', 'N', 'B', 'R', 'Q', 'K'];
-    this.piece = this.pieces[Math.floor(Math.random() * this.pieces.length)];
-    this.moves = this.state.chess.moves({ piece: this.piece });
-    this.move = this.moves[Math.floor(Math.random() * this.moves.length)];
+    this.color = '';
+    this.piece = '';
+    this.move = '';
+    this.movePieceObj = {}; // Objet contenant la position de la pièce et la pièce
+    this.usePieceString = '';
+
+    this.genererPieceAleatoire();
+  }
+
+
+
+  genererPieceAleatoire = () => {
+    const colors = ['b', 'w'];
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+    const pieces = ['P', 'N', 'B', 'R', 'Q', 'K'];
+    this.piece = pieces[Math.floor(Math.random() * pieces.length)];
+    const moves = this.state.chess.moves({ piece: this.piece });
+    this.move = moves[Math.floor(Math.random() * moves.length)];
     if (this.move.length > 2) {
       this.move = this.move.substring(1);
     }
     this.movePieceObj = {
       [this.move]: [this.color] + [this.piece]
     };
-    this.state.chess.clear()
-    this.state.chess.put({ type: this.piece, color: this.color }, this.move)
-    this.usePieceString = this.piece;
+
+    //
+    console.log(this.color);
+    console.log(this.piece);
+    console.log(this.move);
+    //
+
+    this.state.chess.clear(); // Vide le plateau
+    this.state.chess.put({ type: this.piece, color: this.color }, this.move); // Place la pièce sur le plateau
+
     switch (this.movePieceObj[Object.keys(this.movePieceObj)[0]]) {
       case "wP":
         this.usePieceString = "";
@@ -60,9 +79,7 @@ class Nomenclature extends React.Component {
         this.usePieceString = this.movePieceObj[Object.keys(this.movePieceObj)[0]].substring(1);
         break;
     }
-    //this.pointsgagnes=0;                                        ####En attente du back####
-
-  }
+  };
 
   handleInputChange = (event) => {
     this.setState({ inputValue: event.target.value });
@@ -70,30 +87,31 @@ class Nomenclature extends React.Component {
 
 
   handleClick = () => {
-    const { inputValue, chess } = this.state;
-    const str = this.usePieceString + Object.keys(this.movePieceObj)[0];
-    console.log(str);
-    console.log(inputValue);
-    if (inputValue === str) {
+    const { inputValue } = this.state;
+    const bonneReponse = this.usePieceString + Object.keys(this.movePieceObj)[0];
+    console.log(bonneReponse);
+    if (inputValue === bonneReponse) {
       const text = `Bonne réponse ! La pièce est en ${this.state.inputValue}, vous gagné ${this.pointsGagne} points.`;
       //this.pointsgagnes=5;                                       ####En attente du back####
-      this.setState({ chess: chess, 
-        correctMessage: text, 
+      this.setState({
+        correctMessage: text,
         incorrectMessage: '',
         inputValue: '',
-        showCorrect: true, 
-        showIncorrect: false });
+        showCorrect: true,
+        showIncorrect: false
+      });
 
     }
     else {
       const text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez ${this.pointsPerdu} points.`;
       //this.pointsgagnes=-5;                                        ####En attente du back####
-      this.setState({ chess: chess, 
-        incorrectMessage: text, 
+      this.setState({
+        incorrectMessage: text,
         correctMessage: '',
         inputValue: '',
-        showCorrect: false, 
-        showIncorrect: true });
+        showCorrect: false,
+        showIncorrect: true
+      });
       setTimeout(() => {
         this.setState({ showIncorrect: false });
       }, 8000); // Efface le message après 3 secondes

@@ -4,9 +4,7 @@ import "./Inscription.css"
 import axios from "axios";
 
 export default function Inscription() {
-    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice
     const navigate = useNavigate();
-    if (sessionStorage.token) { (navigate("/selectionExercices")) }
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

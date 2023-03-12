@@ -5,7 +5,7 @@ import imageAccueil from "../../imageAccueil.png"
 
 
 export default function Accueil() {
-  
+
   //fonction utile pour le router (plus particulièrement les boutons)
   const navigate = useNavigate();
   //partie fonctionnel du bouton 'se connecter'
@@ -17,6 +17,10 @@ export default function Accueil() {
     navigate("/inscription");
   }
 
+  function handleClickEntrainement() {
+    navigate("/selectionExercices");
+  }
+
   return (
     <div>
       <div>
@@ -24,9 +28,15 @@ export default function Accueil() {
         <img src={imageAccueil} alt="imgAcceuil" width="600" height="600"></img>
       </div>
       <div className="divMargin">
-        <button onClick={handleClickConnexion} className="bouton-custom">Se connecter</button>
-        <div className="space"></div>
-        <button onClick={handleClickInscription} className="bouton-custom">S'inscrire</button>
+        {!sessionStorage.getItem('token') ? (
+          <>
+            <button onClick={handleClickConnexion} className="bouton-custom">Se connecter</button>
+            <div className="space"></div>
+            <button onClick={handleClickInscription} className="bouton-custom">S'inscrire</button>
+          </>
+        ) : (
+          <button onClick={handleClickEntrainement} className="bouton-custom">S'entraîner</button>
+        )}
       </div>
     </div>
   );

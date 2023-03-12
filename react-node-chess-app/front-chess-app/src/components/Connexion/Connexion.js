@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./Connexion.css"
 
 export default function Connexion() {
-    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice 
     const navigate = useNavigate();
-    if (sessionStorage.token) { (navigate("/selectionExercices")) };
 
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");

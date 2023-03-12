@@ -11,9 +11,8 @@ function Navbar() {
         navigate('/');
     };
 
-
     return (
-        <nav>
+        <nav className='nav-bar'>
             <ul>
                 <li><Link to="/">Accueil</Link></li>
                 <li>|</li>
@@ -24,7 +23,11 @@ function Navbar() {
                         <li><Link to="/compte">Mon compte</Link></li>
                     </>
                 ) : (
-                    <li><Link to="/connexion">Connexion</Link></li>
+                    <>
+                        <li><Link to="/connexion" replace>Connexion</Link></li>
+                        <li>|</li>
+                        <li><Link to="/inscription">Inscription</Link></li>
+                    </>
                 )}
                 {token && (
                     <>
