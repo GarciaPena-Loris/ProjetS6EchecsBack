@@ -57,19 +57,6 @@
   margin-top: 3%;
 }
 
-.valider-bouton:hover {
-  background-color: var(--couleur-theme);
-  box-shadow: 0px 5px 5px rgba(255, 255, 255, 0.4);
-  color: #ffffffad;
-  transform: translateY(-2px);
-}
-
-.valider-bouton:disabled {
-  cursor: default;
-  background-color: #ccc;
-  box-shadow: none;
-  transform: none;
-}
 
 .response {
   margin-top: 5%;

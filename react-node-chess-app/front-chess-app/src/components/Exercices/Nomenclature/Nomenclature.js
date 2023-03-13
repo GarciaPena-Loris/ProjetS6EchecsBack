@@ -1,10 +1,11 @@
 import React from "react";
 import './Nomenclature.css';
 import '../../Components.css';
-import { Chessboard } from 'react-chessboard'
-import { Chess } from 'chess.js'
-/*import { useState, useEffect } from 'react';                             ####En attente du back####
-import axios from 'axios';*/
+import { Chessboard } from 'react-chessboard';
+import { Chess } from 'chess.js';
+import axios from "axios";
+import { decodeToken } from "react-jwt";
+
 
 class Nomenclature extends React.Component {
   constructor(args) {
@@ -19,6 +20,8 @@ class Nomenclature extends React.Component {
     };
     this.pointsGagne = args.pointsGagnes;
     this.pointsPerdu = args.pointsPerdus;
+    this.points = 0;
+    this.level = 1;
     this.color = '';
     this.piece = '';
     this.move = '';
@@ -44,21 +47,15 @@ class Nomenclature extends React.Component {
       [this.move]: [this.color] + [this.piece]
     };
 
-    //
-    console.log(this.color);
-    console.log(this.piece);
-    console.log(this.move);
-    //
-
     this.state.chess.clear(); // Vide le plateau
     this.state.chess.put({ type: this.piece, color: this.color }, this.move); // Place la pièce sur le plateau
 
     switch (this.movePieceObj[Object.keys(this.movePieceObj)[0]]) {
       case "wP":
-        this.usePieceString = "";
+        this.usePieceString = "P";
         break;
       case "bP":
-        this.usePieceString = "";
+        this.usePieceString = "P";
         break;
       case "bK":
         this.usePieceString = "K";
@@ -92,7 +89,7 @@ class Nomenclature extends React.Component {
     console.log(bonneReponse);
     if (inputValue === bonneReponse) {
       const text = `Bonne réponse ! La pièce est en ${this.state.inputValue}, vous gagné ${this.pointsGagne} points.`;
-      //this.pointsgagnes=5;                                       ####En attente du back####
+      this.points = this.pointsGagne;
       this.setState({
         correctMessage: text,
         incorrectMessage: '',
@@ -104,7 +101,7 @@ class Nomenclature extends React.Component {
     }
     else {
       const text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez ${this.pointsPerdu} points.`;
-      //this.pointsgagnes=-5;                                        ####En attente du back####
+      this.points = -(this.pointsPerdu);
       this.setState({
         incorrectMessage: text,
         correctMessage: '',
@@ -117,17 +114,48 @@ class Nomenclature extends React.Component {
       }, 8000); // Efface le message après 3 secondes
 
     }
-    //this.handleUpdate();                                        ####En attente du back####
+    setTimeout(() => {
+      this.handleUpdate();
+    }, 2000);
   }
 
-  /*handleUpdate = async () => {                                               ####En attente du back####
+  handleUpdate = async () => {
     try {
-      const response = await axios.put('back'/progressgame/change/:name/:id, { body:this.pointsgagnes });
-      console.log(response.data);
+      // chiffre un code crypte du type id_level/name/eloActuel/newelo(- or +)
+      var CryptoJS = require("crypto-js");
+      const decoded = decodeToken(sessionStorage.token);
+      const name = decoded.name;
+      const global_elo = decoded.global_elo;
+      const message = this.level + "/" + name + "/" + global_elo + "/" + this.points;
+      const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
+
+      const formData = {
+        'points': this.points,
+        'encrypted': encrypted
+      };
+      var config = {
+        method: 'put',
+        maxBodyLength: Infinity,
+        url: `http://localhost:3001/unlockLevel/save/${name}/${this.level}`,
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.token}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: formData
+      };
+      axios(config)
+        .then(function (response) {
+          console.log(response.data);
+
+          // maj de l'elo, refraichissement de la page
+        })
+        .catch(function (error) {
+          console.log(error.response);
+        });
     } catch (error) {
-      console.error(error);                                                    ####En attente du back####
+      console.error(error);
     }
-  }*/
+  }
 
   render() {
     return (

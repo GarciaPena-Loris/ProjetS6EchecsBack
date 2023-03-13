@@ -14,9 +14,9 @@ export default function NiveauxPage() {
     const niveau = location.state.niveau;
     const index = location.state.index;
 
-    console.log(exercice);
-    console.log(niveau);
-    console.log(index);
+    // console.log(exercice);
+    // console.log(niveau);
+    // console.log(index);
 
     // Créez une structure de données pour stocker les composants de chaque niveau
     const niveaux = {

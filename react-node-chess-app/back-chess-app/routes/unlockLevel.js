@@ -52,7 +52,7 @@ router.put('/save/:name/:id', async (req, res) => {
     const pointsParam = req.body.points;
     // recupere un code crypte du type id_level/name/eloActuel/newelo(- or +)
     const encrypted = req.body.encrypted;
-    const message = CryptoJS.AES.decrypt(encrypted, process.env.CRYPTO_KEY).toString(CryptoJS.enc.Utf8);
+    const message = CryptoJS.AES.decrypt(encrypted, process.env.CRYPTO_SECRET).toString(CryptoJS.enc.Utf8);
     const parts = message.split('/');
 
     const idCode = parts[0];
