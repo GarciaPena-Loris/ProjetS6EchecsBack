@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState } from "react";
 import "./App.css";
 import { Routes, Route } from 'react-router-dom';
 import RequireAuth from "./components/RequireAuth/RequireAuth";
@@ -14,17 +14,18 @@ import Exercices from "./components/ExercicePage/ExercicePage";
 import Niveaux from "./components/NiveauxPage/NiveauxPage";
 
 function App() {
+  const [globalElo, setGlobalElo] = useState(null);
   return (
     <div className="App">
       <ErrorBoundary>
-        <Navbar />
-        <Routes>
+        <Navbar globalElo={globalElo} setGlobalElo={setGlobalElo} />
+        <Routes >
           <Route path="/" element={<Accueil />} />
-          <Route path="/connexion" element={<UnRequireAuth component={Connexion} />} />
+          <Route path="/connexion" element={<UnRequireAuth component={Connexion} setGlobalElo={setGlobalElo} />} />
           <Route path="/inscription" element={<UnRequireAuth component={Inscription} />} />
           <Route path="/selectionExercices" element={<RequireAuth component={SelectionExercices} />} />
           <Route path="/exercices" element={<RequireAuth component={Exercices} />} />
-          <Route path="/niveaux" element={<RequireAuth component={Niveaux} />} />
+          <Route path="/niveaux" element={<RequireAuth component={Niveaux} globalElo={globalElo} setGlobalElo={setGlobalElo} />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
       </ErrorBoundary>

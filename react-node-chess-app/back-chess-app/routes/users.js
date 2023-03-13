@@ -27,6 +27,17 @@ router.get('/:name', async (req, res) => {
   }
 });
 
+// Get a single user by Name
+router.get('/globalElo/:name', async (req, res) => {
+  try {
+    const globalElo = await User.getEloUserByName(req.params.name);
+    console.log("🚀 ~ file: users.js:34 ~ router.get ~ globalElo:", globalElo)
+    res.json(globalElo);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Create a new user //gerer les nom de joueur trop long ou trop court ou deja utilisé.
 router.post('/signup', (req, res) => {
   const user = req.body;
@@ -83,7 +94,7 @@ router.post('/signin', (req, res) => {
 
       try {
         // If the name and password are correct, return a JWT to the client
-        const token = jwt.sign({ name: user.name, role: user.role, global_elo: user.global_elo }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        const token = jwt.sign({ name: user.name, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
         console.log(token);
         res.json({ token });
       }

@@ -6,9 +6,9 @@ import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
 
-
 class Nomenclature extends React.Component {
-  constructor(args) {
+  constructor(props) {
+    console.log("🚀 ~ file: Nomenclature.js:11 ~ Nomenclature ~ constructor ~ props:", props)
     super();
     this.state = {
       inputValue: '',
@@ -18,20 +18,24 @@ class Nomenclature extends React.Component {
       showIncorrect: false,
       chess: new Chess(),
     };
-    this.pointsGagne = args.pointsGagnes;
-    this.pointsPerdu = args.pointsPerdus;
+    this.pointsGagne = props.pointsGagnes;
+    this.pointsPerdu = props.pointsPerdus;
+    this.globalElo = props.globalElo;
+    this.exerciceElo = props.exerciceElo;
     this.points = 0;
-    this.level = 1;
+    this.idLevel = 1;
     this.color = '';
     this.piece = '';
     this.move = '';
     this.movePieceObj = {}; // Objet contenant la position de la pièce et la pièce
     this.usePieceString = '';
+    
+    // decode token
+    const decoded = decodeToken(sessionStorage.token);
+    this.name = decoded.name;
 
     this.genererPieceAleatoire();
   }
-
-
 
   genererPieceAleatoire = () => {
     const colors = ['b', 'w'];
@@ -100,8 +104,15 @@ class Nomenclature extends React.Component {
 
     }
     else {
-      const text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez ${this.pointsPerdu} points.`;
-      this.points = -(this.pointsPerdu);
+      let text = '';
+      if (this.exerciceElo <= 0) {
+        text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez 0 points.`;
+        this.points = 0;
+      }
+      else {
+        text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez ${this.pointsPerdu} points.`;
+        this.points = -(this.pointsPerdu);
+      }
       this.setState({
         incorrectMessage: text,
         correctMessage: '',
@@ -121,12 +132,10 @@ class Nomenclature extends React.Component {
 
   handleUpdate = async () => {
     try {
-      // chiffre un code crypte du type id_level/name/eloActuel/newelo(- or +)
-      var CryptoJS = require("crypto-js");
-      const decoded = decodeToken(sessionStorage.token);
-      const name = decoded.name;
-      const global_elo = decoded.global_elo;
-      const message = this.level + "/" + name + "/" + global_elo + "/" + this.points;
+      // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
+      const CryptoJS = require("crypto-js");
+      const message = this.idLevel + "/" + this.name + "/" + this.exerciceElo + "/" + this.points;
+      console.log("🚀 ~ file: Nomenclature.js:136 ~ Nomenclature ~ handleUpdate= ~ message:", message)
       const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
       const formData = {
@@ -136,7 +145,7 @@ class Nomenclature extends React.Component {
       var config = {
         method: 'put',
         maxBodyLength: Infinity,
-        url: `http://localhost:3001/unlockLevel/save/${name}/${this.level}`,
+        url: `http://localhost:3001/unlockLevel/save/${this.name}/${this.idLevel}`,
         headers: {
           'Authorization': `Bearer ${sessionStorage.token}`,
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -147,7 +156,11 @@ class Nomenclature extends React.Component {
         .then(function (response) {
           console.log(response.data);
 
+          // maj de l'elo
+          this.props.setExerciceElo = response.data.newEloExercise;
+          this.props.setGlobalElo = response.data.newEloGlobal;
           // maj de l'elo, refraichissement de la page
+          //window.location.reload();
         })
         .catch(function (error) {
           console.log(error.response);

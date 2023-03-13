@@ -1,13 +1,14 @@
-import React from 'react';
+import { React } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import "./Navbar.css"
 
-function Navbar() {
+function Navbar({ globalElo, setGlobalElo }) {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
+        setGlobalElo(null);
         navigate('/');
     };
 
@@ -36,6 +37,9 @@ function Navbar() {
                     </>
                 )}
             </ul>
+            {globalElo && (
+                <span className='elo'>{globalElo} points d'élo</span>
+            )}
         </nav>
     );
 }

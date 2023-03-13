@@ -1,4 +1,7 @@
+import { React, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { decodeToken } from "react-jwt";
+import axios from "axios";
 import "./NiveauxPage.css"
 
 // imporation des composants de chaque niveau
@@ -7,21 +10,58 @@ import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
 import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
 import Nomenclature4 from '../Exercices/Nomenclature/Nomenclature4';
 
-export default function NiveauxPage() {
+export default function NiveauxPage({ globalElo, setGlobalElo }) {
     const location = useLocation();
     const navigate = useNavigate();
     const exercice = location.state.exercice;
     const niveau = location.state.niveau;
     const index = location.state.index;
 
+    const [exerciceElo, setExerciceElo] = useState(null);
     // console.log(exercice);
     // console.log(niveau);
     // console.log(index);
+    const setActualExerciceElo = async () => {
+        try {
+            const decoded = decodeToken(sessionStorage.token);
+            const name = decoded.name;
+            // get elo
+            var config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: `http://localhost:3001/eloExercise/elo/${name}/${exercice.id}`,
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.token}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+            };
+            axios(config)
+                .then(function (response) {
+                    console.log("response.data");
+                    console.log(response.data.exerciceElo);
+                    setExerciceElo(response.data.exerciceElo);
+                })
+                .catch(function (error) {
+                    console.log(error.response);
+                });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    setActualExerciceElo();
+
 
     // Créez une structure de données pour stocker les composants de chaque niveau
     const niveaux = {
         1: {
-            1: <Nomenclature pointsGagnes="5" pointsPerdus="2" />,
+            1: <Nomenclature
+                pointsGagnes="5"
+                pointsPerdus="2"
+                globalElo={globalElo} setGlobalElo={setGlobalElo}
+                exerciceElo={exerciceElo} setEloExercice={setExerciceElo}
+            />,
             2: <Nomenclature2 />,
             3: <Nomenclature3 />,
             4: <Nomenclature4 />,

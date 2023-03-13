@@ -36,7 +36,7 @@ class EloExercise {
 
     static getEloFromEloExerciseBIdyName = async (id_exercise, name_user) => {
         const elo_exercise = await new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM elo_exercise WHERE name_user = ? AND id_exercise = ?", [name_user, id_exercise], (error, results) => {
+            connection.query("SELECT elo FROM elo_exercise WHERE name_user = ? AND id_exercise = ?", [name_user, id_exercise], (error, results) => {
                 if (error) {
                     reject(error);
                 }

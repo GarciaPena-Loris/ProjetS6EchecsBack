@@ -56,9 +56,13 @@ router.put('/save/:name/:id', async (req, res) => {
     const parts = message.split('/');
 
     const idCode = parts[0];
+    console.log("🚀 ~ file: unlockLevel.js:59 ~ router.put ~ idCode:", idCode)
     const nameCode = parts[1];
+    console.log("🚀 ~ file: unlockLevel.js:61 ~ router.put ~ nameCode:", nameCode)
     const actualEloCode = parseInt(parts[2]);
+    console.log("🚀 ~ file: unlockLevel.js:62 ~ router.put ~ actualEloCode:", actualEloCode)
     const pointsCode = parseInt(parts[3]);
+    console.log("🚀 ~ file: unlockLevel.js:65 ~ router.put ~ pointsCode:", pointsCode)
 
     // Verification validity
     if ((nameParam == nameCode && nameCode == decoded.name) && (idParam == idCode)) { // Verif name and id
@@ -87,7 +91,7 @@ router.put('/save/:name/:id', async (req, res) => {
         // get new elo
         const newEloUser = await User.getEloUserByName(nameCode);
 
-        res.json({ newEloExercise: (actualEloCode + pointsCode), newEloGlobal: (newEloUser) });
+        res.json({ newEloExercise: (actualEloCode + pointsCode), newEloUser });
       }
       else {
         res.status(406).json({ error: "Points do not correspond" });
