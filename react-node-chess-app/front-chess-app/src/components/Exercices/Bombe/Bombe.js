@@ -3,7 +3,6 @@ import './Bombe.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
-import { text } from "express";
 
 class Bombe extends React.Component {
     constructor() {
@@ -21,9 +20,7 @@ class Bombe extends React.Component {
 
         var colonneP, colonneB, colonneA, ligneP, ligneB, ligneA, coul, coulM, couleur, colonneM, ligneM;
         this.state.chess.clear();
-        this.alpha = alpha;
-        this.colonneA = colonneA;
-        this.ligneA = ligneA;
+        
 
         //choix couleur
         couleur = 'b';
@@ -39,36 +36,8 @@ class Bombe extends React.Component {
         // pieces[Math.floor(Math.random() * pieces.length)];
         this.piece = piece;
 
-        // 3 cas
-        if (piece === 'p') { // pions
-            if (couleur === 'b') {
-                // position piece qui mange
-                colonneP = Math.floor(Math.random() * 6) + 1;
-                ligneP = Math.floor(Math.random() * 7) + 2;
 
-                // position piece ambigue
-                colonneA = colonneP + 2;
-                ligneA = ligneP;
-
-                // position piece mangé
-                colonneM = colonneP + 1;
-                ligneM = ligneP - 1;
-            }
-            else {
-                // position piece qui mange
-                colonneP = Math.floor(Math.random() * 5) + 1;
-                ligneP = Math.floor(Math.random() * 7) + 1;
-
-                // position piece ambigue
-                colonneA = colonneP + 2;
-                ligneA = ligneP;
-
-                // position piece mangé
-                colonneM = colonneP + 1;
-                ligneM = ligneP + 1;
-            }
-        }
-        else if (piece === 'r') { // tours
+        if (piece === 'r') { // tours
             // position tour
             colonneP = Math.floor(Math.random() * 8) + 1;
             ligneP = Math.floor(Math.random() * 8) + 1;
@@ -86,7 +55,7 @@ class Bombe extends React.Component {
                     (ligneB !== 2 && colonneB !== 1) && (ligneB !== 2 && colonneB !== 8)
                     && (ligneB !== 7 && colonneB !== 1) && (ligneB !== 7 && colonneB !== 8)) {
                     if (!this.state.chess.get(`${alpha[colonneB - 1]}${ligneB}`)) {
-                        this.state.chess.put({ type: 'p', color: 'w' }, `${alpha[colonneB - 1]}${ligneB}`);
+                        this.state.chess.put({ type: 'p', color: 'b' }, `${alpha[colonneB - 1]}${ligneB}`);
                         cpt++;
                     }
                 }
@@ -123,178 +92,12 @@ class Bombe extends React.Component {
             }
         }
 
-        else if (piece === 'n') {
-            // position piece qui mange
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-
-            // 4 cas
-            if (colonneP <= 4 && ligneP <= 4) { // bas gauche
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece mangé
-                    colonneM = colonneP + 2
-                    ligneM = ligneP + 1
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        // position piece ambigue
-                        colonneA = colonneM + 2
-                        ligneA = ligneM + 1
-                    }
-                    else {
-                        colonneA = colonneM + 1
-                        ligneA = ligneM + 2
-                    }
-                }
-                else {
-                    // position piece mangé
-                    colonneM = colonneP + 1
-                    ligneM = ligneP + 2
-                    // position piece ambigue
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        colonneA = colonneM + 2
-                        ligneA = ligneM + 1
-                    }
-                    else {
-                        colonneA = colonneM + 1
-                        ligneA = ligneM + 2
-                    }
-                }
-            }
-            if (colonneP > 4 && ligneP <= 4) {  // bas droite
-                if (Math.random() < 0.5) { // x-2 y+1
-                    // position piece mangé
-                    colonneM = colonneP - 2
-                    ligneM = ligneP + 1
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        // position piece ambigue
-                        colonneA = colonneM - 2
-                        ligneA = ligneM + 1
-                    }
-                    else {
-                        colonneA = colonneM - 1
-                        ligneA = ligneM + 2
-                    }
-                }
-                else {
-                    // position piece mangé
-                    colonneM = colonneP - 1
-                    ligneM = ligneP + 2
-                    // position piece ambigue
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        colonneA = colonneM - 2
-                        ligneA = ligneM + 1
-                    }
-                    else {
-                        colonneA = colonneM - 1
-                        ligneA = ligneM + 2
-                    }
-                }
-            }
-            if (colonneP <= 4 && ligneP > 4) { // haut gauche
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece mangé
-                    colonneM = colonneP + 2
-                    ligneM = ligneP - 1
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        // position piece ambigue
-                        colonneA = colonneM + 2
-                        ligneA = ligneM - 1
-                    }
-                    else {
-                        colonneA = colonneM + 1
-                        ligneA = ligneM - 2
-                    }
-                }
-                else {
-                    // position piece mangé
-                    colonneM = colonneP + 1
-                    ligneM = ligneP - 2
-                    // position piece ambigue
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        colonneA = colonneM + 2
-                        ligneA = ligneM - 1
-                    }
-                    else {
-                        colonneA = colonneM + 1
-                        ligneA = ligneM - 2
-                    }
-                }
-            }
-            if (colonneP > 4 && ligneP > 4) { // haut droite
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece mangé
-                    colonneM = colonneP - 2
-                    ligneM = ligneP - 1
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        // position piece ambigue
-                        colonneA = colonneM - 2
-                        ligneA = ligneM - 1
-                    }
-                    else {
-                        colonneA = colonneM - 1
-                        ligneA = ligneM - 2
-                    }
-                }
-                else {
-                    // position piece mangé
-                    colonneM = colonneP - 1
-                    ligneM = ligneP - 2
-                    // position piece ambigue
-                    if (Math.random() < 0.5) { // x+2 y+1
-                        colonneA = colonneM - 2
-                        ligneA = ligneM - 1
-                    }
-                    else {
-                        colonneA = colonneM - 1
-                        ligneA = ligneM - 2
-                    }
-                }
-            }
-
-        } else if (piece === 'b') {
-            //piece qui mange 
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-            //piece qui sera mangé 
-            do {
-                do {
-                    colonneM = Math.floor(Math.random() * 8) + 1;
-                }
-                while (colonneM === colonneP);
-                ligneM = ligneP + Math.abs(colonneP - colonneM);
-                if (ligneM > 8) {
-                    ligneM = ligneP - Math.abs(colonneP - colonneM);
-                }
-            } while (ligneM < 0 || ligneM > 8);
-        }
-        else if (piece === 'q') {
-            //piece qui mange 
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-            //piece qui sera mangé 
-            colonneM = Math.floor(Math.random() * 8) + 1;
-            do { ligneM = Math.floor(Math.random() * 8) + 1; }
-            while ((colonneM === colonneP && ligneM === ligneP) || (ligneM !== ligneP && colonneM !== colonneP
-                && ligneM !== (ligneP + Math.abs(colonneP - colonneM) || ligneP - Math.abs(colonneP - colonneM))));
-
-
-        }
-        else if (piece === 'k') {
-            //piece qui mange 
-            colonneP = Math.floor(Math.random() * 8) + 1;
-            ligneP = Math.floor(Math.random() * 8) + 1;
-            //piece qui sera mangé 
-            do {
-                colonneM = Math.floor(Math.random() * 3) + (colonneP - 1);
-                ligneM = Math.floor(Math.random() * 3) + (ligneP - 1);
-            }
-            while (colonneM > 8 || colonneM < 1 || ligneM > 8 || ligneM < 1 ||
-                (ligneM === ligneP && colonneM === colonneP));
-        }
 
 
 
 
-        this.state.chess.put({ type: 'p', color: 'b' }, `${alpha[colonneA - 1]}${ligneA}`) // A
+
+        this.state.chess.put({ type: 'n', color: 'b' }, `${alpha[colonneA - 1]}${ligneA}`) // A
 
         this.state.chess.put({ type: `${piece}`, color: 'w' }, `${alpha[colonneP - 1]}${ligneP}`); // P
 
@@ -305,37 +108,15 @@ class Bombe extends React.Component {
         else if (piece === 'q') this.state.nomPiece = `la reine en ${alpha[colonneP - 1]}${ligneP}`
         else if (piece === 'k') this.state.nomPiece = `le roi en ${alpha[colonneP - 1]}${ligneP}`
 
-        this.state.pos = `${alpha[colonneM - 1]}${ligneM}`;
+        
 
-        var coup = '';
-        if (piece !== 'p') {
-            coup += piece.toUpperCase();
-        }
+        this.state.pos = `${alpha[colonneA - 1]}${ligneA}`;
 
-        if (this.state.chess.get(`${alpha[colonneA - 1]}${ligneA}`) && piece !== 'p') {
-            if (colonneA === colonneP) {
-                coup += ligneP;
-            }
-            else coup += alpha[colonneP - 1];
-        }
-
-        if (this.state.chess.get(`${alpha[colonneM - 1]}${ligneM}`)) {
-            if (piece === 'p') {
-                coup += alpha[colonneP - 1];
-            }
-            coup += 'x';
-        }
-        coup += alpha[colonneM - 1] + ligneM;
-        if (piece === 'p' && (ligneM === 1 || ligneM === 8)) {
-            coup += '=Q';
-        }
-
-        console.log(this.state.chess.moves({ verbose: true }))
-        this.coup = coup;
-
-        // ----------------------
-        this.caseARemove = alpha[colonneP - 1] + ligneP;
-        // ----------------------
+        this.alpha = alpha;
+        this.colonneA = colonneA;
+        this.ligneA = ligneA;
+        this.caseArriv = this.state.chess.get(`${alpha[colonneA - 1]}${ligneA}`);
+        
 
     }
 
@@ -345,7 +126,6 @@ class Bombe extends React.Component {
 
     handleClick = () => {
         const { inputValue, chess } = this.state;
-
         this.setState({ chess: chess, correctMessage: '', incorrectMessage: '', inputValue: '' });
 
         chess.move(inputValue);
@@ -380,9 +160,13 @@ class Bombe extends React.Component {
             chess.move('Qh2');
             chess.remove('h2');
         }
-        if (!chess.get(`${this.alpha[this.colonneA - 1]}${this.ligneA}`)){
+        if (inputValue === 'Rx'+`${this.alpha[this.colonneA - 1]}${this.ligneA}`) {
+            try {
+                chess.move(`${this.alpha[this.colonneA - 1]}${this.ligneA}`)
+            } catch(error){console.log("Non !")}
             const text = "Bravo c'était ça !";
-            this.setState({ chess: chess, correctMessage: text, incorrectMessage: '', inputValue: '' });
+            this.setState({ chess: chess, correctMessage: text });
+            console.log(chess.get(`${this.alpha[this.colonneA - 1]}${this.ligneA}`))
         }
     };
 
@@ -391,7 +175,7 @@ class Bombe extends React.Component {
         return (
             <div className="container">
                 <div className="chesscenter">
-                    <h2 id="txt">Ecrivez le coup pour que {this.state.nomPiece} aille en {this.state.pos}</h2>
+                    <h2 id="txt">Ecrivez le coup pour que {this.state.nomPiece} aille en {this.state.pos} sans toucher les bombes</h2>
                     <Chessboard
                         position={this.state.chess.fen()}
                         squareStyles={{ e4: { backgroundColor: "yellow" } }}
