@@ -20,8 +20,6 @@ class Bombe extends React.Component {
 
         var colonneP, colonneB, colonneA, ligneP, ligneB, ligneA, coul, coulM, couleur, colonneM, ligneM;
         this.state.chess.clear();
-        
-
         //choix couleur
         couleur = 'b';
         coul = 'b';
@@ -36,30 +34,11 @@ class Bombe extends React.Component {
         // pieces[Math.floor(Math.random() * pieces.length)];
         this.piece = piece;
 
-
         if (piece === 'r') { // tours
             // position tour
             colonneP = Math.floor(Math.random() * 8) + 1;
             ligneP = Math.floor(Math.random() * 8) + 1;
 
-            // position bombe
-            let cpt = 0;
-            while (cpt < 5) {
-                colonneB = Math.floor(Math.random() * 8) + 1;
-                ligneB = Math.floor(Math.random() * 8) + 1;
-                if ((ligneB !== ligneP && colonneB !== colonneP) &&
-                    (ligneB !== 1 && colonneB !== 1) && (ligneB !== 1 && colonneB !== 8)
-                    && (ligneB !== 8 && colonneB !== 1) && (ligneB !== 8 && colonneB !== 8) && //Pas dans les coins
-                    (ligneB !== 1 && colonneB !== 2) && (ligneB !== 1 && colonneB !== 7)
-                    && (ligneB !== 8 && colonneB !== 2) && (ligneB !== 8 && colonneB !== 7) &&
-                    (ligneB !== 2 && colonneB !== 1) && (ligneB !== 2 && colonneB !== 8)
-                    && (ligneB !== 7 && colonneB !== 1) && (ligneB !== 7 && colonneB !== 8)) {
-                    if (!this.state.chess.get(`${alpha[colonneB - 1]}${ligneB}`)) {
-                        this.state.chess.put({ type: 'p', color: 'b' }, `${alpha[colonneB - 1]}${ligneB}`);
-                        cpt++;
-                    }
-                }
-            }
 
             // position arrivé
             if (colonneP <= 4 && ligneP <= 4) {     //position de depart en bas a gauche
@@ -91,11 +70,19 @@ class Bombe extends React.Component {
                     (colonneA === 2 && ligneA === 8)));
             }
         }
-
-
-
-
-
+        // position bombe
+        let cpt = 0;
+        while (cpt < Math.floor(Math.random() * 10) + 4) {
+            colonneB = Math.floor(Math.random() * 6) + 2;
+            ligneB = Math.floor(Math.random() * 6) + 2;
+            if (!this.state.chess.get(`${alpha[colonneB - 1]}${ligneB}`) && // pas deja une bombe
+                (ligneB !== ligneP && colonneB !== colonneP) && // pas sur la case de départ
+                (colonneB !== colonneA && ligneB !== ligneA)) // pas sur la case d'arrivé 
+            {
+                this.state.chess.put({ type: 'p', color: 'b' }, `${alpha[colonneB - 1]}${ligneB}`);
+                cpt++;
+            }
+        }
 
         this.state.chess.put({ type: 'n', color: 'b' }, `${alpha[colonneA - 1]}${ligneA}`) // A
 
@@ -108,17 +95,24 @@ class Bombe extends React.Component {
         else if (piece === 'q') this.state.nomPiece = `la reine en ${alpha[colonneP - 1]}${ligneP}`
         else if (piece === 'k') this.state.nomPiece = `le roi en ${alpha[colonneP - 1]}${ligneP}`
 
-        
-
         this.state.pos = `${alpha[colonneA - 1]}${ligneA}`;
 
         this.alpha = alpha;
         this.colonneA = colonneA;
         this.ligneA = ligneA;
         this.caseArriv = this.state.chess.get(`${alpha[colonneA - 1]}${ligneA}`);
-        
+
 
     }
+
+    customPieces = () => {
+        const customBomb = {
+            bP: ({ squareWidth }) => (
+                <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
+            )
+        };
+        return customBomb;
+    };
 
     handleInputChange = (event) => {
         this.setState({ inputValue: event.target.value });
@@ -160,10 +154,10 @@ class Bombe extends React.Component {
             chess.move('Qh2');
             chess.remove('h2');
         }
-        if (inputValue === 'Rx'+`${this.alpha[this.colonneA - 1]}${this.ligneA}`) {
+        if (inputValue === 'Rx' + `${this.alpha[this.colonneA - 1]}${this.ligneA}`) {
             try {
                 chess.move(`${this.alpha[this.colonneA - 1]}${this.ligneA}`)
-            } catch(error){console.log("Non !")}
+            } catch (error) { console.log("Non !") }
             const text = "Bravo c'était ça !";
             this.setState({ chess: chess, correctMessage: text });
             console.log(chess.get(`${this.alpha[this.colonneA - 1]}${this.ligneA}`))
@@ -182,6 +176,7 @@ class Bombe extends React.Component {
                         arePiecesDraggable={false}
                         width={400}
                         animationDuration={800}
+                        customPieces={this.customPieces()}
                     />
                 </div>
                 <div className="elementsDroite">
