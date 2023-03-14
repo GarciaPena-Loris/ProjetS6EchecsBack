@@ -38,7 +38,7 @@ function Navbar({ globalElo, setGlobalElo }) {
                 )}
             </ul>
             {globalElo && (
-                <span className='elo'>{globalElo} points d'élo</span>
+                <span className='elo'>{globalElo} points d'élo général</span>
             )}
         </nav>
     );

@@ -57,7 +57,7 @@ class EloExercise {
     static async updateEloExercise(id_exercise, name_user, newElo) {
         return new Promise((resolve, reject) => {
             connection.query(
-                "UPDATE elo_exercise SET elo = ? WHERE name_user = ? AND id_exercise = ?", [newElo, name_user, id_exercise], (error, result) => {
+                "UPDATE elo_exercise SET elo = elo + ? WHERE name_user = ? AND id_exercise = ?", [newElo, name_user, id_exercise], (error, result) => {
                     if (error) {
                         return reject(error);
                     }

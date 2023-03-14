@@ -8,28 +8,22 @@ import { decodeToken } from "react-jwt";
 
 class Nomenclature extends React.Component {
   constructor(props) {
-    console.log("🚀 ~ file: Nomenclature.js:11 ~ Nomenclature ~ constructor ~ props:", props)
-    super();
+    super(props);
     this.state = {
       inputValue: '',
       correctMessage: ' ',
       incorrectMessage: ' ',
       showCorrect: false,
       showIncorrect: false,
-      chess: new Chess(),
     };
+    this.chess = null;
     this.pointsGagne = props.pointsGagnes;
     this.pointsPerdu = props.pointsPerdus;
-    this.globalElo = props.globalElo;
-    this.exerciceElo = props.exerciceElo;
     this.points = 0;
     this.idLevel = 1;
-    this.color = '';
-    this.piece = '';
-    this.move = '';
     this.movePieceObj = {}; // Objet contenant la position de la pièce et la pièce
     this.usePieceString = '';
-    
+
     // decode token
     const decoded = decodeToken(sessionStorage.token);
     this.name = decoded.name;
@@ -38,21 +32,22 @@ class Nomenclature extends React.Component {
   }
 
   genererPieceAleatoire = () => {
+    this.chess = new Chess();
     const colors = ['b', 'w'];
-    this.color = colors[Math.floor(Math.random() * colors.length)];
+    let color = colors[Math.floor(Math.random() * colors.length)];
     const pieces = ['P', 'N', 'B', 'R', 'Q', 'K'];
-    this.piece = pieces[Math.floor(Math.random() * pieces.length)];
-    const moves = this.state.chess.moves({ piece: this.piece });
-    this.move = moves[Math.floor(Math.random() * moves.length)];
-    if (this.move.length > 2) {
-      this.move = this.move.substring(1);
+    let piece = pieces[Math.floor(Math.random() * pieces.length)];
+    let moves = this.chess.moves({ piece: piece });
+    let move = moves[Math.floor(Math.random() * moves.length)];
+    if (move.length > 2) {
+      move = move.substring(1);
     }
     this.movePieceObj = {
-      [this.move]: [this.color] + [this.piece]
+      [move]: [color] + [piece]
     };
 
-    this.state.chess.clear(); // Vide le plateau
-    this.state.chess.put({ type: this.piece, color: this.color }, this.move); // Place la pièce sur le plateau
+    this.chess.clear(); // Vide le plateau
+    this.chess.put({ type: piece, color: color }, move); // Place la pièce sur le plateau
 
     switch (this.movePieceObj[Object.keys(this.movePieceObj)[0]]) {
       case "wP":
@@ -90,9 +85,8 @@ class Nomenclature extends React.Component {
   handleClick = () => {
     const { inputValue } = this.state;
     const bonneReponse = this.usePieceString + Object.keys(this.movePieceObj)[0];
-    console.log(bonneReponse);
     if (inputValue === bonneReponse) {
-      const text = `Bonne réponse ! La pièce est en ${this.state.inputValue}, vous gagné ${this.pointsGagne} points.`;
+      const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagne} points.`;
       this.points = this.pointsGagne;
       this.setState({
         correctMessage: text,
@@ -105,12 +99,12 @@ class Nomenclature extends React.Component {
     }
     else {
       let text = '';
-      if (this.exerciceElo <= 0) {
-        text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez 0 points.`;
+      if (this.props.exerciceElo <= 0) {
+        text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez 0 points.`;
         this.points = 0;
       }
       else {
-        text = `Mauvaise réponse ! La pièce n'est pas en '${this.state.inputValue}', vous perdez ${this.pointsPerdu} points.`;
+        text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez ${this.pointsPerdu} points.`;
         this.points = -(this.pointsPerdu);
       }
       this.setState({
@@ -121,7 +115,7 @@ class Nomenclature extends React.Component {
         showIncorrect: true
       });
       setTimeout(() => {
-        this.setState({ showIncorrect: false });
+        this.setState({ showCorrect: false, showIncorrect: false });
       }, 8000); // Efface le message après 3 secondes
 
     }
@@ -134,8 +128,7 @@ class Nomenclature extends React.Component {
     try {
       // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
       const CryptoJS = require("crypto-js");
-      const message = this.idLevel + "/" + this.name + "/" + this.exerciceElo + "/" + this.points;
-      console.log("🚀 ~ file: Nomenclature.js:136 ~ Nomenclature ~ handleUpdate= ~ message:", message)
+      const message = this.idLevel + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
       const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
       const formData = {
@@ -153,17 +146,16 @@ class Nomenclature extends React.Component {
         data: formData
       };
       axios(config)
-        .then(function (response) {
-          console.log(response.data);
-
+        .then((response) => {
           // maj de l'elo
-          this.props.setExerciceElo = response.data.newEloExercise;
-          this.props.setGlobalElo = response.data.newEloGlobal;
-          // maj de l'elo, refraichissement de la page
-          //window.location.reload();
+          this.props.setGlobalElo(response.data.newEloUser);
+          this.props.setExerciceElo(response.data.newEloExercise);
+          
+          // maj de l'elo, affichage nouvelle piece
+          this.genererPieceAleatoire();
         })
-        .catch(function (error) {
-          console.log(error.response);
+        .catch((error) => {
+          console.log(error);
         });
     } catch (error) {
       console.error(error);
@@ -176,7 +168,7 @@ class Nomenclature extends React.Component {
         <div className="jeu">
           <div className="plateau-gauche">
             <Chessboard
-              position={this.state.chess.fen()}
+              position={this.chess.fen()}
               arePiecesDraggable={false}
             />
           </div>

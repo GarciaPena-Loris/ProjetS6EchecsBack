@@ -9,7 +9,7 @@
 .level-header {
     display: flex;
     width: 100%;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     margin: 1% 0;
 }
@@ -18,14 +18,17 @@
     font-size: 2em;
     font-weight: bold;
     color: #fff;
-    width: 50%;
-    margin-left: 10%;
 }
 
 .back-button {
     width: 13%;
     padding: 0.7% 0;
     font-weight: 600;
+}
+
+.level-elo {
+    font-size: 1em;
+    color: #fff;
 }
 
 .level-jeux {
