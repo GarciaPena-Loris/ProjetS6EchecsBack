@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { decodeToken } from "react-jwt";
+import { getActualGlobalElo } from "../Utils/utils";
 import "./Connexion.css"
 
 
@@ -11,35 +11,6 @@ export default function Connexion({ setGlobalElo }) {
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
-
-    const setActualGlobalElo = async () => {
-        try {
-            const decoded = decodeToken(sessionStorage.token);
-            const name = decoded.name;
-            // get elo
-            var config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: `http://localhost:3001/users/globalElo/${name}`,
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.token}`,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-            };
-            axios(config)
-                .then(function (response) {
-                    console.log(response.data);
-
-                    setGlobalElo(response.data.global_elo);
-                })
-                .catch(function (error) {
-                    console.log(error.response);
-                });
-        }
-        catch (error) {
-            console.log(error);
-        }
-    }
 
     const handleConnexion = async (event) => {
         event.preventDefault();
@@ -58,10 +29,11 @@ export default function Connexion({ setGlobalElo }) {
         };
         axios(config)
             .then(function (response) {
-                console.log(response.data);
                 // Pour stocker le token dans la variable de session
                 sessionStorage.setItem('token', response.data.token);
-                setActualGlobalElo();
+                const globalElo = getActualGlobalElo();
+                sessionStorage.setItem('globalElo', globalElo);
+                setGlobalElo(globalElo);
 
                 navigate('/selectionExercices');
             })

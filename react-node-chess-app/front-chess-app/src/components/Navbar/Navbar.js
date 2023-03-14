@@ -37,9 +37,12 @@ function Navbar({ globalElo, setGlobalElo }) {
                     </>
                 )}
             </ul>
-            {globalElo && (
+            {globalElo !== null ? (
                 <span className='elo'>{globalElo} points d'élo général</span>
-            )}
+            ) : (
+                sessionStorage.getItem('globalElo') !== null &&
+                setGlobalElo(sessionStorage.getItem('globalElo')))
+            }
         </nav>
     );
 }
