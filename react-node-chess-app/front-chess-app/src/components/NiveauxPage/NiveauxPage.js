@@ -78,7 +78,7 @@ export default function NiveauxPage({ globalElo, setGlobalElo }) {
             <div className="level-header">
                 <button className="valider-bouton back-button" onClick={() => navigate(-1)}>← Retour</button> {/* Retourne à la page précédente */}
                 <div className="level-label">Exercice <i>{exercice.name}</i> : <i>niveau {index}</i></div>
-                <span className="level-elo">{exerciceElo !== null && exerciceElo} points d'élo pour cet exercice</span>
+                <span className="level-elo">{exerciceElo !== null && exerciceElo} points d'élo pour cet <b>exercice</b></span>
             </div>
             {/* Affichez le composant récupéré */}
             <div className="level-jeux">
