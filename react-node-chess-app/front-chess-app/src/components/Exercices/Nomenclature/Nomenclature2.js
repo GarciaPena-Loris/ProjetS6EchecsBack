@@ -287,25 +287,25 @@ class Nomenclature2 extends React.Component {
     //#endregion
 
     // couleur des cases
-    customSquare = React.forwardRef((props, ref) => {
+    customSquare = ((props) => {
         const { children, square, style } = props;
         if (square === this.positionPieceP) {
             return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
+                <div style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
                     {children}
                 </div>
             );
         }
         else if (square === this.positionPieceM) {
             return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
+                <div style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
                     {children}
                 </div>
             );
         }
         else {
             return (
-                <div ref={ref} style={{ ...style, position: "relative" }}>
+                <div style={{ ...style, position: "relative" }}>
                     {children}
                 </div>
             );
@@ -394,7 +394,7 @@ class Nomenclature2 extends React.Component {
                 })
                 .catch((error) => {
                     console.log(error);
-                    
+
                     // affichage nouvelle piece
                     this.genererPieceAleatoire();
                 });
