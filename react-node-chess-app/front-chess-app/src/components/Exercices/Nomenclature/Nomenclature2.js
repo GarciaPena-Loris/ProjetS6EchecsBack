@@ -36,7 +36,7 @@ class Nomenclature2 extends React.Component {
         this.genererPieceAleatoire();
     }
 
-
+    //#region Génération pièce aléatoire
     genererPion = (couleur, colonneP, ligneP, colonneM, ligneM) => {
         if (couleur === 'b') {
             // position piece qui mange
@@ -256,23 +256,21 @@ class Nomenclature2 extends React.Component {
         else if (piece === 'k') {
             [colonneP, ligneP, colonneM, ligneM] = this.genererRoi(couleur, colonneP, ligneP, colonneM, ligneM);
         }
-
-        this.state.chess.put({ type: `${piece}`, color: `${coulP}` }, `${alpha[colonneP - 1]}${ligneP}`) // P
-        this.state.chess.put({ type: `q`, color: `${coulM}` }, `${alpha[colonneM - 1]}${ligneM}`) // M
-
         this.positionPieceP = `${alpha[colonneP - 1]}${ligneP}`;
         this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
 
-        // nom de la piece
-        if (piece === 'p') this.nomPiece = ` le pion en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'r') this.nomPiece = ` la tour en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'n') this.nomPiece = ` le cavalier en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'b') this.nomPiece = ` le fou en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'q') this.nomPiece = ` la reine en ${alpha[colonneP - 1]}${ligneP}`
-        else if (piece === 'k') this.nomPiece = ` le roi en ${alpha[colonneP - 1]}${ligneP}`
+        this.state.chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
+        this.state.chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
 
-        // position de la piece mangé
-        this.pos = ` ${alpha[colonneM - 1]}${ligneM}`;
+
+        // nom de la piece
+        if (piece === 'p') this.nomPiece = `le pion`
+        else if (piece === 'r') this.nomPiece = `la tour`
+        else if (piece === 'n') this.nomPiece = `le cavalier`
+        else if (piece === 'b') this.nomPiece = `le fou`
+        else if (piece === 'q') this.nomPiece = `la reine`
+        else if (piece === 'k') this.nomPiece = `le roi`
+        this.nomPiece += ` en ${this.positionPieceP}`
 
         // nom coup a faire
         if (piece !== 'p') {
@@ -283,33 +281,38 @@ class Nomenclature2 extends React.Component {
         }
         coup += 'x'; // manger
         coup += alpha[colonneM - 1] + ligneM; // position de la piece mangé
-        console.log("🚀 ~ file: Nomenclature2.js:286 ~ Nomenclature2 ~ coup:", coup)
-        
+
         this.coup = coup;
-    }
+    };
+    //#endregion
 
     // couleur des cases
-    customSquare = (square) => {
-        //console.log(square);
-        if (square.square === this.positionPieceP) {
+    customSquare = React.forwardRef((props, ref) => {
+        const { children, square, style } = props;
+        if (square === this.positionPieceP) {
             return (
-                <div style={{ backgroundColor: this.couleurP }}> {/* pièce qui mange */}
-                    {square.children}
+                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
+                    {children}
                 </div>
             );
         }
-        if (square.square === this.positionPieceM) {
+        else if (square === this.positionPieceM) {
             return (
-                <div style={{ ...square.style, backgroundColor: this.couleurM }}> {/* pièce mangé */}
-                    {square.children}
+                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
+                    {children}
                 </div>
             );
         }
-        return (
-            <div style={square.style}>
-                {square.children}
-            </div>);
-    }
+        else {
+            return (
+                <div ref={ref} style={{ ...style, position: "relative" }}>
+                    {children}
+                </div>
+            );
+        }
+    });
+
+
 
     handleInputChange = (event) => {
         this.setState({ inputValue: event.target.value });
@@ -364,7 +367,6 @@ class Nomenclature2 extends React.Component {
             // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
             const CryptoJS = require("crypto-js");
             const message = this.idLevel + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
-            console.log("🚀 ~ file: Nomenclature2.js:366 ~ Nomenclature2 ~ message:", message)
             const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
             const formData = {
@@ -392,6 +394,9 @@ class Nomenclature2 extends React.Component {
                 })
                 .catch((error) => {
                     console.log(error);
+                    
+                    // affichage nouvelle piece
+                    this.genererPieceAleatoire();
                 });
         } catch (error) {
             console.error(error);
@@ -411,12 +416,10 @@ class Nomenclature2 extends React.Component {
                     </div>
                     <div className="elements-droite">
                         <i className="consigne">
-                            Ecrivez le coup pour que
-                            <span style={{ color: `${this.couleurP}` }}>
+                            Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}>
                                 {this.nomPiece}
-                            </span> mange la reine en
-                            <span style={{ color: `${this.couleurM}` }}>
-                                {this.pos}
+                            </span> mange la reine en <span style={{ color: `${this.couleurM}` }}>
+                                {this.positionPieceM}
                             </span>
                         </i>
                         <input className="reponse-input"
