@@ -16,14 +16,13 @@ class Nomenclature extends React.Component {
       incorrectMessage: ' ',
       showCorrect: false,
       showIncorrect: false,
+      chess: new Chess(),
     };
-    this.chess = null;
     this.pointsGagne = props.pointsGagnes;
     this.pointsPerdu = props.pointsPerdus;
     this.points = 0;
-    this.idLevel = 1;
-    this.movePieceObj = {}; // Objet contenant la position de la pièce et la pièce
-    this.usePieceString = '';
+    this.idLevel = props.idLevel;
+    this.usePieceString = [];
 
     // decode token
     const decoded = decodeToken(sessionStorage.token);
@@ -33,49 +32,21 @@ class Nomenclature extends React.Component {
   }
 
   genererPieceAleatoire = () => {
-    this.chess = new Chess();
+    const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    this.state.chess.clear(); // Vide le plateau
+    let colonneP = Math.floor(Math.random() * 8) + 1;
+    let ligneP = Math.floor(Math.random() * 8) + 1;
     const colors = ['b', 'w'];
     let color = colors[Math.floor(Math.random() * colors.length)];
     const pieces = ['P', 'N', 'B', 'R', 'Q', 'K'];
     let piece = pieces[Math.floor(Math.random() * pieces.length)];
-    let moves = this.chess.moves({ piece: piece });
-    let move = moves[Math.floor(Math.random() * moves.length)];
-    if (move.length > 2) {
-      move = move.substring(1);
-    }
-    this.movePieceObj = {
-      [move]: [color] + [piece]
-    };
+    let position = `${alpha[colonneP - 1]}${ligneP}`;
 
-    this.chess.clear(); // Vide le plateau
-    this.chess.put({ type: piece, color: color }, move); // Place la pièce sur le plateau
+    this.usePieceString.push(piece + position);
+    this.usePieceString.push(piece.toLowerCase() + position);
+    this.state.chess.put({ type: piece, color: color }, position); // Place la pièce sur le plateau
 
-    switch (this.movePieceObj[Object.keys(this.movePieceObj)[0]]) {
-      case "wP":
-        this.usePieceString = "P";
-        break;
-      case "bP":
-        this.usePieceString = "P";
-        break;
-      case "bK":
-        this.usePieceString = "K";
-        break;
-      case "bN":
-        this.usePieceString = "N";
-        break;
-      case "bB":
-        this.usePieceString = "B";
-        break;
-      case "bR":
-        this.usePieceString = "R";
-        break;
-      case "bQ":
-        this.usePieceString = "Q";
-        break;
-      default:
-        this.usePieceString = this.movePieceObj[Object.keys(this.movePieceObj)[0]].substring(1);
-        break;
-    }
+
   };
 
   handleInputChange = (event) => {
@@ -85,8 +56,7 @@ class Nomenclature extends React.Component {
 
   handleClick = () => {
     const { inputValue } = this.state;
-    const bonneReponse = this.usePieceString + Object.keys(this.movePieceObj)[0];
-    if (inputValue === bonneReponse) {
+    if (this.usePieceString.includes(inputValue)) {
       const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagne} points.`;
       this.points = this.pointsGagne;
       this.setState({
@@ -96,7 +66,6 @@ class Nomenclature extends React.Component {
         showCorrect: true,
         showIncorrect: false
       });
-
     }
     else {
       let text = '';
@@ -168,7 +137,7 @@ class Nomenclature extends React.Component {
         <div className="jeu">
           <div className="plateau-gauche">
             <Chessboard
-              position={this.chess.fen()}
+              position={this.state.chess.fen()}
               arePiecesDraggable={false}
             />
           </div>

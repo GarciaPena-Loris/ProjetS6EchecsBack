@@ -48,7 +48,6 @@ export default function Connexion() {
                 };
                 axios(config)
                     .then(function (response) {
-                        console.log("🚀 ~ file: utils.js:23 ~ response.data.global_elo:", response.data.global_elo)
                         updateGlobalElo(response.data.global_elo);
                         navigate('/selectionExercices');
                     })
