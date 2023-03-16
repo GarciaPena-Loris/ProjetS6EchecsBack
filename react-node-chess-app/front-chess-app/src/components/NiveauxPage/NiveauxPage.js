@@ -1,7 +1,9 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
+import { GlobalContext } from '../GlobalContext/GlobalContext';
 import axios from "axios";
+
 import "./NiveauxPage.css"
 
 // imporation des composants de chaque niveau
@@ -10,16 +12,18 @@ import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
 import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
 import Nomenclature4 from '../Exercices/Nomenclature/Nomenclature4';
 
-export default function NiveauxPage({ globalElo, setGlobalElo }) {
+export default function NiveauxPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const exercice = location.state.exercice;
     const niveau = location.state.niveau;
     const index = location.state.index;
     const [exerciceElo, setExerciceElo] = useState(null);
+    const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
     // console.log(exercice);
     // console.log(niveau);
     // console.log(index);
+
     useEffect(() => {
         async function setActualExerciceElo() {
             try {
@@ -59,8 +63,8 @@ export default function NiveauxPage({ globalElo, setGlobalElo }) {
             1: <Nomenclature
                 pointsGagnes="5"
                 pointsPerdus="2"
-                globalElo={globalElo} setGlobalElo={setGlobalElo}
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
+                updateGlobalElo={updateGlobalElo}
             />,
             2: <Nomenclature2 />,
             3: <Nomenclature3 />,

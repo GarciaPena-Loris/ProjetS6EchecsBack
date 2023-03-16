@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getActualGlobalElo } from "../Utils/utils";
+import { GlobalContext } from '../GlobalContext/GlobalContext';
+import { decodeToken } from "react-jwt";
 import "./Connexion.css"
 
 
-export default function Connexion({ setGlobalElo }) {
+export default function Connexion() {
     const navigate = useNavigate();
 
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
+    const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
+
 
     const handleConnexion = async (event) => {
         event.preventDefault();
@@ -28,14 +31,30 @@ export default function Connexion({ setGlobalElo }) {
             data: formData
         };
         axios(config)
-            .then(function (response) {
+            .then(async function (response) {
                 // Pour stocker le token dans la variable de session
                 sessionStorage.setItem('token', response.data.token);
-                const globalElo = getActualGlobalElo();
-                sessionStorage.setItem('globalElo', globalElo);
-                setGlobalElo(globalElo);
-
-                navigate('/selectionExercices');
+                const decoded = decodeToken(sessionStorage.token);
+                const name = decoded.name;
+                // get elo
+                var config = {
+                    method: 'get',
+                    maxBodyLength: Infinity,
+                    url: `http://localhost:3001/users/globalElo/${name}`,
+                    headers: {
+                        'Authorization': `Bearer ${response.data.token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                };
+                axios(config)
+                    .then(function (response) {
+                        console.log("🚀 ~ file: utils.js:23 ~ response.data.global_elo:", response.data.global_elo)
+                        updateGlobalElo(response.data.global_elo);
+                        navigate('/selectionExercices');
+                    })
+                    .catch(function (error) {
+                        console.log(error.response);
+                    });
             })
             .catch(function (error) {
                 if (error.response) {

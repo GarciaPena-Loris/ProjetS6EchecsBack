@@ -6,6 +6,7 @@ import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
 
+
 class Nomenclature extends React.Component {
   constructor(props) {
     super(props);
@@ -114,17 +115,16 @@ class Nomenclature extends React.Component {
         showCorrect: false,
         showIncorrect: true
       });
-      setTimeout(() => {
-        this.setState({ showCorrect: false, showIncorrect: false });
-      }, 8000); // Efface le message après 3 secondes
-
     }
+    setTimeout(() => {
+      this.setState({ showCorrect: false, showIncorrect: false });
+    }, 8000); // Efface le message après 3 secondes
     setTimeout(() => {
       this.handleUpdate();
     }, 2000);
   }
 
-  handleUpdate = async () => {
+  handleUpdate = () => {
     try {
       // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
       const CryptoJS = require("crypto-js");
@@ -148,10 +148,10 @@ class Nomenclature extends React.Component {
       axios(config)
         .then((response) => {
           // maj de l'elo
-          this.props.setGlobalElo(response.data.newEloUser);
           this.props.setExerciceElo(response.data.newEloExercise);
-          
-          // maj de l'elo, affichage nouvelle piece
+          this.props.updateGlobalElo(response.data.newEloUser);
+
+          // affichage nouvelle piece
           this.genererPieceAleatoire();
         })
         .catch((error) => {

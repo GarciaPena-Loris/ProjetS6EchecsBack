@@ -1,14 +1,15 @@
-import { React } from 'react';
+import { React, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GlobalContext  } from '../GlobalContext/GlobalContext';
 import "./Navbar.css"
 
-function Navbar({ globalElo, setGlobalElo }) {
+function Navbar() {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
+    const { globalElo } = useContext(GlobalContext );
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
-        setGlobalElo(null);
         navigate('/');
     };
 
@@ -37,12 +38,9 @@ function Navbar({ globalElo, setGlobalElo }) {
                     </>
                 )}
             </ul>
-            {globalElo !== null ? (
+            {globalElo && (
                 <span className='elo'>{globalElo} points d'élo général</span>
-            ) : (
-                sessionStorage.getItem('globalElo') !== null &&
-                setGlobalElo(sessionStorage.getItem('globalElo')))
-            }
+            )}
         </nav>
     );
 }
