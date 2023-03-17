@@ -287,25 +287,25 @@ class Nomenclature2 extends React.Component {
     //#endregion
 
     // couleur des cases
-    customSquare = ((props) => {
+    customSquare = React.forwardRef((props, ref) => {
         const { children, square, style } = props;
         if (square === this.positionPieceP) {
             return (
-                <div style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
+                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
                     {children}
                 </div>
             );
         }
         else if (square === this.positionPieceM) {
             return (
-                <div style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
+                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
                     {children}
                 </div>
             );
         }
         else {
             return (
-                <div style={{ ...style, position: "relative" }}>
+                <div ref={ref} style={{ ...style, position: "relative" }}>
                     {children}
                 </div>
             );
