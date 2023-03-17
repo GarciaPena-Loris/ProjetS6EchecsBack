@@ -312,8 +312,6 @@ class Nomenclature2 extends React.Component {
         }
     });
 
-
-
     handleInputChange = (event) => {
         this.setState({ inputValue: event.target.value });
     };
@@ -416,11 +414,8 @@ class Nomenclature2 extends React.Component {
                     </div>
                     <div className="elements-droite">
                         <i className="consigne">
-                            Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}>
-                                {this.nomPiece}
-                            </span> mange la reine en <span style={{ color: `${this.couleurM}` }}>
-                                {this.positionPieceM}
-                            </span>
+                        Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                            </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
                         </i>
                         <input className="reponse-input"
                             type="text"

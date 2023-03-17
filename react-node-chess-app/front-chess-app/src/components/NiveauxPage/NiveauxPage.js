@@ -41,7 +41,6 @@ export default function NiveauxPage() {
                 };
                 axios(config)
                     .then(function (response) {
-                        console.log("response.data :", response.data.exerciceElo);
                         setExerciceElo(response.data.exerciceElo);
                     })
                     .catch(function (error) {
@@ -72,8 +71,17 @@ export default function NiveauxPage() {
                 pointsPerdus="3"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
-            3: <Nomenclature3 />,
-            4: <Nomenclature4 />,
+            3: <Nomenclature3
+                idLevel={exercice.id}
+                pointsGagnes="10"
+                pointsPerdus="5"
+                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
+                updateGlobalElo={updateGlobalElo} />,
+            4: <Nomenclature4 idLevel={exercice.id}
+                pointsGagnes="10"
+                pointsPerdus="5"
+                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
+                updateGlobalElo={updateGlobalElo} />,
             // etc...
         },
         // etc...
