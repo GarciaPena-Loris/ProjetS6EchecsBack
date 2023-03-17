@@ -1,0 +1,86 @@
+.container-general {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  
+  .jeu {
+    display: flex;
+    width: 100%;
+  }
+  
+  .plateau-gauche {
+    width: 60%;
+    box-sizing: border-box;
+  }
+  
+  .elements-droite {
+    width: 40%;
+    background-color: #282522;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  
+  .consigne {
+    margin-top: 2%;
+    padding: 0 2%;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--couleur-theme);
+    margin-bottom: 1%;
+  }
+  
+  .reponse-input {
+    margin-top: 90%;
+    padding: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+    width: 80%;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+  }
+  
+  .reponse-input[type="text"]:focus {
+    border-color: var(--couleur-theme);
+  }
+  
+  
+  .actual-bouton {
+    width: 30%;
+    height: 5%;
+    margin-top: 3%;
+  }
+  
+  
+  .response {
+    margin-top: 5%;
+    width: 80%;
+    font-family: var(--police-ecriture);
+    color: white;
+    font-size: 1.1em;
+    padding: 5px 15px;
+    border-radius: 2px;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+  }
+  
+  .show {
+    opacity: 1;
+  }
+  
+  
+  .correct-response {
+    background-color: var(--couleur-theme);
+  }
+  
+  .incorrect-response {
+    background-color: var(--couleur-erreur);
+  
+  }
