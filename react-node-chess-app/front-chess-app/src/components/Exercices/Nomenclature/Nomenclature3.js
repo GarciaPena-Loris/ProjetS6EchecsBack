@@ -417,8 +417,7 @@ class Nomenclature3 extends React.Component {
         setTimeout(() => {
             this.handleUpdate();
         }, 2000);
-
-    }
+    };
 
     handleUpdate = () => {
         try {
