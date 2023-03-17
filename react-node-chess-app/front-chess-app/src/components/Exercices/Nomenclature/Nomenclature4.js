@@ -473,7 +473,7 @@ class Nomenclature4 extends React.Component {
         const { inputValue, chess } = this.state;
 
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagne} points.`;
+            const text = `Bonne réponse ! La réponse est bien ${inputValue}, vous gagné ${this.pointsGagne} points.`;
             this.points = this.pointsGagne;
             this.setState({
                 correctMessage: text,
@@ -483,16 +483,15 @@ class Nomenclature4 extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
-            chess.move(inputValue);
         }
         else {
             let text = '';
             if (this.props.exerciceElo <= 0) {
-                text = `Mauvaise réponse ! Le coup n'est pas '${inputValue}', vous perdez 0 points.`;
+                text = `Mauvaise réponse ! La réponse n'est pas '${inputValue}', vous perdez 0 points.`;
                 this.points = 0;
             }
             else {
-                text = `Mauvaise réponse ! Le coup n'est pas '${inputValue}', vous perdez ${this.pointsPerdu} points.`;
+                text = `Mauvaise réponse ! La réponse n'est pas '${inputValue}', vous perdez ${this.pointsPerdu} points.`;
                 this.points = -(this.pointsPerdu);
             }
             this.setState({
