@@ -60,24 +60,25 @@ export default function NiveauxPage() {
     const niveaux = {
         1: {
             1: <Nomenclature
-                idLevel={exercice.id}
+                idExercice={exercice.id}
                 pointsGagnes="5"
                 pointsPerdus="2"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
             2: <Nomenclature2
-                idLevel={exercice.id}
+                idExercice={exercice.id}
                 pointsGagnes="8"
                 pointsPerdus="3"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
             3: <Nomenclature3
-                idLevel={exercice.id}
+                idExercice={exercice.id}
                 pointsGagnes="10"
                 pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
-            4: <Nomenclature4 idLevel={exercice.id}
+            4: <Nomenclature4 
+                idExercice={exercice.id}
                 pointsGagnes="10"
                 pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}

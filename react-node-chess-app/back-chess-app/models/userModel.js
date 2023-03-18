@@ -101,6 +101,17 @@ class User {
         });
     }
 
+    static async changeTo0EloUser(name) {
+        return new Promise((resolve, reject) => {
+            connection.query("UPDATE users SET global_elo = 0 WHERE name = ?", [name], (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(result.affectedRows);
+            });
+        });
+    }
+
 }
 
 module.exports = User;

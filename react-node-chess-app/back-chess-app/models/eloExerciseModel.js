@@ -67,6 +67,19 @@ class EloExercise {
         });
     }
 
+    static async updateTo0EloExercise(id_exercise, name_user) {
+        return new Promise((resolve, reject) => {
+            connection.query(
+                "UPDATE elo_exercise SET elo = 0 WHERE name_user = ? AND id_exercise = ?", [name_user, id_exercise], (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result.affectedRows);
+                }
+            );
+        });
+    }
+
 }
 
 module.exports = EloExercise;

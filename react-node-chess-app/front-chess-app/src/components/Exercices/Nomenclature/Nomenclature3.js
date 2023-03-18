@@ -28,7 +28,7 @@ class Nomenclature3 extends React.Component {
 
         this.nomPiece = '';
         this.pos = '';
-        this.idLevel = props.idLevel;
+        this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
 
@@ -393,15 +393,8 @@ class Nomenclature3 extends React.Component {
             chess.move(inputValue);
         }
         else {
-            let text = '';
-            if (this.props.exerciceElo <= 0) {
-                text = `Mauvaise réponse ! La réponse n'est pas '${inputValue}', vous perdez 0 points.`;
-                this.points = 0;
-            }
-            else {
-                text = `Mauvaise réponse ! La réponse n'est pas '${inputValue}', vous perdez ${this.pointsPerdu} points.`;
-                this.points = -(this.pointsPerdu);
-            }
+            let text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 incorrectMessage: text,
                 correctMessage: '',
@@ -423,7 +416,7 @@ class Nomenclature3 extends React.Component {
         try {
             // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
             const CryptoJS = require("crypto-js");
-            const message = this.idLevel + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
+            const message = this.idExercice + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
             const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
             const formData = {
@@ -433,7 +426,7 @@ class Nomenclature3 extends React.Component {
             var config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: `http://localhost:3001/unlockLevel/save/${this.name}/${this.idLevel}`,
+                url: `http://localhost:3001/unlockLevel/save/${this.name}/${this.idExercice}`,
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.token}`,
                     'Content-Type': 'application/x-www-form-urlencoded'
