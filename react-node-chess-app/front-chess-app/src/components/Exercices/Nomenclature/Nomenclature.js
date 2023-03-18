@@ -22,6 +22,8 @@ class Nomenclature extends React.Component {
     this.pointsPerdu = props.pointsPerdus;
     this.points = 0;
     this.idLevel = props.idLevel;
+    this.position = '';
+    this.couleurCase = "#7e9d4e";
     this.usePieceString = [];
 
     // decode token
@@ -40,14 +42,33 @@ class Nomenclature extends React.Component {
     let color = colors[Math.floor(Math.random() * colors.length)];
     const pieces = ['P', 'N', 'B', 'R', 'Q', 'K'];
     let piece = pieces[Math.floor(Math.random() * pieces.length)];
-    let position = `${alpha[colonneP - 1]}${ligneP}`;
+    this.position = `${alpha[colonneP - 1]}${ligneP}`;
 
-    this.usePieceString.push(piece + position);
-    this.usePieceString.push(piece.toLowerCase() + position);
-    this.state.chess.put({ type: piece, color: color }, position); // Place la pièce sur le plateau
+    this.usePieceString.push(piece + this.position);
+    this.usePieceString.push(piece.toLowerCase() + this.position);
+    this.state.chess.put({ type: piece, color: color }, this.position); // Place la pièce sur le plateau
 
 
   };
+
+  // couleur des cases
+  customSquare = React.forwardRef((props, ref) => {
+    const { children, square, style } = props;
+    if (square === this.position) {
+      return (
+        <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurCase }}> {/* pièce qui mange */}
+          {children}
+        </div>
+      );
+    }
+    else {
+      return (
+        <div ref={ref} style={{ ...style, position: "relative" }}>
+          {children}
+        </div>
+      );
+    }
+  });
 
   handleInputChange = (event) => {
     this.setState({ inputValue: event.target.value });
@@ -139,6 +160,7 @@ class Nomenclature extends React.Component {
             <Chessboard
               position={this.state.chess.fen()}
               arePiecesDraggable={false}
+              customSquare={this.customSquare}
             />
           </div>
           <div className="elements-droite">
