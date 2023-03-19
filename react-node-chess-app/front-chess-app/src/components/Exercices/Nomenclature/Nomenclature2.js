@@ -7,6 +7,18 @@ import { Chess } from 'chess.js'
 import axios from "axios";
 import { decodeToken } from "react-jwt";
 
+import { Button, ButtonGroup, Grid, Stack, createTheme, ThemeProvider } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faChessKing as whiteKing,
+    faChessQueen as whiteQueen,
+    faChessRook as whiteRook,
+    faChessBishop as whiteBishop,
+    faChessKnight as whiteKnight,
+    faChessPawn as whitePawn
+} from '@fortawesome/free-regular-svg-icons'
+
+
 
 class Nomenclature2 extends React.Component {
     constructor(props) {
@@ -20,8 +32,8 @@ class Nomenclature2 extends React.Component {
             chess: new Chess()
         };
         // validation réponse
-        this.pointsGagne = props.pointsGagnes;
-        this.pointsPerdu = props.pointsPerdus;
+        this.pointsGagnes = props.pointsGagnes;
+        this.pointsPerdus = props.pointsPerdus;
         this.points = 0;
         // decode token
         const decoded = decodeToken(sessionStorage.token);
@@ -316,41 +328,44 @@ class Nomenclature2 extends React.Component {
         this.setState({ inputValue: event.target.value });
     };
 
-    handleClick = () => {
-        const { inputValue, chess } = this.state;
+    handleClearButtonClick = () => {
+        this.setState({ inputValue: '' });
+    };
 
+    handlePiece = (event) => {
+        this.setState({ inputValue: this.state.inputValue + event });
+    };
+
+    handleClick = () => {
+        const { inputValue } = this.state;
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            const text = `Bonne réponse ! La réponse est bien ${inputValue}, vous gagné ${this.pointsGagne} points.`;
-            this.points = this.pointsGagne;
+            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            this.points = this.pointsGagnes;
             this.setState({
-                correctMessage: text,
-                incorrectMessage: '',
+                message: text,
                 inputValue: '',
-                chess: chess,
                 showCorrect: true,
                 showIncorrect: false
             });
-            chess.move(inputValue);
         }
         else {
             let text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
-                incorrectMessage: text,
-                correctMessage: '',
+                message: text,
                 inputValue: '',
-                chess: chess,
                 showCorrect: false,
                 showIncorrect: true
             });
         }
         setTimeout(() => {
-            this.setState({ showCorrect: false, showIncorrect: false });
-        }, 8000); // Efface le message après 3 secondes
-        setTimeout(() => {
-            this.handleUpdate();
-        }, 2000);
+            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
 
+            if (this.points !== 0)
+                this.handleUpdate();
+            else
+                this.genererPieceAleatoire();
+        }, 3000); // Efface le message après 3 secondes
     }
 
     handleUpdate = () => {
@@ -358,6 +373,7 @@ class Nomenclature2 extends React.Component {
             // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
             const CryptoJS = require("crypto-js");
             const message = this.idExercice + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
+            console.log("🚀 ~ file: Nomenclature2.js:376 ~ Nomenclature2 ~ message:", message)
             const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
             const formData = {
@@ -394,6 +410,44 @@ class Nomenclature2 extends React.Component {
         }
     }
 
+    styles = {
+        button: {
+            textTransform: 'none',
+            fontWeight: 'bold',
+        },
+    };
+
+    piecesBlanches = [
+        <Button key="pion" onClick={() => this.handlePiece("P")}><FontAwesomeIcon icon={whitePawn} size="xl" /></Button>,
+        <Button key="tour" onClick={() => this.handlePiece("R")}><FontAwesomeIcon icon={whiteRook} size="xl" /></Button>,
+        <Button key="fou" onClick={() => this.handlePiece("B")}><FontAwesomeIcon icon={whiteBishop} size="xl" /></Button>,
+        <Button key="cavalier" onClick={() => this.handlePiece("N")}><FontAwesomeIcon icon={whiteKnight} size="xl" /></Button>,
+        <Button key="reine" onClick={() => this.handlePiece("Q")}><FontAwesomeIcon icon={whiteQueen} size="xl" /></Button>,
+        <Button key="roi" onClick={() => this.handlePiece("K")}><FontAwesomeIcon icon={whiteKing} size="xl" /></Button>,
+    ];
+    lignes = [
+        "8", "7", "6", "5", "4", "3", "2", "1"
+    ];
+
+    colonnes = [
+        "a", "b", "c", "d", "e", "f", "g", "h"
+    ]
+    custom = [
+        "x", "O-O", "O-O-O", "=", "e.p."
+    ]
+
+    theme = createTheme({
+        palette: {
+            primary: {
+                main: '#b58863',
+            },
+            secondary: {
+                main: '#f0d9b5',
+            },
+        },
+    });
+
+
     render() {
         return (
             <div className="container-general">
@@ -410,27 +464,69 @@ class Nomenclature2 extends React.Component {
                             Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
                             </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
                         </i>
-                        <input className="reponse-input"
-                            type="text"
-                            placeholder="Entrez la position..."
-                            value={this.state.inputValue}
-                            onChange={this.handleInputChange} />
+                        <div className="boutons">
+                            <ThemeProvider theme={this.theme}>
+                                <Grid container spacing={1} direction="column" justifyContent="space-between">
+                                    <Grid item xs={12} sm={6} md={3} container alignItems="center" justifyContent="space-between">
+                                        <ButtonGroup orientation="vertical" variant="contained" >
+                                            {this.lignes.map((line, index) => {
+                                                const colorClass = index % 2 === 0 ? "secondary" : "primary";
+                                                return (
+                                                    <Button key={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
+                                                        {line}
+                                                    </Button>
+                                                );
+                                            })}
+                                        </ButtonGroup>
+                                        <ButtonGroup size="large" orientation="vertical" color="secondary" variant="contained" >
+                                            {this.piecesBlanches}
+                                        </ButtonGroup>
+                                        <ButtonGroup size="large" orientation="vertical" color="secondary" variant="contained" >
+                                            {this.custom.map((line, index) => {
+                                                return (
+                                                    <Button key={line} sx={this.styles.button} variant="contained" onClick={() => this.handlePiece(line)}>
+                                                        {line}
+                                                    </Button>
+                                                );
+                                            })}
+                                        </ButtonGroup>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={3} container direction="column" alignItems="center" justifyContent="flex-start" >
+                                        <Grid item>
+                                            <ButtonGroup variant="contained" color="secondary">
+                                                {this.colonnes.map((line, index) => {
+                                                    const colorClass = index % 2 === 0 ? "primary" : "secondary";
+                                                    return (
+                                                        <Button key={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
+                                                            {line}
+                                                        </Button>
+                                                    );
+                                                })}
+                                            </ButtonGroup>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </ThemeProvider>
+                        </div>
+                        <Stack spacing={2} direction="row" alignItems="center">
+                            <input className="reponse-input"
+                                type="text"
+                                placeholder="Entrez la position..."
+                                value={this.state.inputValue}
+                                onChange={this.handleInputChange} />
+                            <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
+                                ✕
+                            </Button>
+                        </Stack>
                         <button className="valider-bouton actual-bouton"
                             onClick={this.handleClick}
                             {...(this.state.inputValue.length < 3 && { disabled: true })}
                         >
                             Valider
                         </button>
-                        {this.state.correctMessage &&
-                            <div className={`response correct-response ${this.state.showCorrect ? 'show' : ''}`}>
-                                {this.state.correctMessage}
-                            </div>
-                        }
-                        {this.state.incorrectMessage &&
-                            <div className={`response incorrect-response ${this.state.showIncorrect ? 'show' : ''}`}>
-                                {this.state.incorrectMessage}
-                            </div>
-                        }
+                        <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
+                            {this.state.message}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -20,8 +20,8 @@ class Nomenclature4 extends React.Component {
             chess: new Chess()
         };
         // validation réponse
-        this.pointsGagne = props.pointsGagnes;
-        this.pointsPerdu = props.pointsPerdus;
+        this.pointsGagnes = props.pointsGagnes;
+        this.pointsPerdus = props.pointsPerdus;
         this.points = 0;
         // decode token
         const decoded = decodeToken(sessionStorage.token);

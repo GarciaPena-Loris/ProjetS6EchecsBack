@@ -5,10 +5,17 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
+import { Button, ButtonGroup, Grid, Stack, createTheme, ThemeProvider } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChessKing as whiteKing,
+  faChessQueen as whiteQueen,
+  faChessRook as whiteRook,
+  faChessBishop as whiteBishop,
+  faChessKnight as whiteKnight,
+  faChessPawn as whitePawn
+} from '@fortawesome/free-regular-svg-icons'
+
 
 class Nomenclature extends React.Component {
   constructor(props) {
@@ -115,7 +122,11 @@ class Nomenclature extends React.Component {
     }
     setTimeout(() => {
       this.setState({ showCorrect: false, showIncorrect: false, message: '' });
-      this.handleUpdate();
+
+      if (this.points !== 0)
+        this.handleUpdate();
+      else
+        this.genererPieceAleatoire();
     }, 3000); // Efface le message après 3 secondes
   }
 
@@ -151,40 +162,61 @@ class Nomenclature extends React.Component {
         })
         .catch((error) => {
           console.log(error);
+
+          // affichage nouvelle piece
+          this.genererPieceAleatoire();
         });
     } catch (error) {
       console.error(error);
     }
   }
 
-  pieces = [
-    <Button key="pion" onClick={() => this.handlePiece("p")}>p</Button>,
-    <Button key="tour" onClick={() => this.handlePiece("r")}>r</Button>,
-    <Button key="fou" onClick={() => this.handlePiece("b")}>b</Button>,
-    <Button key="cavalier" onClick={() => this.handlePiece("n")}>n</Button>,
-    <Button key="reine" onClick={() => this.handlePiece("q")}>q</Button>,
-    <Button key="roi" onClick={() => this.handlePiece("k")}>k</Button>,
-  ];
+  styles = {
+    button: {
+      textTransform: 'none',
+      fontWeight: 'bold',
+    },
+  };
+
+  piecesBlanchesNom = [
+    "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
+  ]
+  piecesBlanchesIcon = [
+    whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
+  ]
+  piecesBlanchesInput = [
+    "P", "R", "B", "N", "Q", "K"
+  ]
   lignes = [
-    <Button key="huit" onClick={() => this.handlePiece("8")}>8</Button>,
-    <Button key="sept" onClick={() => this.handlePiece("7")}>7</Button>,
-    <Button key="six" onClick={() => this.handlePiece("6")}>6</Button>,
-    <Button key="cinq" onClick={() => this.handlePiece("5")}>5</Button>,
-    <Button key="quatre" onClick={() => this.handlePiece("4")}>4</Button>,
-    <Button key="trois" onClick={() => this.handlePiece("3")}>3</Button>,
-    <Button key="deux" onClick={() => this.handlePiece("2")}>2</Button>,
-    <Button key="un" onClick={() => this.handlePiece("1")}>1</Button>,
+    "8", "7", "6", "5", "4", "3", "2", "1"
   ];
+
   colonnes = [
-    <Button key="h" onClick={() => this.handlePiece("h")}>h</Button>,
-    <Button key="g" onClick={() => this.handlePiece("g")}>g</Button>,
-    <Button key="f" onClick={() => this.handlePiece("f")}>f</Button>,
-    <Button key="e" onClick={() => this.handlePiece("e")}>e</Button>,
-    <Button key="d" onClick={() => this.handlePiece("d")}>d</Button>,
-    <Button key="c" onClick={() => this.handlePiece("c")}>c</Button>,
-    <Button key="b" onClick={() => this.handlePiece("b")}>b</Button>,
-    <Button key="a" onClick={() => this.handlePiece("a")}>a</Button>,
-  ];
+    "a", "b", "c", "d", "e", "f", "g", "h"
+  ]
+  custom = [
+    "x", "O-O", "O-O-O", "=", "e.p.", "+"
+    // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
+    //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
+  ]
+  customCoup = [
+    "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+  ]
+
+  theme = createTheme({
+    palette: {
+      primary: {
+        main: '#b58863',
+      },
+      secondary: {
+        main: '#f0d9b5',
+      },
+      info: {
+        main: '#ffeec0',
+      },
+    },
+  });
+
 
   render() {
     return (
@@ -202,53 +234,76 @@ class Nomenclature extends React.Component {
               Ecrivez la position de la pièce
             </i>
             <div className="boutons">
-              <Stack className="boutons"
-                spacing={{ xs: 1, sm: 2, md: 4 }}
-                direction="row"
-                alignItems="flex-start"
-                divider={<Divider orientation="vertical" flexItem />}
-              >
-                <ButtonGroup
-                  orientation="vertical"
-                  color="success"
-                  variant="contained"
-                >
-                  {this.pieces}
-                </ButtonGroup>
-                <ButtonGroup
-                  orientation="vertical"
-                  color="success"
-                  variant="contained"
-                >
-                  {this.colonnes}
-                </ButtonGroup>
-                <ButtonGroup
-                  orientation="vertical"
-                  color="success"
-                  variant="contained"
-                >
-                  {this.lignes}
-                </ButtonGroup>
+              <ThemeProvider theme={this.theme}>
+                <Grid container spacing={1} direction="column" justifyContent="space-between">
+                  <Grid container alignItems="center" justifyContent="space-between">
+                    <ButtonGroup orientation="vertical" variant="contained" >
+                      {this.lignes.map((line, index) => {
+                        const colorClass = index % 2 === 0 ? "secondary" : "primary";
+                        return (
+                          <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
+                            {line}
+                          </Button>
+                        );
+                      })}
+                    </ButtonGroup>
+                    <ButtonGroup size="large" orientation="vertical" color="secondary" variant="contained" >
+                      {this.piecesBlanchesIcon.map((line, index) => {
+                        const colorClass = index % 2 === 0 ? "secondary" : "info";
+                        return (
+                          <Button key={line} title={this.piecesBlanchesNom[index]} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(this.piecesBlanchesInput[index])}>
+                            <FontAwesomeIcon icon={line} size="xl" />
+                          </Button>
+                        );
+                      })}
+                    </ButtonGroup>
+                    <ButtonGroup orientation="vertical" color="secondary" variant="contained" >
+                      {this.custom.map((line, index) => {
+                        const colorClass = index % 2 === 0 ? "secondary" : "info";
+                        return (
+                          <Button key={line} title={line} sx={this.styles.button} color={colorClass} variant="contained" onClick={() => this.handlePiece(line)}>
+                            {line}
+                          </Button>
+                        );
+                      })}
+                    </ButtonGroup>
+                  </Grid>
+                  <Grid item container direction="column" alignItems="center" justifyContent="flex-end" >
+                    <Grid item>
+                      <ButtonGroup variant="contained" color="secondary">
+                        {this.colonnes.map((line, index) => {
+                          const colorClass = index % 2 === 0 ? "primary" : "secondary";
+                          return (
+                            <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
+                              {line}
+                            </Button>
+                          );
+                        })}
+                      </ButtonGroup>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </ThemeProvider>
+            </div>
+            <div className="input">
+              <Stack spacing={2} direction="row" alignItems="center">
+                <input className="reponse-input"
+                  type="text"
+                  placeholder="Entrez la position..."
+                  value={this.state.inputValue}
+                  onChange={this.handleInputChange} />
+                <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
+                  ✕
+                </Button>
               </Stack>
 
+              <button className="valider-bouton actual-bouton"
+                onClick={this.handleClick}
+                {...(this.state.inputValue.length < 3 && { disabled: true })}
+              >
+                Valider
+              </button>
             </div>
-            <Stack direction="row" alignItems="center">
-              <input className="reponse-input"
-                type="text"
-                placeholder="Entrez la position..."
-                value={this.state.inputValue}
-                onChange={this.handleInputChange} />
-              <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
-                ✕
-              </Button>
-            </Stack>
-
-            <button className="valider-bouton actual-bouton"
-              onClick={this.handleClick}
-              {...(this.state.inputValue.length < 3 && { disabled: true })}
-            >
-              Valider
-            </button>
             <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
               {this.state.message}
             </div>
