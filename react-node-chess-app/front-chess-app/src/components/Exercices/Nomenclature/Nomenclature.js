@@ -111,7 +111,7 @@ class Nomenclature extends React.Component {
       });
     }
     else {
-      let text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+      let text = `Mauvaise réponse ! La piéce était en ${this.usePieceString[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
       this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
       this.setState({
         message: text,
