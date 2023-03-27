@@ -29,8 +29,81 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 80%;
+  width: 80%
 }
+
+.groupe-butons {
+  display: flex;
+  flex-direction: column;
+}
+
+/* css button custom from  https://www.joshwcomeau.com/animation/3d-button/*/
+.pushable {
+  border: none;
+  border-radius: 12px;
+  padding: 0;
+  margin: 2% 0;
+  cursor: pointer;
+}
+
+.pushable-clair {
+  background: #d6bd91;
+}
+
+.pushable-fonce {
+  background: #8b623e;
+}
+
+.front {
+  display: block;
+  padding: 0.3rem 1rem;
+  border-radius: 12px;
+  font-size: 1vw;
+  background: #b58863;
+  color: rgb(255, 255, 255);
+  transform: translateY(-4px);
+}
+
+.fronts-clair {
+  background: #f0d9b5;
+  color: rgb(53, 53, 53);
+}
+
+.fronts-fonce {
+  background: #b58863;
+  color: rgb(255, 255, 255);
+}
+
+.custom {
+  font-size: 0.8vw;
+}
+
+.pushable:active .front {
+  transform: translateY(-2px);
+}
+
+.pushable:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.front {
+  transition:
+    transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.pushable:hover .front {
+  box-shadow:rgb(230, 199, 152) 0px 0px 0px 2px;
+  transform: translateY(-10px);
+  transition:
+    transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.pushable:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+/* --- */
 
 .input {
   display: flex;
@@ -55,7 +128,6 @@
   border-color: var(--couleur-theme);
 }
 
-
 .actual-bouton {
   width: 30%;
   margin-top: 2%;
@@ -63,13 +135,13 @@
   font-size: 1.2vw;
 }
 
-
 .response {
   width: 80%;
   height: 8%;
   display: flex;
   align-items: center;
   font-family: var(--police-ecriture);
+  font-size: 1vw;
   color: white;
   padding: 5px 15px;
   opacity: 0;
@@ -89,14 +161,25 @@
 @media only screen and (max-width: 1200px) {
   .container-general {
     flex-direction: column;
-    width: 60%;
+    width: 80%;
+  }
+
+  .groupe-butons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .boutons {
+    width: 100%;
     flex-direction: column;
     justify-content: space-between;
     height: 20vh;
     margin: 2% 0;
+  }
+  
+  .pushable .front{
+    font-size: 1.5vw;
   }
 
   .plateau-gauche {
@@ -113,12 +196,8 @@
   }
 }
 
-@media only screen and (max-width: 800px) {
-  .boutons {
-    display: none;
-  }
-
-  .input {
-    margin-top: 5%;
+@media only screen and (max-width: 700px) {
+  .container-general {
+    width: 100%;
   }
 }

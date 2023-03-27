@@ -5,7 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
-import { Button, ButtonGroup, Stack, createTheme, ThemeProvider } from '@mui/material';
+import { Button, Stack, createTheme, ThemeProvider } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChessKing as whiteKing,
@@ -15,7 +15,7 @@ import {
   faChessKnight as whiteKnight,
   faChessPawn as whitePawn
 } from '@fortawesome/free-regular-svg-icons'
-
+import { Howl, Howler } from 'howler';
 
 class Nomenclature extends React.Component {
   constructor(props) {
@@ -39,6 +39,15 @@ class Nomenclature extends React.Component {
     const decoded = decodeToken(sessionStorage.token);
     this.name = decoded.name;
 
+    this.soundHover = new Howl({
+      src: ['/sons/hover.mp3']
+    });
+    this.soundDown = new Howl({
+      src: ['/sons/clicdown.wav']
+    });
+    this.soundUp = new Howl({
+      src: ['/sons/clicup.wav']
+    });
   }
 
   componentDidMount() {
@@ -91,8 +100,20 @@ class Nomenclature extends React.Component {
     this.setState({ inputValue: '' });
   };
 
-  handlePiece = (event) => {
+  handlePieceHover = () => {
+    Howler.volume(0.1);
+    this.soundHover.play();
+  };
+
+  handlePieceUp = (event) => {
+    Howler.volume(0.3);
+    this.soundUp.play();
     this.setState({ inputValue: this.state.inputValue + event });
+  };
+
+  handlePieceDown = (event) => {
+    Howler.volume(0.3);
+    this.soundDown.play();
   };
 
 
@@ -232,46 +253,66 @@ class Nomenclature extends React.Component {
           </i>
           <div className="boutons">
             <ThemeProvider theme={this.theme}>
-              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} size={`${this.props.matches && `large`}`} color="secondary" variant="contained" >
-                {this.piecesBlanchesIcon.map((line, index) => {
-                  const colorClass = index % 2 === 0 ? "secondary" : "info";
+              <div className="groupe-butons" >
+                {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
                   return (
-                    <Button key={this.piecesBlanchesNom[index]} title={this.piecesBlanchesNom[index]} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(this.piecesBlanchesInput[index])}>
-                      <FontAwesomeIcon icon={line} size="xl" />
-                    </Button>
+                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                      title={this.piecesBlanchesNom[index]}
+                      onMouseEnter={() => this.handlePieceHover(line)}
+                      onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
+                      onMouseDown={() => this.handlePieceDown()}>
+                      <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                        <FontAwesomeIcon icon={line} size="l" />
+                      </span>
+                    </button>
                   );
                 })}
-              </ButtonGroup>
-              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} color="secondary" variant="contained">
-                {this.colonnes.map((line, index) => {
-                  const colorClass = index % 2 === 0 ? "primary" : "secondary";
+              </div>
+              <div className="groupe-butons">
+                {this.colonnes.map((line, index) => { // a b c d e f g h
                   return (
-                    <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
-                      {line}
-                    </Button>
+                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                      title={line}
+                      onMouseEnter={() => this.handlePieceHover(line)}
+                      onMouseUp={() => this.handlePieceUp(line)}
+                      onMouseDown={() => this.handlePieceDown()}>
+                      <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                        {line}
+                      </span>
+                    </button>
                   );
                 })}
-              </ButtonGroup>
-              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} variant="contained" >
-                {this.lignes.map((line, index) => {
-                  const colorClass = index % 2 === 0 ? "secondary" : "primary";
+              </div>
+              <div className="groupe-butons" >
+                {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
                   return (
-                    <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
-                      {line}
-                    </Button>
+                    <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
+                      title={line}
+                      onMouseEnter={() => this.handlePieceHover(line)}
+                      onMouseUp={() => this.handlePieceUp(line)}
+                      onMouseDown={() => this.handlePieceDown()}>
+                      <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
+                        {line}
+                      </span>
+                    </button>
                   );
                 })}
-              </ButtonGroup>
-              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} color="secondary" variant="contained" >
-                {this.custom.map((line, index) => {
-                  const colorClass = index % 2 === 0 ? "secondary" : "info";
+              </div>
+              <div className="groupe-butons" >
+                {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
                   return (
-                    <Button key={line} title={this.customCoup[index]} sx={this.styles.button} color={colorClass} variant="contained" onClick={() => this.handlePiece(line)}>
-                      {line}
-                    </Button>
+                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                      title={this.customCoup[index]}
+                      onMouseEnter={() => this.handlePieceHover(line)}
+                      onMouseUp={() => this.handlePieceUp(line)}
+                      onMouseDown={() => this.handlePieceDown()}>
+                      <span className={`front custom ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                        {line}
+                      </span>
+                    </button>
                   );
                 })}
-              </ButtonGroup>
+              </div>
             </ThemeProvider>
           </div>
           <div className="input">
