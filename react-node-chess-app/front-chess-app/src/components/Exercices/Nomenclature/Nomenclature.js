@@ -5,7 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
-import { Button, ButtonGroup, Grid, Stack, createTheme, ThemeProvider } from '@mui/material';
+import { Button, ButtonGroup, Stack, createTheme, ThemeProvider } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChessKing as whiteKing,
@@ -45,8 +45,6 @@ class Nomenclature extends React.Component {
     this.genererPieceAleatoire();
   }
 
-
-
   genererPieceAleatoire = () => {
     const { chess } = this.state;
     const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -63,7 +61,7 @@ class Nomenclature extends React.Component {
     this.usePieceString.push(piece.toLowerCase() + this.position);
     chess.put({ type: piece, color: color }, this.position); // Place la pièce sur le plateau
 
-    this.setState({ chess: this.state.chess });
+    this.setState({ chess: chess });
   };
 
   // couleur des cases
@@ -221,92 +219,82 @@ class Nomenclature extends React.Component {
   render() {
     return (
       <div className="container-general">
-        <div className="jeu">
-          <div className="plateau-gauche">
-            <Chessboard
-              position={this.state.chess.fen()}
-              arePiecesDraggable={false}
-              customSquare={this.customSquare}
-            />
+        <div className="plateau-gauche">
+          <Chessboard
+            position={this.state.chess.fen()}
+            arePiecesDraggable={false}
+            customSquare={this.customSquare}
+          />
+        </div>
+        <div className="elements-droite">
+          <i className="consigne">
+            Ecrivez la position de la pièce
+          </i>
+          <div className="boutons">
+            <ThemeProvider theme={this.theme}>
+              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} size={`${this.props.matches && `large`}`} color="secondary" variant="contained" >
+                {this.piecesBlanchesIcon.map((line, index) => {
+                  const colorClass = index % 2 === 0 ? "secondary" : "info";
+                  return (
+                    <Button key={this.piecesBlanchesNom[index]} title={this.piecesBlanchesNom[index]} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(this.piecesBlanchesInput[index])}>
+                      <FontAwesomeIcon icon={line} size="xl" />
+                    </Button>
+                  );
+                })}
+              </ButtonGroup>
+              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} color="secondary" variant="contained">
+                {this.colonnes.map((line, index) => {
+                  const colorClass = index % 2 === 0 ? "primary" : "secondary";
+                  return (
+                    <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
+                      {line}
+                    </Button>
+                  );
+                })}
+              </ButtonGroup>
+              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} variant="contained" >
+                {this.lignes.map((line, index) => {
+                  const colorClass = index % 2 === 0 ? "secondary" : "primary";
+                  return (
+                    <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
+                      {line}
+                    </Button>
+                  );
+                })}
+              </ButtonGroup>
+              <ButtonGroup orientation={`${this.props.matches ? `vertical` : `horizontal`}`} color="secondary" variant="contained" >
+                {this.custom.map((line, index) => {
+                  const colorClass = index % 2 === 0 ? "secondary" : "info";
+                  return (
+                    <Button key={line} title={this.customCoup[index]} sx={this.styles.button} color={colorClass} variant="contained" onClick={() => this.handlePiece(line)}>
+                      {line}
+                    </Button>
+                  );
+                })}
+              </ButtonGroup>
+            </ThemeProvider>
           </div>
-          <div className="elements-droite">
-            <i className="consigne">
-              Ecrivez la position de la pièce
-            </i>
-            <div className="boutons">
-              <ThemeProvider theme={this.theme}>
-                <Grid container spacing={1} direction="column" justifyContent="space-between">
-                  <Grid container alignItems="center" justifyContent="space-between">
-                    <ButtonGroup orientation="vertical" variant="contained" >
-                      {this.lignes.map((line, index) => {
-                        const colorClass = index % 2 === 0 ? "secondary" : "primary";
-                        return (
-                          <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
-                            {line}
-                          </Button>
-                        );
-                      })}
-                    </ButtonGroup>
-                    <ButtonGroup size="large" orientation="vertical" color="secondary" variant="contained" >
-                      {this.piecesBlanchesIcon.map((line, index) => {
-                        const colorClass = index % 2 === 0 ? "secondary" : "info";
-                        return (
-                          <Button key={line} title={this.piecesBlanchesNom[index]} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(this.piecesBlanchesInput[index])}>
-                            <FontAwesomeIcon icon={line} size="xl" />
-                          </Button>
-                        );
-                      })}
-                    </ButtonGroup>
-                    <ButtonGroup orientation="vertical" color="secondary" variant="contained" >
-                      {this.custom.map((line, index) => {
-                        const colorClass = index % 2 === 0 ? "secondary" : "info";
-                        return (
-                          <Button key={line} title={line} sx={this.styles.button} color={colorClass} variant="contained" onClick={() => this.handlePiece(line)}>
-                            {line}
-                          </Button>
-                        );
-                      })}
-                    </ButtonGroup>
-                  </Grid>
-                  <Grid item container direction="column" alignItems="center" justifyContent="flex-end" >
-                    <Grid item>
-                      <ButtonGroup variant="contained" color="secondary">
-                        {this.colonnes.map((line, index) => {
-                          const colorClass = index % 2 === 0 ? "primary" : "secondary";
-                          return (
-                            <Button key={line} title={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
-                              {line}
-                            </Button>
-                          );
-                        })}
-                      </ButtonGroup>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </ThemeProvider>
-            </div>
-            <div className="input">
-              <Stack spacing={2} direction="row" alignItems="center">
-                <input className="reponse-input"
-                  type="text"
-                  placeholder="Entrez la position..."
-                  value={this.state.inputValue}
-                  onChange={this.handleInputChange} />
-                <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
-                  ✕
-                </Button>
-              </Stack>
+          <div className="input">
+            <Stack spacing={2} direction="row" alignItems="center">
+              <input className="reponse-input"
+                type="text"
+                placeholder="Entrez la position..."
+                value={this.state.inputValue}
+                onChange={this.handleInputChange} />
+              <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
+                ✕
+              </Button>
+            </Stack>
 
-              <button className="valider-bouton actual-bouton"
-                onClick={this.handleClick}
-                {...(this.state.inputValue.length < 3 && { disabled: true })}
-              >
-                Valider
-              </button>
-            </div>
-            <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
-              {this.state.message}
-            </div>
+            <button className="valider-bouton actual-bouton"
+              onClick={this.handleClick}
+              {...(this.state.inputValue.length < 3 && { disabled: true })}
+            >
+              Valider
+            </button>
+          </div>
+          <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
+            {this.state.message}
           </div>
         </div>
       </div>

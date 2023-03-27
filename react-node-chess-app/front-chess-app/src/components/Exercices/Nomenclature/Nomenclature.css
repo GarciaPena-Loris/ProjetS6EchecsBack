@@ -1,14 +1,5 @@
 .container-general {
   display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-
-.jeu {
-  display: flex;
   width: 100%;
 }
 
@@ -22,16 +13,23 @@
   background-color: #282522;
   display: flex;
   flex-direction: column;
-  justify-content: space-around; 
+  justify-content: space-around;
   align-items: center;
 }
 
 .consigne {
   margin-top: 2%;
   padding: 0 2%;
-  font-size: 1.5em;
+  font-size: 1.5vw;
   font-weight: bold;
   color: var(--couleur-theme);
+}
+
+.boutons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 80%;
 }
 
 .input {
@@ -45,7 +43,7 @@
 .reponse-input[type="text"] {
   padding: 10px;
   font-family: 'Roboto', sans-serif;
-  font-size: 20px;
+  font-size: 1.5vw;
   border: 3px solid #ccc;
   border-radius: 5px;
   width: 80%;
@@ -62,6 +60,7 @@
   width: 30%;
   margin-top: 2%;
   padding: 2% 0;
+  font-size: 1.2vw;
 }
 
 
@@ -72,7 +71,6 @@
   align-items: center;
   font-family: var(--police-ecriture);
   color: white;
-  font-size: 1.1em;
   padding: 5px 15px;
   opacity: 0;
   background-color: var(--couleur-theme);
@@ -85,4 +83,42 @@
 
 .incorrect {
   background-color: var(--couleur-erreur);
+}
+
+
+@media only screen and (max-width: 1200px) {
+  .container-general {
+    flex-direction: column;
+    width: 60%;
+  }
+
+  .boutons {
+    flex-direction: column;
+    justify-content: space-between;
+    height: 20vh;
+    margin: 2% 0;
+  }
+
+  .plateau-gauche {
+    width: 100%;
+  }
+
+  .elements-droite {
+    width: 100%;
+  }
+
+  .actual-bouton {
+    width: 30%;
+    margin: 5% 0;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .boutons {
+    display: none;
+  }
+
+  .input {
+    margin-top: 5%;
+  }
 }

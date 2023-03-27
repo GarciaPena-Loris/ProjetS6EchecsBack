@@ -2,6 +2,7 @@ import { React, useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from "axios";
 
 import "./NiveauxPage.css"
@@ -20,6 +21,7 @@ export default function NiveauxPage() {
     const index = location.state.index;
     const [exerciceElo, setExerciceElo] = useState(null);
     const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
+    const matches = useMediaQuery("(min-width:1200px)");
     // console.log(exercice);
     // console.log(niveau);
     // console.log(index);
@@ -64,7 +66,8 @@ export default function NiveauxPage() {
                 pointsGagnes="5"
                 pointsPerdus="2"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo} />,
+                updateGlobalElo={updateGlobalElo}
+                matches={matches} />,
             2: <Nomenclature2
                 idExercice={exercice.id}
                 pointsGagnes="8"
@@ -77,7 +80,7 @@ export default function NiveauxPage() {
                 pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
-            4: <Nomenclature4 
+            4: <Nomenclature4
                 idExercice={exercice.id}
                 pointsGagnes="10"
                 pointsPerdus="5"
