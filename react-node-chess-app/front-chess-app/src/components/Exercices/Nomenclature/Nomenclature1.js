@@ -5,7 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
-import { Button, Stack, createTheme, ThemeProvider } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChessKing as whiteKing,
@@ -111,13 +111,15 @@ class Nomenclature extends React.Component {
     this.setState({ inputValue: this.state.inputValue + event });
   };
 
-  handlePieceDown = (event) => {
+  handlePieceDown = () => {
     Howler.volume(0.3);
     this.soundDown.play();
   };
 
 
   handleClick = () => {
+    Howler.volume(0.3);
+    this.soundUp.play();
     const { inputValue } = this.state;
     if (this.usePieceString.includes(inputValue)) {
       const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
@@ -190,13 +192,6 @@ class Nomenclature extends React.Component {
     }
   }
 
-  styles = {
-    button: {
-      textTransform: 'none',
-      fontWeight: 'bold',
-    },
-  };
-
   piecesBlanchesNom = [
     "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
   ]
@@ -222,26 +217,12 @@ class Nomenclature extends React.Component {
     "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
   ]
 
-  theme = createTheme({
-    palette: {
-      primary: {
-        main: '#b58863',
-      },
-      secondary: {
-        main: '#f0d9b5',
-      },
-      info: {
-        main: '#ffeec0',
-      },
-    },
-  });
-
-
   render() {
     return (
       <div className="container-general">
         <div className="plateau-gauche">
           <Chessboard
+            key="board"
             position={this.state.chess.fen()}
             arePiecesDraggable={false}
             customSquare={this.customSquare}
@@ -252,86 +233,93 @@ class Nomenclature extends React.Component {
             Ecrivez la position de la pièce
           </i>
           <div className="boutons">
-            <ThemeProvider theme={this.theme}>
-              <div className="groupe-butons" >
-                {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
-                  return (
-                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                      title={this.piecesBlanchesNom[index]}
-                      onMouseEnter={() => this.handlePieceHover(line)}
-                      onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
-                      onMouseDown={() => this.handlePieceDown()}>
-                      <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                        <FontAwesomeIcon icon={line} size="l" />
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="groupe-butons">
-                {this.colonnes.map((line, index) => { // a b c d e f g h
-                  return (
-                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                      title={line}
-                      onMouseEnter={() => this.handlePieceHover(line)}
-                      onMouseUp={() => this.handlePieceUp(line)}
-                      onMouseDown={() => this.handlePieceDown()}>
-                      <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                        {line}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="groupe-butons" >
-                {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
-                  return (
-                    <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
-                      title={line}
-                      onMouseEnter={() => this.handlePieceHover(line)}
-                      onMouseUp={() => this.handlePieceUp(line)}
-                      onMouseDown={() => this.handlePieceDown()}>
-                      <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
-                        {line}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="groupe-butons" >
-                {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
-                  return (
-                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                      title={this.customCoup[index]}
-                      onMouseEnter={() => this.handlePieceHover(line)}
-                      onMouseUp={() => this.handlePieceUp(line)}
-                      onMouseDown={() => this.handlePieceDown()}>
-                      <span className={`front custom ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                        {line}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </ThemeProvider>
+            <div className="groupe-butons" >
+              {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
+                return (
+                  <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                    key={this.piecesBlanchesNom[index]}
+                    title={this.piecesBlanchesNom[index]}
+                    onMouseEnter={() => this.handlePieceHover()}
+                    onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
+                    onMouseDown={() => this.handlePieceDown()}>
+                    <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                      <FontAwesomeIcon icon={line} />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="groupe-butons">
+              {this.colonnes.map((line, index) => { // a b c d e f g h
+                return (
+                  <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                    key={line}
+                    title={line}
+                    onMouseEnter={() => this.handlePieceHover()}
+                    onMouseUp={() => this.handlePieceUp(line)}
+                    onMouseDown={() => this.handlePieceDown()}>
+                    <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                      {line}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="groupe-butons" >
+              {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                return (
+                  <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
+                    key={line}
+                    title={line}
+                    onMouseEnter={() => this.handlePieceHover()}
+                    onMouseUp={() => this.handlePieceUp(line)}
+                    onMouseDown={() => this.handlePieceDown()}>
+                    <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
+                      {line}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="groupe-butons" >
+              {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
+                return (
+                  <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                    key={line}
+                    title={this.customCoup[index]}
+                    onMouseEnter={() => this.handlePieceHover()}
+                    onMouseUp={() => this.handlePieceUp(line)}
+                    onMouseDown={() => this.handlePieceDown()}>
+                    <span className={`front custom ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                      {line}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <div className="input">
-            <Stack spacing={2} direction="row" alignItems="center">
+            <Stack key="stack" spacing={2} direction="row" alignItems="center">
               <input className="reponse-input"
                 type="text"
                 placeholder="Entrez la position..."
                 value={this.state.inputValue}
                 onChange={this.handleInputChange} />
-              <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
+              <Button key="valider" variant="contained" color="error" onClick={this.handleClearButtonClick}>
                 ✕
               </Button>
             </Stack>
 
-            <button className="valider-bouton actual-bouton"
-              onClick={this.handleClick}
+            <button className="bouton-3D"
+              key="valider"
+              title="Valider"
               {...(this.state.inputValue.length < 3 && { disabled: true })}
-            >
-              Valider
+              onMouseEnter={() => this.handlePieceHover()}
+              onMouseUp={this.handleClick}
+              onMouseDown={() => this.handlePieceDown()}>
+              <span className="texte-3D">
+                Valider
+              </span>
             </button>
           </div>
           <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>

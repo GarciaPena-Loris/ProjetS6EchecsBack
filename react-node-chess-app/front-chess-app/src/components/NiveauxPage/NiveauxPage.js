@@ -8,7 +8,7 @@ import axios from "axios";
 import "./NiveauxPage.css"
 
 // imporation des composants de chaque niveau
-import Nomenclature from '../Exercices/Nomenclature/Nomenclature';
+import Nomenclature1 from '../Exercices/Nomenclature/Nomenclature1';
 import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
 import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
 import Nomenclature4 from '../Exercices/Nomenclature/Nomenclature4';
@@ -61,7 +61,7 @@ export default function NiveauxPage() {
     // Créez une structure de données pour stocker les composants de chaque niveau
     const niveaux = {
         1: {
-            1: <Nomenclature
+            1: <Nomenclature1
                 idExercice={exercice.id}
                 pointsGagnes="5"
                 pointsPerdus="2"
@@ -97,7 +97,11 @@ export default function NiveauxPage() {
     return (
         <div className="level-container">
             <div className="level-header">
-                <button className="valider-bouton back-button" onClick={() => navigate(-1)}>← Retour</button> {/* Retourne à la page précédente */}
+                <button className="bouton-3D" onClick={() => navigate(-1)}>
+                    <span className="texte-3D"> {/* Retourne à la page précédente */}
+                        ← Retour
+                    </span>
+                </button>
                 <div className="level-label">Exercice <i>{exercice.name}</i> : <i>niveau {index}</i></div>
                 <span className="level-elo">{exerciceElo !== null && exerciceElo} points d'élo pour cet <b>exercice</b></span>
             </div>
