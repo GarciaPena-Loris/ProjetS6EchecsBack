@@ -18,7 +18,7 @@ class Bombe extends React.Component {
 
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        var colonneP, colonneB, colonneA, ligneP, ligneB, ligneA, coul, coulM, couleur, colonneM, ligneM;
+        var colonneP, colonneB, colonneA, ligneP, ligneB, ligneA, coul, coulM, couleur;
         this.state.chess.clear();
         //choix couleur
         couleur = 'b';

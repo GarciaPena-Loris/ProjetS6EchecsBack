@@ -9,6 +9,9 @@ import NomenclatureTROIS from "./components/Exercices/Nomenclature/NomenclatureT
 import NomenclatureDEUX from "./components/Exercices/Nomenclature/NomenclatureDEUX";
 import NomenclatureQuatre from "./components/Exercices/Nomenclature/NomenclatureQUATRE";
 import Bombe from "./components/Exercices/Bombe/Bombe";
+import BombeEX2 from "./components/Exercices/Bombe/BombeEX2";
+import BombeEX3 from "./components/Exercices/Bombe/BombeEX3";
+
 
 function App() {
   return (
@@ -22,6 +25,8 @@ function App() {
           <Route path="/Exercices/NomenclatureTROIS" element={<NomenclatureTROIS/>}/>
           <Route path="/Exercices/NomenclatureQuatre" element={<NomenclatureQuatre/>}/>
           <Route path="/Exercices/Bombe" element={<Bombe/>}/>
+          <Route path="/Exercices/BombeEX2" element={<BombeEX2/>}/>
+          <Route path="/Exercices/BombeEX3" element={<BombeEX3/>}/>
       </Routes>
     </div>
   );
