@@ -4,6 +4,8 @@ import { decodeToken } from "react-jwt";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from "axios";
+import { Howl, Howler } from 'howler';
+
 
 import "./NiveauxPage.css"
 
@@ -22,6 +24,10 @@ export default function NiveauxPage() {
     const [exerciceElo, setExerciceElo] = useState(null);
     const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
     const matches = useMediaQuery("(min-width:1200px)");
+
+    const soundHover = new Howl({
+        src: ['/sons/hover.mp3']
+    });
     // console.log(exercice);
     // console.log(niveau);
     // console.log(index);
@@ -91,13 +97,20 @@ export default function NiveauxPage() {
         // etc...
     };
 
+    const handlePieceHover = () => {
+        Howler.volume(0.1);
+        soundHover.play();
+    };
+
     // Récupérez le composant à afficher en fonction des id
     const NiveauComponent = niveaux[exercice.id][index];
 
     return (
         <div className="level-container">
             <div className="level-header">
-                <button className="bouton-3D" onClick={() => navigate(-1)}>
+                <button className="bouton-3D"
+                    onClick={() => navigate(-1)}
+                    onMouseEnter={() => handlePieceHover()}>
                     <span className="texte-3D"> {/* Retourne à la page précédente */}
                         ← Retour
                     </span>

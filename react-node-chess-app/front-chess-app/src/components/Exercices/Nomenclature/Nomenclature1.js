@@ -39,8 +39,11 @@ class Nomenclature extends React.Component {
     const decoded = decodeToken(sessionStorage.token);
     this.name = decoded.name;
 
+    // this.soundHover = new Howl({
+    //   src: ['/sons/hover.mp3']
+    // });
     this.soundHover = new Howl({
-      src: ['/sons/hover.mp3']
+      src: ['/sons/fart.mp3']
     });
     this.soundDown = new Howl({
       src: ['/sons/clicdown.wav']
@@ -109,7 +112,7 @@ class Nomenclature extends React.Component {
   };
 
   handlePieceHover = () => {
-    Howler.volume(0.1);
+    Howler.volume(1);
     this.soundHover.play();
   };
 
@@ -321,6 +324,7 @@ class Nomenclature extends React.Component {
                 key="clean"
                 title="supprimer"
                 onMouseDown={() => this.handlePieceDown()}
+                onMouseEnter={() => this.handlePieceHover()}
                 onClick={this.handleClearButtonClick}>
                 <span className="texte-3D texte-clean">
                   ✕
