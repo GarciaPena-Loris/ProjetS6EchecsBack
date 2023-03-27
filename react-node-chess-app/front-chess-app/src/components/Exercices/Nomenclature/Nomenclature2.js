@@ -6,8 +6,7 @@ import { Chess } from 'chess.js'
 // validation réponse
 import axios from "axios";
 import { decodeToken } from "react-jwt";
-
-import { Button, ButtonGroup, Grid, Stack, createTheme, ThemeProvider } from '@mui/material';
+import { Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faChessKing as whiteKing,
@@ -17,6 +16,7 @@ import {
     faChessKnight as whiteKnight,
     faChessPawn as whitePawn
 } from '@fortawesome/free-regular-svg-icons'
+import { Howl, Howler } from 'howler';
 
 
 
@@ -34,6 +34,8 @@ class Nomenclature2 extends React.Component {
         // validation réponse
         this.pointsGagnes = props.pointsGagnes;
         this.pointsPerdus = props.pointsPerdus;
+        this.idExercice = props.idExercice;
+
         this.points = 0;
         // decode token
         const decoded = decodeToken(sessionStorage.token);
@@ -41,12 +43,31 @@ class Nomenclature2 extends React.Component {
 
         this.nomPiece = '';
         this.pos = '';
-        this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
 
+        this.soundHover = new Howl({
+            src: ['/sons/hover.mp3']
+        });
+        this.soundDown = new Howl({
+            src: ['/sons/clicdown.wav']
+        });
+        this.soundUp = new Howl({
+            src: ['/sons/clicup.wav']
+        });
+        this.soundWin = new Howl({
+            src: ['/sons/win.wav']
+        });
+        this.soundWrong = new Howl({
+            src: ['/sons/evil.ogg']
+        });
+
+    }
+
+    componentDidMount() {
         this.genererPieceAleatoire();
     }
+
 
     //#region Génération pièce aléatoire
     genererPion = (couleur, colonneP, ligneP, colonneM, ligneM) => {
@@ -223,7 +244,8 @@ class Nomenclature2 extends React.Component {
     }
 
     genererPieceAleatoire = () => {
-        this.state.chess.clear();
+        const { chess } = this.state;
+        chess.clear();
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         let colonneP, colonneM, ligneP, ligneM, coulP, coulM, couleur, coup = '';
@@ -234,9 +256,9 @@ class Nomenclature2 extends React.Component {
             couleur = 'b';
             coulP = 'b';
             coulM = 'w';
-            this.state.chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
-            this.state.chess.remove('a8');
-            this.state.chess.remove('b8');
+            chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
+            chess.remove('a8');
+            chess.remove('b8');
 
         }
         else {
@@ -271,8 +293,8 @@ class Nomenclature2 extends React.Component {
         this.positionPieceP = `${alpha[colonneP - 1]}${ligneP}`;
         this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
 
-        this.state.chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
-        this.state.chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
+        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
+        chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
 
 
         // nom de la piece
@@ -295,6 +317,7 @@ class Nomenclature2 extends React.Component {
         coup += alpha[colonneM - 1] + ligneM; // position de la piece mangé
 
         this.coup = coup;
+        this.setState({ chess: chess });
     };
     //#endregion
 
@@ -329,27 +352,49 @@ class Nomenclature2 extends React.Component {
     };
 
     handleClearButtonClick = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
         this.setState({ inputValue: '' });
     };
 
-    handlePiece = (event) => {
+    handlePieceHover = () => {
+        Howler.volume(0.1);
+        this.soundHover.play();
+    };
+
+    handlePieceUp = (event) => {
+        Howler.volume(0.3);
+        this.soundUp.play();
         this.setState({ inputValue: this.state.inputValue + event });
     };
 
+    handlePieceDown = () => {
+        Howler.volume(0.3);
+        this.soundDown.play();
+    };
+
     handleClick = () => {
+        Howler.volume(1);
+        this.soundUp.play();
         const { inputValue } = this.state;
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
+            Howler.volume(0.3);
+            this.soundWin.play();
             const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
+            this.state.chess.move(this.coup);
             this.setState({
                 message: text,
+                chess: this.state.chess,
                 inputValue: '',
                 showCorrect: true,
                 showIncorrect: false
             });
         }
         else {
-            let text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            Howler.volume(1);
+            this.soundWrong.play();
+            let text = `Mauvaise réponse ! La piéce était en ${this.usePieceString[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -373,7 +418,6 @@ class Nomenclature2 extends React.Component {
             // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
             const CryptoJS = require("crypto-js");
             const message = this.idExercice + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
-            console.log("🚀 ~ file: Nomenclature2.js:376 ~ Nomenclature2 ~ message:", message)
             const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
             const formData = {
@@ -410,21 +454,15 @@ class Nomenclature2 extends React.Component {
         }
     }
 
-    styles = {
-        button: {
-            textTransform: 'none',
-            fontWeight: 'bold',
-        },
-    };
-
-    piecesBlanches = [
-        <Button key="pion" onClick={() => this.handlePiece("P")}><FontAwesomeIcon icon={whitePawn} size="xl" /></Button>,
-        <Button key="tour" onClick={() => this.handlePiece("R")}><FontAwesomeIcon icon={whiteRook} size="xl" /></Button>,
-        <Button key="fou" onClick={() => this.handlePiece("B")}><FontAwesomeIcon icon={whiteBishop} size="xl" /></Button>,
-        <Button key="cavalier" onClick={() => this.handlePiece("N")}><FontAwesomeIcon icon={whiteKnight} size="xl" /></Button>,
-        <Button key="reine" onClick={() => this.handlePiece("Q")}><FontAwesomeIcon icon={whiteQueen} size="xl" /></Button>,
-        <Button key="roi" onClick={() => this.handlePiece("K")}><FontAwesomeIcon icon={whiteKing} size="xl" /></Button>,
-    ];
+    piecesBlanchesNom = [
+        "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
+    ]
+    piecesBlanchesIcon = [
+        whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
+    ]
+    piecesBlanchesInput = [
+        "P", "R", "B", "N", "Q", "K"
+    ]
     lignes = [
         "8", "7", "6", "5", "4", "3", "2", "1"
     ];
@@ -433,100 +471,130 @@ class Nomenclature2 extends React.Component {
         "a", "b", "c", "d", "e", "f", "g", "h"
     ]
     custom = [
-        "x", "O-O", "O-O-O", "=", "e.p."
+        "x", "O-O", "O-O-O", "=", "e.p.", "+"
+        // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
+        //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
     ]
-
-    theme = createTheme({
-        palette: {
-            primary: {
-                main: '#b58863',
-            },
-            secondary: {
-                main: '#f0d9b5',
-            },
-        },
-    });
+    customCoup = [
+        "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+    ]
 
 
     render() {
         return (
             <div className="container-general">
-                <div className="jeu">
-                    <div className="plateau-gauche">
-                        <Chessboard
-                            position={this.state.chess.fen()}
-                            arePiecesDraggable={false}
-                            customSquare={this.customSquare}
-                        />
-                    </div>
-                    <div className="elements-droite">
-                        <i className="consigne">
-                            Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                            </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
-                        </i>
-                        <div className="boutons">
-                            <ThemeProvider theme={this.theme}>
-                                <Grid container spacing={1} direction="column" justifyContent="space-between">
-                                    <Grid item xs={12} sm={6} md={3} container alignItems="center" justifyContent="space-between">
-                                        <ButtonGroup orientation="vertical" variant="contained" >
-                                            {this.lignes.map((line, index) => {
-                                                const colorClass = index % 2 === 0 ? "secondary" : "primary";
-                                                return (
-                                                    <Button key={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
-                                                        {line}
-                                                    </Button>
-                                                );
-                                            })}
-                                        </ButtonGroup>
-                                        <ButtonGroup size="large" orientation="vertical" color="secondary" variant="contained" >
-                                            {this.piecesBlanches}
-                                        </ButtonGroup>
-                                        <ButtonGroup size="large" orientation="vertical" color="secondary" variant="contained" >
-                                            {this.custom.map((line, index) => {
-                                                return (
-                                                    <Button key={line} sx={this.styles.button} variant="contained" onClick={() => this.handlePiece(line)}>
-                                                        {line}
-                                                    </Button>
-                                                );
-                                            })}
-                                        </ButtonGroup>
-                                    </Grid>
-                                    <Grid item xs={12} sm={6} md={3} container direction="column" alignItems="center" justifyContent="flex-start" >
-                                        <Grid item>
-                                            <ButtonGroup variant="contained" color="secondary">
-                                                {this.colonnes.map((line, index) => {
-                                                    const colorClass = index % 2 === 0 ? "primary" : "secondary";
-                                                    return (
-                                                        <Button key={line} sx={this.styles.button} variant="contained" color={colorClass} onClick={() => this.handlePiece(line)}>
-                                                            {line}
-                                                        </Button>
-                                                    );
-                                                })}
-                                            </ButtonGroup>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            </ThemeProvider>
+                <div className="plateau-gauche">
+                    <Chessboard
+                        key="board"
+                        position={this.state.chess.fen()}
+                        arePiecesDraggable={false}
+                        customSquare={this.customSquare}
+                    />
+                </div>
+                <div className="elements-droite">
+                    <i className="consigne">
+                        Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
+                    </i>
+                    <div className="boutons">
+                        <div className="groupe-butons" >
+                            {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={this.piecesBlanchesNom[index]}
+                                        title={this.piecesBlanchesNom[index]}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            <FontAwesomeIcon icon={line} />
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
-                        <Stack spacing={2} direction="row" alignItems="center">
+                        <div className="groupe-butons">
+                            {this.colonnes.map((line, index) => { // a b c d e f g h
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={line}
+                                        title={line}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons" >
+                            {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
+                                        key={line}
+                                        title={line}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons" >
+                            {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={line}
+                                        title={this.customCoup[index]}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front custom ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="input">
+                        <Stack key="stack" spacing={2} direction="row" alignItems="center">
                             <input className="reponse-input"
                                 type="text"
                                 placeholder="Entrez la position..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange} />
-                            <Button variant="contained" color="error" onClick={this.handleClearButtonClick}>
-                                ✕
-                            </Button>
+                            <button className="bouton-3D button-clean"
+                                key="clean"
+                                title="supprimer"
+                                onMouseDown={() => this.handlePieceDown()}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onClick={this.handleClearButtonClick}>
+                                <span className="texte-3D texte-clean">
+                                    ✕
+                                </span>
+                            </button>
                         </Stack>
-                        <button className="valider-bouton actual-bouton"
-                            onClick={this.handleClick}
+
+                        <button className="bouton-3D"
+                            key="valider"
+                            title="Valider"
                             {...(this.state.inputValue.length < 3 && { disabled: true })}
-                        >
-                            Valider
+                            onMouseEnter={() => this.handlePieceHover()}
+                            onMouseUp={this.handleClick}
+                            onMouseDown={() => this.handlePieceDown()}>
+                            <span className="texte-3D">
+                                Valider
+                            </span>
                         </button>
-                        <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
-                            {this.state.message}
-                        </div>
+                    </div>
+                    <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
+                        {this.state.message}
                     </div>
                 </div>
             </div>

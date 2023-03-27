@@ -55,7 +55,12 @@ export default function ExercicePage() {
                     <div key={level.id} className="level-row">
                         <div className="level-name-container">
                             <div className="level-name">{level.name}</div>
-                            <button className="level-button" onClick={() => handleLevelClick(level, (index + 1))}>Niveau {index + 1} </button>
+                            <button className="bouton-3D"
+                                onClick={() => handleLevelClick(level, (index + 1))}>
+                                <span className="texte-3D"> {/* Retourne à la page précédente */}
+                                    Niveau {index + 1}
+                                </span>
+                            </button>
                         </div>
                         <div className="level-name-container">
                             <div className="level-description">{level.rules}</div>
