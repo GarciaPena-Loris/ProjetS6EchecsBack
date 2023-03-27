@@ -92,7 +92,7 @@
 }
 
 .pushable:hover .front {
-  box-shadow:rgb(230, 199, 152) 0px 0px 0px 2px;
+  box-shadow: rgb(230, 199, 152) 0px 0px 0px 2px;
   transform: translateY(-10px);
   transition:
     transform 250ms cubic-bezier(.3, .7, .4, 1.5);
@@ -127,6 +127,15 @@
 .reponse-input[type="text"]:focus {
   border-color: var(--couleur-theme);
 }
+
+.button-clean {
+  background-color: rgb(170, 21, 21);
+}
+
+.texte-clean {
+  background-color: var(--couleur-erreur);
+}
+
 
 .actual-bouton {
   width: 30%;
@@ -177,8 +186,8 @@
     height: 20vh;
     margin: 2% 0;
   }
-  
-  .pushable .front{
+
+  .pushable .front {
     font-size: 1.5vw;
   }
 

@@ -48,6 +48,12 @@ class Nomenclature extends React.Component {
     this.soundUp = new Howl({
       src: ['/sons/clicup.wav']
     });
+    this.soundWin = new Howl({
+      src: ['/sons/win.wav']
+    });
+    this.soundWrong = new Howl({
+      src: ['/sons/evil.ogg']
+    });
   }
 
   componentDidMount() {
@@ -97,6 +103,8 @@ class Nomenclature extends React.Component {
   };
 
   handleClearButtonClick = () => {
+    Howler.volume(0.3);
+    this.soundUp.play();
     this.setState({ inputValue: '' });
   };
 
@@ -118,10 +126,12 @@ class Nomenclature extends React.Component {
 
 
   handleClick = () => {
-    Howler.volume(0.3);
+    Howler.volume(1);
     this.soundUp.play();
     const { inputValue } = this.state;
     if (this.usePieceString.includes(inputValue)) {
+      Howler.volume(0.3);
+      this.soundWin.play();
       const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
       this.points = this.pointsGagnes;
       this.setState({
@@ -132,6 +142,8 @@ class Nomenclature extends React.Component {
       });
     }
     else {
+      Howler.volume(1);
+      this.soundWrong.play();
       let text = `Mauvaise réponse ! La piéce était en ${this.usePieceString[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
       this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
       this.setState({
@@ -305,9 +317,15 @@ class Nomenclature extends React.Component {
                 placeholder="Entrez la position..."
                 value={this.state.inputValue}
                 onChange={this.handleInputChange} />
-              <Button key="valider" variant="contained" color="error" onClick={this.handleClearButtonClick}>
-                ✕
-              </Button>
+              <button className="bouton-3D button-clean"
+                key="clean"
+                title="supprimer"
+                onMouseDown={() => this.handlePieceDown()}
+                onClick={this.handleClearButtonClick}>
+                <span className="texte-3D texte-clean">
+                  ✕
+                </span>
+              </button>
             </Stack>
 
             <button className="bouton-3D"
