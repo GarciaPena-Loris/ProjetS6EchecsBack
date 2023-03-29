@@ -8,6 +8,9 @@ import axios from "axios";
 import { decodeToken } from "react-jwt";
 import { Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { styled } from '@mui/material/styles';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import {
     faChessKing as whiteKing,
     faChessQueen as whiteQueen,
@@ -26,6 +29,7 @@ class Nomenclature3 extends React.Component {
             message: '',
             showCorrect: false,
             showIncorrect: false,
+            orientation: "white",
             chess: new Chess()
         };
         // validation réponse
@@ -63,6 +67,12 @@ class Nomenclature3 extends React.Component {
 
     componentDidMount() {
         this.genererPieceAleatoire();
+        if (Math.random() < 0.5) {
+            this.setState({ orientation: "black" });
+        }
+        else {
+            this.setState({ orientation: "white" });
+        }
         this.monInputRef.current.focus();
     }
 
@@ -444,6 +454,17 @@ class Nomenclature3 extends React.Component {
         this.soundDown.play();
     };
 
+    handleOrientation = (event) => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        if (event.target.checked) {
+            this.setState({ orientation: 'white' });
+        }
+        else {
+            this.setState({ orientation: 'black' });
+        }
+    }
+
     handleClick = () => {
         Howler.volume(0.3);
         this.soundUp.play();
@@ -525,33 +546,75 @@ class Nomenclature3 extends React.Component {
         }
     }
 
-    piecesBlanchesNom = [
-        "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
-    ]
-    piecesBlanchesIcon = [
-        whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
-    ]
-    piecesBlanchesInput = [
-        "P", "R", "B", "N", "Q", "K"
-    ]
-    lignes = [
-        "8", "7", "6", "5", "4", "3", "2", "1"
-    ];
-
-    colonnes = [
-        "a", "b", "c", "d", "e", "f", "g", "h"
-    ]
-    custom = [
-        "x", "O-O", "O-O-O", "=", "e.p.", "+"
-        // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
-        //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
-    ]
-    customCoup = [
-        "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
-    ]
+    MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
+        width: 62,
+        height: 34,
+        padding: 7,
+        cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
+        '& .MuiSwitch-switchBase': {
+            margin: 1,
+            padding: 0,
+            transform: 'translateX(6px)',
+            '&.Mui-checked': {
+                color: '#fff',
+                transform: 'translateX(22px)',
+                '& .MuiSwitch-thumb:before': {
+                    backgroundColor: "white",
+                    borderRadius: '50%',
+                },
+                '& + .MuiSwitch-track': {
+                    opacity: 1,
+                    backgroundColor: disabled ? 'rgba(255, 255, 255, 0.5)' : '#cccccc',
+                },
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            backgroundColor: '#001e3c',
+            width: 32,
+            height: 32,
+            '&:before': {
+                content: "''",
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                left: 0,
+                top: 0,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundColor: disabled ? '#c7c7c7' : 'black',
+                borderRadius: '50%',
+            },
+        },
+        '& .Mui-disabled': {
+            opacity: 0.5,
+        },
+    }));
 
 
     render() {
+        const piecesBlanchesNom = [
+            "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
+        ]
+        const piecesBlanchesIcon = [
+            whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
+        ]
+        const piecesBlanchesInput = [
+            "P", "R", "B", "N", "Q", "K"
+        ]
+        let lignes = this.state.orientation === 'white'
+            ? ["8", "7", "6", "5", "4", "3", "2", "1"]
+            : ["1", "2", "3", "4", "5", "6", "7", "8"];
+        let colonnes = this.state.orientation === 'white'
+            ? ["a", "b", "c", "d", "e", "f", "g", "h"]
+            : ["h", "g", "f", "e", "d", "c", "b", "a"];
+        const custom = [
+            "x", "O-O", "O-O-O", "=", "e.p.", "+"
+            // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
+            //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
+        ]
+        const customCoup = [
+            "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+        ]
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
@@ -560,6 +623,7 @@ class Nomenclature3 extends React.Component {
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
                         customSquare={this.customSquare}
+                        boardOrientation={this.state.orientation}
                     />
                 </div>
                 <div className="elements-droite">
@@ -567,15 +631,22 @@ class Nomenclature3 extends React.Component {
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
                         </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
                     </i>
+                    <FormControlLabel
+                        control={<this.MaterialUISwitch
+                            checked={this.state.orientation === 'white'}
+                        />}
+                        label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                        onChange={this.handleOrientation}
+                    />
                     <div className="boutons">
                         <div className="groupe-butons" >
-                            {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
+                            {piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={this.piecesBlanchesNom[index]}
-                                        title={this.piecesBlanchesNom[index]}
+                                        key={piecesBlanchesNom[index]}
+                                        title={piecesBlanchesNom[index]}
                                         onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
+                                        onMouseUp={() => this.handlePieceUp(piecesBlanchesInput[index])}
                                         onMouseDown={() => this.handlePieceDown()}>
                                         <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
                                             <FontAwesomeIcon icon={line} />
@@ -585,7 +656,7 @@ class Nomenclature3 extends React.Component {
                             })}
                         </div>
                         <div className="groupe-butons">
-                            {this.colonnes.map((line, index) => { // a b c d e f g h
+                            {colonnes.map((line, index) => { // a b c d e f g h
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
                                         key={line}
@@ -601,7 +672,7 @@ class Nomenclature3 extends React.Component {
                             })}
                         </div>
                         <div className="groupe-butons" >
-                            {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                            {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
                                         key={line}
@@ -617,11 +688,11 @@ class Nomenclature3 extends React.Component {
                             })}
                         </div>
                         <div className="groupe-butons" >
-                            {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
+                            {custom.map((line, index) => { // x O-O O-O-O = e.p. +
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
                                         key={line}
-                                        title={this.customCoup[index]}
+                                        title={customCoup[index]}
                                         onMouseEnter={() => this.handlePieceHover()}
                                         onMouseUp={() => this.handlePieceUp(line)}
                                         onMouseDown={() => this.handlePieceDown()}>
@@ -634,7 +705,7 @@ class Nomenclature3 extends React.Component {
                         </div>
                     </div>
                     <div className="input">
-                        <Stack key="stack" spacing={2} direction="row" alignItems="center">
+                        <Stack spacing={2} direction="row" alignItems="center">
                             <input className="reponse-input"
                                 type="text"
                                 placeholder="Entrez la position..."

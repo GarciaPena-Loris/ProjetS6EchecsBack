@@ -410,10 +410,9 @@ class Nomenclature4 extends React.Component {
         if (Math.random() < 0.5) {
             chess.put({ type: `${piece}`, color: `${coul}` }, this.positionPieceA) // A
         }
-        if (Math.random() < 0.5) {
+        if (Math.random() < 0.7) {
             chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
             this.optionManger = `manger la reine`;
-
         } else if (piece === 'p') {
             if (coul === 'b' && ligneP === 7) {
                 colonneM = colonneP;
@@ -422,7 +421,8 @@ class Nomenclature4 extends React.Component {
                 colonneM = colonneP;
                 if (Math.random() < 0.5) { ligneM = 4 } else ligneM = 3;
             }
-            else { colonneM = colonneP; }
+            colonneM = colonneP;
+            this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
         }
 
         chess.put({ type: `${piece}`, color: `${coul}` }, this.positionPieceP); // P
@@ -669,12 +669,13 @@ class Nomenclature4 extends React.Component {
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
                         customSquare={this.customSquare}
+                        showBoardNotation={false}
                     />
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
+                        </span> aille <span style={{ color: `${this.couleurM}` }}> {this.optionManger} en {this.positionPieceM} </span>
                     </i>
                     <div className="boutons">
                         <div className="groupe-butons" >
