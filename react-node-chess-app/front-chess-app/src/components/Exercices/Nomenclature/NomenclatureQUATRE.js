@@ -332,6 +332,7 @@ class NomenclatureQUATRE extends React.Component {
                 if (Math.random() < 0.5) { ligneM = 4 } else ligneM = 3;
             }
             else { colonneM = colonneP; }
+            colonneM = colonneP;
         }
 
         this.state.chess.put({ type: `${piece}`, color: `${coul}` }, `${alpha[colonneP - 1]}${ligneP}`); // P

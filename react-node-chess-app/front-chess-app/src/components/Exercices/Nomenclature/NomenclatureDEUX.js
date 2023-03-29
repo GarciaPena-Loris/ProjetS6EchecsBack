@@ -179,7 +179,7 @@ class NomenclatureDEUX extends React.Component {
                 if (ligneM > 8) {
                     ligneM = ligneP - Math.abs(colonneP - colonneM);
                 }
-            } while (ligneM < 0 || ligneM > 8);
+            } while (ligneM < 1 || ligneM > 8);
         }
         else if (piece === 'q') {
             //piece qui mange 
