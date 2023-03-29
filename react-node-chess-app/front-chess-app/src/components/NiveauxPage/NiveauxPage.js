@@ -24,10 +24,16 @@ export default function NiveauxPage() {
     const [exerciceElo, setExerciceElo] = useState(null);
     const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
     const matches = useMediaQuery("(min-width:1200px)");
-
     const soundHover = new Howl({
         src: ['/sons/hover.mp3']
     });
+    const soundDown = new Howl({
+        src: ['/sons/clicdown.wav']
+    });
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
+
     // console.log(exercice);
     // console.log(niveau);
     // console.log(index);
@@ -102,6 +108,12 @@ export default function NiveauxPage() {
         soundHover.play();
     };
 
+    const handlePieceDown = () => {
+        Howler.volume(0.3);
+        soundDown.play();
+    };
+
+
     // Récupérez le composant à afficher en fonction des id
     const NiveauComponent = niveaux[exercice.id][index];
 
@@ -109,8 +121,13 @@ export default function NiveauxPage() {
         <div className="level-container">
             <div className="level-header">
                 <button className="bouton-3D"
-                    onClick={() => navigate(-1)}
-                    onMouseEnter={() => handlePieceHover()}>
+                    onClick={() => {
+                        Howler.volume(0.3);
+                        soundUp.play();
+                        navigate(-1)
+                    }}
+                    onMouseEnter={() => handlePieceHover()}
+                    onMouseDown={() => handlePieceDown()}>
                     <span className="texte-3D"> {/* Retourne à la page précédente */}
                         ← Retour
                     </span>

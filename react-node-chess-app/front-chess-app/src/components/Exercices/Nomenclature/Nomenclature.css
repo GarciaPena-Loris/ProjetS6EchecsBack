@@ -136,6 +136,17 @@
   background-color: var(--couleur-erreur);
 }
 
+.button-replay {
+  background-color: #9c63d1;
+}
+
+.texte-replay {
+  background-color: #af80dc;
+}
+
+.stack {
+  margin-top: 2%;
+}
 
 .actual-bouton {
   width: 30%;

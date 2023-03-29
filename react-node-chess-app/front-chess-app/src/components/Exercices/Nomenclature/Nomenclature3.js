@@ -6,14 +6,24 @@ import { Chess } from 'chess.js'
 // validation réponse
 import axios from "axios";
 import { decodeToken } from "react-jwt";
+import { Stack } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faChessKing as whiteKing,
+    faChessQueen as whiteQueen,
+    faChessRook as whiteRook,
+    faChessBishop as whiteBishop,
+    faChessKnight as whiteKnight,
+    faChessPawn as whitePawn
+} from '@fortawesome/free-regular-svg-icons'
+import { Howl, Howler } from 'howler';
 
 class Nomenclature3 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             inputValue: '',
-            correctMessage: '',
-            incorrectMessage: '',
+            message: '',
             showCorrect: false,
             showIncorrect: false,
             chess: new Chess()
@@ -32,8 +42,30 @@ class Nomenclature3 extends React.Component {
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
 
-        this.genererPieceAleatoire();
+        this.monInputRef = React.createRef();
+
+        this.soundHover = new Howl({
+            src: ['/sons/hover.mp3']
+        });
+        this.soundDown = new Howl({
+            src: ['/sons/clicdown.wav']
+        });
+        this.soundUp = new Howl({
+            src: ['/sons/clicup.wav']
+        });
+        this.soundWin = new Howl({
+            src: ['/sons/win.wav']
+        });
+        this.soundWrong = new Howl({
+            src: ['/sons/evil.ogg']
+        });
     }
+
+    componentDidMount() {
+        this.genererPieceAleatoire();
+        this.monInputRef.current.focus();
+    }
+
 
     genererPionOuDame = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         if (couleur === 'b') {
@@ -276,19 +308,20 @@ class Nomenclature3 extends React.Component {
     }
 
     genererPieceAleatoire = () => {
+        const { chess } = this.state;
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coulP, coulM, couleur;
-        this.state.chess.clear();
+        chess.clear();
 
         //choix couleur
         if (Math.random() < 0.5) {
             couleur = 'b';
             coulP = 'b';
             coulM = 'w';
-            this.state.chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
-            this.state.chess.remove('a8');
-            this.state.chess.remove('b8');
+            chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
+            chess.remove('a8');
+            chess.remove('b8');
 
         }
         else {
@@ -316,9 +349,9 @@ class Nomenclature3 extends React.Component {
         this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
         this.positionPieceA = `${alpha[colonneA - 1]}${ligneA}`;
 
-        this.state.chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
-        this.state.chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceA) // A
-        this.state.chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
+        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
+        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceA) // A
+        chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
 
         if (piece === 'p') this.nomPiece = `le pion`
         else if (piece === 'r') this.nomPiece = `la tour`
@@ -341,9 +374,9 @@ class Nomenclature3 extends React.Component {
 
         coup += 'x';
         coup += alpha[colonneM - 1] + ligneM;
-
-        console.log(coup);
         this.coup = coup;
+
+        this.setState({ chess: chess });
     }
 
     // couleur des cases
@@ -372,45 +405,84 @@ class Nomenclature3 extends React.Component {
         }
     });
 
+    // handles
+
     handleInputChange = (event) => {
         this.setState({ inputValue: event.target.value });
     };
 
-    handleClick = () => {
-        const { inputValue, chess } = this.state;
+    handleKeyPress = (event) => {
+        if (this.state.inputValue.length >= 3) {
+            if (event.key === "Enter") {
+                // Appeler la fonction de vérification
+                this.handleClick();
+            }
+        }
+    }
 
+    // sons
+    handleClearButtonClick = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ inputValue: '' });
+    };
+
+    handlePieceHover = () => {
+        Howler.volume(0.1);
+        this.soundHover.play();
+    };
+
+    handlePieceUp = (event) => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ inputValue: this.state.inputValue + event });
+        this.monInputRef.current.focus();
+    };
+
+    handlePieceDown = () => {
+        Howler.volume(0.3);
+        this.soundDown.play();
+    };
+
+    handleClick = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        const { inputValue } = this.state;
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            const text = `Bonne réponse ! La réponse est bien ${inputValue}, vous gagné ${this.pointsGagne} points.`;
-            this.points = this.pointsGagne;
+            Howler.volume(0.3);
+            this.soundWin.play();
+            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            this.points = this.pointsGagnes;
+            this.state.chess.move(this.coup);
             this.setState({
-                correctMessage: text,
-                incorrectMessage: '',
+                message: text,
+                chess: this.state.chess,
                 inputValue: '',
-                chess: chess,
                 showCorrect: true,
                 showIncorrect: false
             });
-            chess.move(inputValue);
         }
         else {
-            let text = `Mauvaise réponse ! La pièce n'est pas en '${inputValue}', vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            Howler.volume(1);
+            this.soundWrong.play();
+            let text = `Mauvaise réponse ! La piéce était en ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
-                incorrectMessage: text,
-                correctMessage: '',
+                message: text,
                 inputValue: '',
-                chess: chess,
                 showCorrect: false,
                 showIncorrect: true
             });
         }
         setTimeout(() => {
-            this.setState({ showCorrect: false, showIncorrect: false });
-        }, 8000); // Efface le message après 3 secondes
-        setTimeout(() => {
-            this.handleUpdate();
-        }, 2000);
-    };
+            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+
+            if (this.points !== 0)
+                this.handleUpdate();
+            else
+                this.genererPieceAleatoire();
+        }, 3000); // Efface le message après 3 secondes
+    }
 
     handleUpdate = () => {
         try {
@@ -453,43 +525,149 @@ class Nomenclature3 extends React.Component {
         }
     }
 
+    piecesBlanchesNom = [
+        "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
+    ]
+    piecesBlanchesIcon = [
+        whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
+    ]
+    piecesBlanchesInput = [
+        "P", "R", "B", "N", "Q", "K"
+    ]
+    lignes = [
+        "8", "7", "6", "5", "4", "3", "2", "1"
+    ];
+
+    colonnes = [
+        "a", "b", "c", "d", "e", "f", "g", "h"
+    ]
+    custom = [
+        "x", "O-O", "O-O-O", "=", "e.p.", "+"
+        // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
+        //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
+    ]
+    customCoup = [
+        "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+    ]
+
+
     render() {
         return (
             <div className="container-general">
-                <div className="jeu">
-                    <div className="plateau-gauche">
-                        <Chessboard
-                            position={this.state.chess.fen()}
-                            arePiecesDraggable={false}
-                            customSquare={this.customSquare}
-                        />
+                <div className="plateau-gauche">
+                    <Chessboard
+                        key="board"
+                        position={this.state.chess.fen()}
+                        arePiecesDraggable={false}
+                        customSquare={this.customSquare}
+                    />
+                </div>
+                <div className="elements-droite">
+                    <i className="consigne">
+                        Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
+                    </i>
+                    <div className="boutons">
+                        <div className="groupe-butons" >
+                            {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={this.piecesBlanchesNom[index]}
+                                        title={this.piecesBlanchesNom[index]}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            <FontAwesomeIcon icon={line} />
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons">
+                            {this.colonnes.map((line, index) => { // a b c d e f g h
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={line}
+                                        title={line}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons" >
+                            {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
+                                        key={line}
+                                        title={line}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons" >
+                            {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={line}
+                                        title={this.customCoup[index]}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front custom ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
-                    <div className="elements-droite">
-                        <i className="consigne">
-                            Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                            </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
-                        </i>
-                        <input className="reponse-input"
-                            type="text"
-                            placeholder="Entrez la position..."
-                            value={this.state.inputValue}
-                            onChange={this.handleInputChange} />
-                        <button className="valider-bouton actual-bouton"
-                            onClick={this.handleClick}
+                    <div className="input">
+                        <Stack key="stack" spacing={2} direction="row" alignItems="center">
+                            <input className="reponse-input"
+                                type="text"
+                                placeholder="Entrez la position..."
+                                value={this.state.inputValue}
+                                onChange={this.handleInputChange}
+                                onKeyDown={this.handleKeyPress}
+                                ref={this.monInputRef} />
+                            <button className="bouton-3D button-clean"
+                                key="clean"
+                                title="supprimer"
+                                onMouseDown={() => this.handlePieceDown()}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onClick={this.handleClearButtonClick}>
+                                <span className="texte-3D texte-clean">
+                                    ✕
+                                </span>
+                            </button>
+                        </Stack>
+
+                        <button className="bouton-3D"
+                            key="valider"
+                            title="Valider"
                             {...(this.state.inputValue.length < 3 && { disabled: true })}
-                        >
-                            Valider
+                            onMouseEnter={() => this.handlePieceHover()}
+                            onMouseUp={this.handleClick}
+                            onMouseDown={() => this.handlePieceDown()}>
+                            <span className="texte-3D">
+                                Valider
+                            </span>
                         </button>
-                        {this.state.correctMessage &&
-                            <div className={`response correct-response ${this.state.showCorrect ? 'show' : ''}`}>
-                                {this.state.correctMessage}
-                            </div>
-                        }
-                        {this.state.incorrectMessage &&
-                            <div className={`response incorrect-response ${this.state.showIncorrect ? 'show' : ''}`}>
-                                {this.state.incorrectMessage}
-                            </div>
-                        }
+                    </div>
+                    <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
+                        {this.state.message}
                     </div>
                 </div>
             </div>

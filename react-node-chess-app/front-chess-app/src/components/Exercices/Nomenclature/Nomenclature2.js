@@ -25,8 +25,7 @@ class Nomenclature2 extends React.Component {
         super(props);
         this.state = {
             inputValue: '',
-            correctMessage: '',
-            incorrectMessage: '',
+            message: '',
             showCorrect: false,
             showIncorrect: false,
             chess: new Chess()
@@ -45,6 +44,8 @@ class Nomenclature2 extends React.Component {
         this.pos = '';
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
+
+        this.monInputRef = React.createRef();
 
         this.soundHover = new Howl({
             src: ['/sons/hover.mp3']
@@ -66,6 +67,7 @@ class Nomenclature2 extends React.Component {
 
     componentDidMount() {
         this.genererPieceAleatoire();
+        this.monInputRef.current.focus();
     }
 
 
@@ -213,7 +215,7 @@ class Nomenclature2 extends React.Component {
             if (ligneM > 8) {
                 ligneM = ligneP - Math.abs(colonneP - colonneM);
             }
-        } while (ligneM < 0 || ligneM > 8);
+        } while (ligneM < 1 || ligneM > 8);
         return [colonneP, ligneP, colonneM, ligneM];
     }
 
@@ -315,8 +317,8 @@ class Nomenclature2 extends React.Component {
         }
         coup += 'x'; // manger
         coup += alpha[colonneM - 1] + ligneM; // position de la piece mangé
-
         this.coup = coup;
+
         this.setState({ chess: chess });
     };
     //#endregion
@@ -346,11 +348,23 @@ class Nomenclature2 extends React.Component {
             );
         }
     });
+    
+    // handles
 
     handleInputChange = (event) => {
         this.setState({ inputValue: event.target.value });
     };
 
+    handleKeyPress = (event) => {
+        if (this.state.inputValue.length >= 3) {
+            if (event.key === "Enter") {
+                // Appeler la fonction de vérification
+                this.handleClick();
+            }
+        }
+    }
+
+    // sons
     handleClearButtonClick = () => {
         Howler.volume(0.3);
         this.soundUp.play();
@@ -366,6 +380,7 @@ class Nomenclature2 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
         this.setState({ inputValue: this.state.inputValue + event });
+        this.monInputRef.current.focus();
     };
 
     handlePieceDown = () => {
@@ -374,7 +389,7 @@ class Nomenclature2 extends React.Component {
     };
 
     handleClick = () => {
-        Howler.volume(1);
+        Howler.volume(0.3);
         this.soundUp.play();
         const { inputValue } = this.state;
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
@@ -394,7 +409,7 @@ class Nomenclature2 extends React.Component {
         else {
             Howler.volume(1);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.usePieceString[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! La piéce était en ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -568,7 +583,9 @@ class Nomenclature2 extends React.Component {
                                 type="text"
                                 placeholder="Entrez la position..."
                                 value={this.state.inputValue}
-                                onChange={this.handleInputChange} />
+                                onChange={this.handleInputChange}
+                                onKeyDown={this.handleKeyPress}
+                                ref={this.monInputRef} />
                             <button className="bouton-3D button-clean"
                                 key="clean"
                                 title="supprimer"

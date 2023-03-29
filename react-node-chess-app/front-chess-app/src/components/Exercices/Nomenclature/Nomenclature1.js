@@ -5,7 +5,7 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
-import { Button, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChessKing as whiteKing,
@@ -39,6 +39,8 @@ class Nomenclature extends React.Component {
     const decoded = decodeToken(sessionStorage.token);
     this.name = decoded.name;
 
+    this.monInputRef = React.createRef();
+
     // this.soundHover = new Howl({
     //   src: ['/sons/hover.mp3']
     // });
@@ -61,6 +63,7 @@ class Nomenclature extends React.Component {
 
   componentDidMount() {
     this.genererPieceAleatoire();
+    this.monInputRef.current.focus();
   }
 
   genererPieceAleatoire = () => {
@@ -101,9 +104,20 @@ class Nomenclature extends React.Component {
     }
   });
 
+  // handles
+
   handleInputChange = (event) => {
     this.setState({ inputValue: event.target.value });
   };
+
+  handleKeyPress = (event) => {
+    if (this.state.inputValue.length >= 3) {
+      if (event.key === "Enter") {
+        // Appeler la fonction de vérification
+        this.handleClick();
+      }
+    }
+  }
 
   handleClearButtonClick = () => {
     Howler.volume(0.3);
@@ -120,6 +134,7 @@ class Nomenclature extends React.Component {
     Howler.volume(0.3);
     this.soundUp.play();
     this.setState({ inputValue: this.state.inputValue + event });
+    this.monInputRef.current.focus();
   };
 
   handlePieceDown = () => {
@@ -127,9 +142,8 @@ class Nomenclature extends React.Component {
     this.soundDown.play();
   };
 
-
   handleClick = () => {
-    Howler.volume(1);
+    Howler.volume(0.3);
     this.soundUp.play();
     const { inputValue } = this.state;
     if (this.usePieceString.includes(inputValue)) {
@@ -314,18 +328,19 @@ class Nomenclature extends React.Component {
             </div>
           </div>
           <div className="input">
-            <Stack key="stack" spacing={2} direction="row" alignItems="center">
+            <Stack spacing={2} direction="row" alignItems="center">
               <input className="reponse-input"
                 type="text"
                 placeholder="Entrez la position..."
                 value={this.state.inputValue}
-                onChange={this.handleInputChange} />
+                onChange={this.handleInputChange}
+                onKeyDown={this.handleKeyPress}
+                ref={this.monInputRef} />
               <button className="bouton-3D button-clean"
-                key="clean"
                 title="supprimer"
                 onMouseDown={() => this.handlePieceDown()}
                 onMouseEnter={() => this.handlePieceHover()}
-                onClick={this.handleClearButtonClick}>
+                onClick={this.handleClearButtonClick} >
                 <span className="texte-3D texte-clean">
                   ✕
                 </span>
@@ -333,7 +348,6 @@ class Nomenclature extends React.Component {
             </Stack>
 
             <button className="bouton-3D"
-              key="valider"
               title="Valider"
               {...(this.state.inputValue.length < 3 && { disabled: true })}
               onMouseEnter={() => this.handlePieceHover()}
