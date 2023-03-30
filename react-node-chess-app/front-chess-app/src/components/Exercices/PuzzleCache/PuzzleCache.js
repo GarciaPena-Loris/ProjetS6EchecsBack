@@ -2,13 +2,24 @@ import React from "react";
 import './PuzzleCache.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
-import { Chess } from 'chess.js'
+import { Chess, SQUARES } from 'chess.js'
 // validation réponse
 import axios from "axios";
-import { decodeToken } from "react-jwt";
 
+
+//import { decodeToken } from "react-jwt";
 
 class PuzzleCache extends React.Component {
+    static SQUARES = [
+        'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8',
+        'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7',
+        'a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6',
+        'a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5',
+        'a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4',
+        'a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3',
+        'a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2',
+        'a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'
+    ];
     constructor(props) {
         super(props);
         this.state = {
@@ -18,10 +29,11 @@ class PuzzleCache extends React.Component {
             showCorrect: false,
             showIncorrect: false,
             chess: new Chess(),
+            pos : '',
+            text : '',
         };
-
         this.currentIndex = 0
-
+        
         // validation réponse
         this.pointsGagne = props.pointsGagnes;
         this.pointsPerdu = props.pointsPerdus;
@@ -30,8 +42,7 @@ class PuzzleCache extends React.Component {
         //const decoded = decodeToken(sessionStorage.token);
         //this.name = decoded.name;
 
-        this.nomPiece = '';
-        this.pos = '';
+        this.coup = '';
         this.idLevel = props.idLevel;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
@@ -39,25 +50,53 @@ class PuzzleCache extends React.Component {
 
         this.genererMouvement();
     }
-
+      
     genererMouvement = () => {
-        let nombreMoves = Math.floor(Math.random() * 10) + 5;
-        if (nombreMoves % 2 !== 0)
-            nombreMoves++;
-        let intervalId = setInterval(() => {
-            if (this.currentIndex < nombreMoves) {
-                const possibleMoves = this.state.chess.moves();
-                const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-                this.state.chess.move(possibleMoves[randomIndex]);
-                this.historicMove.push(possibleMoves[randomIndex]);
-                this.setState({ chess: this.state.chess });
-                this.currentIndex++;
-            } else {
-                clearInterval(intervalId);
+        let intervalId;
+        intervalId = setInterval(() => {
+          let possibleMoves = this.state.chess.moves();
+          let possibleXMoves = possibleMoves.filter(element => element.includes("x"));
+          if (possibleXMoves.length>=1){
+            possibleMoves=possibleXMoves;
+          }
+          const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+          this.state.chess.move(possibleMoves[randomIndex]);
+          this.historicMove.push(possibleMoves[randomIndex]);
+          this.setState({ chess: this.state.chess });
+          const boardValue = this.RevaluateBoard(this.state.chess);
+          if (boardValue > 0) {
+            clearInterval(intervalId);
+            console.log("w");
+            console.log(possibleMoves[randomIndex].slice(-2));
+            this.state.chess.undo();
+            if (possibleMoves[randomIndex].slice(-1)=='+'){
+                this.state.pos=possibleMoves[randomIndex].slice(-3,-1);
             }
+            else{this.state.pos=possibleMoves[randomIndex].slice(-2);}
+            this.state.text='Ecrivez le coup pour prendre la pièce en ';
+            this.coup=possibleMoves[randomIndex];
+            console.log(this.coup);
+          }
+          if (boardValue < 0) {
+            clearInterval(intervalId);
+            console.log("b");
+            console.log(possibleMoves[randomIndex].slice(-2));
+            this.state.chess.undo();
+            if (possibleMoves[randomIndex].slice(-1)=='+'){
+                this.state.pos=possibleMoves[randomIndex].slice(-3,-1);
+            }
+            else{this.state.pos=possibleMoves[randomIndex].slice(-2);}
+            this.state.text='Quelle pièce (P,N,B,R,Q,K) va être mangé en  ';
+            this.coup=this.state.chess.get(this.state.pos).type;
+            console.log(this.coup);
+            if (this.coup!=='k'||this.coup!=='q'||this.coup!=='r'||this.coup!=='b'||this.coup!=='n'){
+                this.coup='P';
+            }
+            console.log(this.coup);
+          }
         }, 800);
-    }
-
+      };
+      
     //#region Afficher coup
     safeGameMutate = (modify) => {
         this.setState((g) => {
@@ -103,6 +142,7 @@ class PuzzleCache extends React.Component {
 
         return true;
     }
+    
     //#endregion
     rejouer = (event) => {
         let currentIndex = 0;
@@ -115,9 +155,35 @@ class PuzzleCache extends React.Component {
                 currentIndex++;
             } else {
                 clearInterval(intervalId);
+                this.state.chess.undo();
             }
         }, 800);
     };
+
+    //#region calcule du meilleur coup
+    
+    RevaluateBoard(chess) {
+        const pieceValues = {
+          'p': 1,
+          'n': 3,
+          'b': 3,
+          'r': 5,
+          'q': 9,
+          'k': 0
+        };
+        let value = 0;
+        SQUARES.forEach(Element => {
+              if(this.state.chess.get(Element)){value += this.state.chess.get(Element).color === 'w' ? pieceValues[this.state.chess.get(Element).type] : -pieceValues[this.state.chess.get(Element).type];
+          }
+        });
+        console.log(value);
+        return value;
+    }
+
+    
+    //#endregion 
+
+
 
     handleInputChange = (event) => {
         this.setState({ inputValue: event.target.value });
@@ -127,7 +193,7 @@ class PuzzleCache extends React.Component {
         const { inputValue, chess } = this.state;
 
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagne} points.`;
+            const text = `Bonne réponse ! La pièce est en ${this.state.pos}, vous gagné ${this.pointsGagne} points.`;
             this.points = this.pointsGagne;
             this.setState({
                 correctMessage: text,
@@ -137,7 +203,9 @@ class PuzzleCache extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
+            if (inputValue.length>=3){
             chess.move(inputValue);
+            }
         }
         else {
             let text = '';
@@ -242,6 +310,7 @@ class PuzzleCache extends React.Component {
             <div className="container-general">
                 <div className="jeu">
                     <div className="plateau-gauche">
+                    <h2 id="txt"> {this.state.text} {this.state.pos}.</h2>
                         <Chessboard
                             position={this.state.chess.fen()}
                             onPieceDrop={this.onDrop}
@@ -263,7 +332,7 @@ class PuzzleCache extends React.Component {
                             onChange={this.handleInputChange} />
                         <button className="valider-bouton actual-bouton"
                             onClick={this.handleClick}
-                            {...(this.state.inputValue.length < 3 && { disabled: true })}
+                            {...(this.state.inputValue.length < 1 && { disabled: true })}
                         >
                             Valider
                         </button>
@@ -281,6 +350,11 @@ class PuzzleCache extends React.Component {
                             onClick={this.rejouer}
                         >
                             Rejouer
+                        </button>
+                        <button className="valider-bouton actual-bouton"
+                            onClick={this.RevaluateBoard.bind(this)}
+                        >
+                            caclcule avantage
                         </button>
                     </div>
                 </div>
