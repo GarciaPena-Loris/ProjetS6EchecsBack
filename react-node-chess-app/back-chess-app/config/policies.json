@@ -27,6 +27,13 @@
                 "action": "allow"
             },
             {
+                "resource": "users/globalElo/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
                 "resource": "users/*",
                 "methods": [
                     "PUT"
@@ -35,6 +42,13 @@
             },
             {
                 "resource": "exercises/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "eloExercise/elo/*",
                 "methods": [
                     "GET"
                 ],

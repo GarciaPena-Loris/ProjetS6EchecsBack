@@ -1,4 +1,4 @@
-.container {
+.container-connexion {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -6,10 +6,10 @@
     height: 100vh;
 }
 
-.connexion {
+.form-connexion {
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: #262421;
-    max-width: 40em;
+    width: 23em;
     border-radius: 30px;
     padding: 2em;
     display: flex;
@@ -18,27 +18,18 @@
     margin-bottom: 2%;
 }
 
-.form {
-    width: 100%;
-    max-width: 600px;
-}
-
-label {
-    color: black;
-}
-
-input {
-    height: 50px;
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 30px;
+.input-connexion {
+    padding: 0;
+    padding-left: 10px;
+    height: 2em;
+    width: 90%;
+    margin-top: 5%;
     display: block;
     background: transparent;
     border: none;
     border-bottom: 1px solid #000000;
-    padding: 2px 5px;
     color: #ffffff;
-    font-size: 24px;
+    font-size: 20px;
     font-display: center;
     background-color: #312e2b;
 }

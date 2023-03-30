@@ -1,19 +1,20 @@
-import React from 'react';
+import { React, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GlobalContext  } from '../GlobalContext/GlobalContext';
 import "./Navbar.css"
 
 function Navbar() {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
+    const { globalElo } = useContext(GlobalContext );
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
-        navigate('/connexion');
+        navigate('/');
     };
 
-
     return (
-        <nav>
+        <nav className='nav-bar'>
             <ul>
                 <li><Link to="/">Accueil</Link></li>
                 <li>|</li>
@@ -24,7 +25,11 @@ function Navbar() {
                         <li><Link to="/compte">Mon compte</Link></li>
                     </>
                 ) : (
-                    <li><Link to="/connexion">Connexion</Link></li>
+                    <>
+                        <li><Link to="/connexion" replace>Connexion</Link></li>
+                        <li>|</li>
+                        <li><Link to="/inscription">Inscription</Link></li>
+                    </>
                 )}
                 {token && (
                     <>
@@ -33,6 +38,9 @@ function Navbar() {
                     </>
                 )}
             </ul>
+            {globalElo && (
+                <span className='elo'>{globalElo} points d'élo général</span>
+            )}
         </nav>
     );
 }

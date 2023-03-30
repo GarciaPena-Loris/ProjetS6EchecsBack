@@ -1,0 +1,47 @@
+.level-container {
+    margin: 0 20vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.level-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1% 0;
+}
+
+.level-label {
+    font-size: 2vw;
+    font-weight: bold;
+    color: #fff;
+}
+
+.back-button {
+    width: 13%;
+    padding: 0.7% 0;
+    font-size: 1vw;
+    font-weight: 600;
+}
+
+.level-elo {
+    font-size: 1vw;
+    color: #fff;
+}
+
+.level-jeux {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media only screen and (max-width: 1400px) {
+    .level-container {
+        margin: 0 15vw;
+    }
+}

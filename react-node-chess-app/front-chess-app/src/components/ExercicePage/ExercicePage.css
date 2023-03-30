@@ -1,30 +1,32 @@
-.exercise-page {
+.exercice-page {
   margin: 0 30em;
   font-weight: 600;
+  color: #fff;
 }
 
-.exercise-title {
+.exercice-title {
   font-size: 4em;
   margin: 0;
-  margin-bottom: 2%;
+  margin-bottom: 1%;
 }
 
-.exercise-description-name {
+.exercice-description-name {
   font-size: 2em;
   color: #7e9d4e;
 }
 
-.exercise-description {
+.exercice-description {
   font-size: 1.5em;
   margin: 0;
-  margin-top: 2%;
+  margin-top: 1%;
 }
 
 .levels-container {
-  margin-top: 10%;
+  margin-top: 5%;
   padding: 2% 2%;
   display: flex;
   flex-direction: column;
+  color: #fff;
   background-color: #282522;
 }
 
@@ -36,7 +38,6 @@
 .level-title {
   font-size: 2em;
   font-weight: bold;
-  color: #fff;
   width: 50%;
 }
 

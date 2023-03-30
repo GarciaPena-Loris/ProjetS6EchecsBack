@@ -1,38 +1,23 @@
-label{
-    color:whitesmoke;
+label {
+    color: whitesmoke;
 }
 
-h1{
+h1 {
     color: #EDEFF2;
 }
 
-input {
-    height: 50px;
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 30px;
-    display: block;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #000000;
-    padding: 2px 5px;
-    color: #24292E;
-    font-size: large;
-    font-display: center;
-}
 
-
-.divMargin{
+.divMargin {
     margin-top: 20px;
 }
 
-.space{
+.space {
     width: 50px;
     height: auto;
     display: inline-block;
 }
 
-.button-4 {
+.bouton-custom {
     appearance: none;
     background-color: #202020;
     border: 1px solid rgba(27, 31, 35, 0.15);
@@ -58,13 +43,13 @@ input {
     word-wrap: break-word;
 }
 
-.button-4:hover {
+.bouton-custom:hover {
     background-color: #505050;
     text-decoration: none;
     transition-duration: 0.1s;
 }
 
-.button-4:disabled {
+.bouton-custom:disabled {
     background-color: #202020;
     border-color: rgba(27, 31, 35, 0.15);
     opacity: 40%;
@@ -72,22 +57,52 @@ input {
     cursor: default;
 }
 
-.button-4:active {
+.bouton-custom:active {
     background-color: #EDEFF2;
     box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
     transition: none 0s;
 }
 
-.button-4:focus {
+.bouton-custom:focus {
     outline: 1px transparent;
 }
 
-.button-4:before {
+.bouton-custom:before {
     display: none;
 }
 
-.button-4:-webkit-details-marker {
+.bouton-custom:-webkit-details-marker {
     display: none;
+}
+
+.valider-bouton {
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+    color: #fff8f8;
+    background-color: var(--couleur-theme);
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+}
+
+.valider-bouton:hover {
+    background-color: var(--couleur-theme);
+    box-shadow: 0px 5px 5px rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.valider-bouton:disabled {
+    cursor: default;
+    background-color: #ccc;
+    box-shadow: none;
+    transform: none;
 }
 
 
@@ -98,13 +113,13 @@ input {
     height: 80vh;
 }
 
-.imgExo{
-        cursor: pointer;
-        border: 2px solid #000;
-        border-radius: 5px;
-        max-width: 80%;
-        max-height: 80%;
-        margin: auto 15px;
+.imgExo {
+    cursor: pointer;
+    border: 2px solid #000;
+    border-radius: 5px;
+    max-width: 80%;
+    max-height: 80%;
+    margin: auto 15px;
 }
 
 
@@ -134,14 +149,15 @@ nav ul li {
 }
 
 nav ul li:last-child {
-    margin-right: 0 ;
-    margin-left: 0px ;
+    margin-right: 0;
+    margin-left: 0px;
 }
 
 nav a {
     color: #fff;
     text-decoration: none;
-} 
+}
+
 .logout {
     margin-left: auto;
 }
@@ -159,4 +175,72 @@ nav a {
 .logout:hover {
     background-color: #262421;
     color: #fff;
+}
+
+/* css button custom from  https://www.joshwcomeau.com/animation/3d-button/*/
+.bouton-3D {
+    border: none;
+    border-radius: 12px;
+    background: var(--couleur-theme-fonce);
+    padding: 0;
+    margin: 2% 0;
+    cursor: pointer;
+}
+
+.texte-3D {
+    display: block;
+    padding: 0.3rem 1rem;
+    border-radius: 12px;
+    font-size: 1.2vw;
+    background: var(--couleur-theme);
+    color: rgb(255, 255, 255);
+    transform: translateY(-4px);
+}
+
+.bouton-3D[disabled] {
+    background: gray;
+    cursor: not-allowed;
+}
+
+.bouton-3D[disabled] .texte-3D {
+    transform: none;
+    background: darkgray;
+}
+
+.bouton-3D[disabled]:hover .texte-3D {
+    transform: none;
+}
+
+.bouton-3D:active .texte-3D {
+    transform: translateY(-2px);
+}
+
+.bouton-3D:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.texte-3D {
+    transition:
+        transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.bouton-3D:hover .texte-3D {
+    transform: translateY(-6px);
+    transition:
+        transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.bouton-3D:active .texte-3D {
+    transform: translateY(-2px);
+    transition: transform 34ms;
+}
+
+/* --- */
+
+
+:root {
+    --couleur-theme: #7e9d4e;
+    --couleur-theme-fonce: #5c742f;
+    --couleur-erreur: #c63935;
+    --police-ecriture: 'Helvetica Neue', sans-serif;
 }

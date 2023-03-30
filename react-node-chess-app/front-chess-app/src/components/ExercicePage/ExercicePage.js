@@ -1,49 +1,51 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "../Components.css"
 import "./ExercicePage.css"
+import { Howl, Howler } from 'howler';
 
-export default function ExercicePage({id_exercice}) {
+export default function ExercicePage() {
     const [dataLevels, setDataLevels] = useState([]);
-    const [dataExo, setDataExo] = useState([]);
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
-    const exerciceid = sessionStorage.getItem('exerciceSelectionne');
-    
+    const location = useLocation();
+    const exercice = location.state.exercice;
+    const exerciceId = exercice.id;
+    const soundHover = new Howl({
+        src: ['/sons/hover.mp3']
+    });
+    const soundDown = new Howl({
+        src: ['/sons/clicdown.wav']
+    });
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
+
     //fonction pour les boutons 
-    const handleLevelClick = (level) => {
-        navigate("/"+dataExo.name.toLowerCase()+"/niveau"+level.id);
+    const handleLevelClick = (level, index) => {
+        Howler.volume(0.3);
+        soundUp.play();
+        navigate('/niveaux', { state: { exercice: exercice, niveau: level, index: index } });
     };
 
-    //Pour récuperer les data de l'exo
-    useEffect(() => {
-        var config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: 'http://localhost:3001/exercises/'+exerciceid,
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        };
+    const handlePieceHover = () => {
+        Howler.volume(0.1);
+        soundHover.play();
+    };
 
-        axios(config)
-            .then(function (response) {
-                console.log(JSON.stringify(response.data));
-                setDataExo(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }, []);
+    const handlePieceDown = () => {
+        Howler.volume(0.3);
+        soundDown.play();
+    };
+
 
     //useEffect recupere les info de chaques levels au chargement de la page
     useEffect(() => {
         var config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: 'http://localhost:3001/levels/allLevels/'+exerciceid,
+            url: 'http://localhost:3001/levels/allLevels/' + exerciceId,
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -59,14 +61,12 @@ export default function ExercicePage({id_exercice}) {
             });
     }, []);
 
-    
-
     return (
-        <div className="exercise-page">
+        <div className="exercice-page">
             <div>
-                <h1 className="exercise-title">{dataExo.name}</h1>
-                <i className="exercise-description-name">Règles du jeu :</i>
-                <p className="exercise-description">{dataExo.description}</p>
+                <h1 className="exercice-title">{exercice.name}</h1>
+                <i className="exercice-description-name">Règles du jeu :</i>
+                <p className="exercice-description">{exercice.description}</p>
             </div>
             <div className="levels-container">
                 <div className="level-header">
@@ -77,7 +77,14 @@ export default function ExercicePage({id_exercice}) {
                     <div key={level.id} className="level-row">
                         <div className="level-name-container">
                             <div className="level-name">{level.name}</div>
-                            <button className="level-button" onClick={() => handleLevelClick(level)}>Niveau {index + 1} </button>
+                            <button className="bouton-3D"
+                                onClick={() => handleLevelClick(level, (index + 1))}
+                                onMouseEnter={() => handlePieceHover()}
+                                onMouseDown={() => handlePieceDown()}>
+                                <span className="texte-3D"> {/* Retourne à la page précédente */}
+                                    Niveau {index + 1}
+                                </span>
+                            </button>
                         </div>
                         <div className="level-name-container">
                             <div className="level-description">{level.rules}</div>

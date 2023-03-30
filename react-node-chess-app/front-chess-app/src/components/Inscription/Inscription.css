@@ -1,4 +1,4 @@
-.container {
+.container-inscription {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -6,7 +6,7 @@
     height: 100vh;
 }
 
-.connexion {
+.form-inscription {
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: #262421;
     width: 23em;
@@ -18,29 +18,31 @@
     margin-bottom: 2%;
 }
 
-.form {
-    width: 100%;
-    max-width: 600px;
-}
 
-label {
-    color: black;
-}
-
-input {
-    height: 50px;
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 30px;
+.input-inscription {
+    padding: 0;
+    padding-left: 10px;
+    height: 2em;
+    width: 90%;
+    margin-top: 5%;
     display: block;
     background: transparent;
     border: none;
     border-bottom: 1px solid #000000;
-    padding: 2px 5px;
     color: #ffffff;
-    font-size: 24px;
+    font-size: 20px;
     font-display: center;
     background-color: #312e2b;
+}
+
+.info {
+    font-size: 12px;
+    color: var(--couleur-theme);
+    margin-top: 5px;
+}
+
+.bouton-custom-form {
+    margin-top: 7%;
 }
 
 .errors {

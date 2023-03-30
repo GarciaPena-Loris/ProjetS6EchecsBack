@@ -34,7 +34,6 @@ const verifToken = (req, res, next) => {
 verifToken.unless = unless;
 
 //Importation des routes
-var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var exercisesRouter = require('./routes/exercises');
 var levelsRouter = require('./routes/levels');
@@ -57,7 +56,6 @@ app.use(verifToken.unless({ path: ['/', '/users/signin', '/users/signup'] })); /
 app.use(acl.authorize); //configurer les autorisations pour les utilisateurs connectés
 
 // Les routes
-app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/exercises', exercisesRouter);
 app.use('/levels', levelsRouter);

@@ -15,10 +15,20 @@ router.get('/', async (req, res) => {
 });
 
 // Get a single EloExercise by Name
-router.get('/:name/:id_exercise', async (req, res) => {
+router.get('/:name/:id', async (req, res) => {
   try {
-    const exercise = await EloExercise.getEloExerciseByNameId(req.params.id_exercise, req.params.name_user);
-    res.json(exercise);
+    const eloExercise = await EloExercise.getEloExerciseByNameId(req.params.id, req.params.name);
+    res.json({ eloExercice: eloExercise });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Get a single EloExercise by Name
+router.get('/elo/:name/:id', async (req, res) => {
+  try {
+    const elo = await EloExercise.getEloFromEloExerciseBIdyName(req.params.id, req.params.name);
+    res.json({ exerciceElo: elo });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -28,7 +38,7 @@ router.get('/:name/:id_exercise', async (req, res) => {
 // Update an existing EloExercise
 router.put('/:name/:id', async (req, res) => {
   try {
-    const updatedeloExercise = await EloExercise.updateEloExercise(req.params.id_exercise, req.params.name_user, req.body.elo);
+    const updatedeloExercise = await EloExercise.updateEloExercise(req.params.id, req.params.name, req.body.elo);
     res.json(updatedeloExercise);
   } catch (error) {
     res.status(500).json({ error: error.message });

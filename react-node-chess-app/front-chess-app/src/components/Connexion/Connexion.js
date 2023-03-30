@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
-import "../Components.css"
+import { useNavigate } from "react-router-dom";
+import { GlobalContext } from '../GlobalContext/GlobalContext';
+import { decodeToken } from "react-jwt";
 import "./Connexion.css"
+
 
 export default function Connexion() {
     const navigate = useNavigate();
+
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
+    const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
 
-    // verifie si la personne est connecté si oui, la renvoie sur la page de selection d'exercice 
-    useEffect(()=>{
-        if(sessionStorage.token){(navigate("/selectionExercices"))}
-    });
 
     const handleConnexion = async (event) => {
         event.preventDefault();
-        const qs = require('qs');
         const formData = {
             'name': nomCompte,
             'password': motDePasse
@@ -31,42 +30,76 @@ export default function Connexion() {
             },
             data: formData
         };
-        console.log(formData);
         axios(config)
-            .then(function (response) {
-                console.log(response.data);
-                setReponseServeur(response.data);
+            .then(async function (response) {
                 // Pour stocker le token dans la variable de session
                 sessionStorage.setItem('token', response.data.token);
-
-                navigate("/selectionExercices");
+                const decoded = decodeToken(sessionStorage.token);
+                const name = decoded.name;
+                // get elo
+                var config = {
+                    method: 'get',
+                    maxBodyLength: Infinity,
+                    url: `http://localhost:3001/users/globalElo/${name}`,
+                    headers: {
+                        'Authorization': `Bearer ${response.data.token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                };
+                axios(config)
+                    .then(function (response) {
+                        updateGlobalElo(response.data.global_elo);
+                        navigate('/selectionExercices');
+                    })
+                    .catch(function (error) {
+                        console.log(error.response);
+                    });
             })
             .catch(function (error) {
-                console.log(error.response.data);
-                setReponseServeur(error.response.data);
+                if (error.response) {
+                    console.log(error.response.data);
+                    setReponseServeur(error.response.data.error);
+                }
+                else {
+                    setReponseServeur(error.message);
+                }
+                setTimeout(() => {
+                    setReponseServeur('');
+                }, 4000);
             });
     };
 
     return (
-        <div className="container">
-            <div className="connexion">
-                <div className="form">
-                    <form onSubmit={handleConnexion} action="" methode="post">
-                        <h1>Connexion</h1>
-                        <div>
-                            <input placeholder="Nom de compte" value={nomCompte} onChange={(event) => setNomCompte(event.target.value)} />
-                        </div>
-                        <div>
-                            <input type="password" placeholder="Mot de passe" value={motDePasse} onChange={(event) => setMotDePasse(event.target.value)} />
-                        </div>
-                        <button className="button-4" role="button">Se connecter</button>
-                    </form>
-                </div>
-            </div>
+        <div className="container-connexion">
+            <form className="form-connexion" onSubmit={handleConnexion} >
+                <h1>Connexion</h1>
+                <input
+                    className="input-connexion"
+                    placeholder="Nom de compte"
+                    value={nomCompte}
+                    onChange={(event) => setNomCompte(event.target.value)} />
+                <input
+                    className="input-connexion"
+                    type="password"
+                    placeholder="Mot de passe"
+                    value={motDePasse}
+                    onChange={(event) => setMotDePasse(event.target.value)} />
+                {nomCompte !== "" && motDePasse !== "" ? (
+                    <button
+                        className="bouton-custom bouton-custom-form">
+                        Se connecter
+                    </button>) : (
+                    <button
+                        className="bouton-custom bouton-custom-form"
+                        disabled>
+                        Se connecter
+                    </button>
+                )}
+            </form>
             <div>
-                {reponseServeur.error && (
+                {reponseServeur && (
                     <div className="errors">
-                        <b>{reponseServeur.error}</b>
+                        <b>{reponseServeur}</b>
                     </div>
                 )}
             </div>

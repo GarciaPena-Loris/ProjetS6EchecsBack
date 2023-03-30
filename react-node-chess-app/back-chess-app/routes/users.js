@@ -27,6 +27,16 @@ router.get('/:name', async (req, res) => {
   }
 });
 
+// Get a single user by Name
+router.get('/globalElo/:name', async (req, res) => {
+  try {
+    const globalElo = await User.getEloUserByName(req.params.name);
+    res.json(globalElo);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // Create a new user //gerer les nom de joueur trop long ou trop court ou deja utilisé.
 router.post('/signup', (req, res) => {
   const user = req.body;
