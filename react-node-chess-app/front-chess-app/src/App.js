@@ -14,6 +14,7 @@ import SelectionExercices from "./components/SelectionExercices/SelectionExercic
 import Exercices from "./components/ExercicePage/ExercicePage";
 import Niveaux from "./components/NiveauxPage/NiveauxPage";
 import PuzzleCache from './components/Exercices/PuzzleCache/PuzzleCache';
+import PuzzleCache2 from './components/Exercices/PuzzleCache/PuzzleCache2';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/niveaux" element={<RequireAuth component={Niveaux} />} />
           <Route path="*" element={<NoPage />} />
           <Route path="/puzzlecache" element={<PuzzleCache/>} />
+          <Route path="/puzzlecache2" element={<PuzzleCache2/>} />
         </Routes>
         </GlobalProvider>
       </ErrorBoundary>

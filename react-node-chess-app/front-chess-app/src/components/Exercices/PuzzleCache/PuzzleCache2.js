@@ -283,7 +283,7 @@ class PuzzleCache extends React.Component {
         const returnPieces = {};
         piecesBlanche.map((p) => {
             returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://leadgenapp.io/wp-content/uploads/2022/03/28f3b36507394f083b344ea49bbf8bb5.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
+                <img src="https://images.vexels.com/media/users/3/189293/isolated/lists/dccc31fcb7e0ed37bcbabd61bf8b0ffc-pear-icon-stroke.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
             );
             return null;
         });
