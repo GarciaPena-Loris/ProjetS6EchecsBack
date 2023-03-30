@@ -21,7 +21,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 import { Howl, Howler } from 'howler';
 
-class Nomenclature3 extends React.Component {
+class Nomenclature4 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -29,7 +29,6 @@ class Nomenclature3 extends React.Component {
             message: '',
             showCorrect: false,
             showIncorrect: false,
-            orientation: "white",
             chess: new Chess()
         };
         // validation réponse
@@ -45,6 +44,11 @@ class Nomenclature3 extends React.Component {
         this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
+
+        this.positionPieceP = ``;
+        this.positionPieceM = ``;
+        this.positionPieceA = ``;
+        this.optionManger = ``;
 
         this.monInputRef = React.createRef();
 
@@ -63,12 +67,6 @@ class Nomenclature3 extends React.Component {
         this.soundWrong = new Howl({
             src: ['/sons/evil.ogg']
         });
-        this.switchOn = new Howl({
-            src: ['/sons/switchOn.mp3']
-        });
-        this.switchOff = new Howl({
-            src: ['/sons/switchOff.mp3']
-        });
     }
 
     componentDidMount() {
@@ -79,8 +77,7 @@ class Nomenclature3 extends React.Component {
         this.monInputRef.current.focus();
     }
 
-
-    genererPionOuDame = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+    genererPion = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         if (couleur === 'b') {
             // position piece qui mange
             colonneP = Math.floor(Math.random() * 6) + 1;
@@ -320,17 +317,61 @@ class Nomenclature3 extends React.Component {
         return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
     }
 
-    genererPieceAleatoire = () => {
+    genererFou = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+        //piece qui mange 
+        colonneP = Math.floor(Math.random() * 8) + 1;
+        ligneP = Math.floor(Math.random() * 8) + 1;
+        //piece qui sera mangé 
+        do {
+            do {
+                colonneM = Math.floor(Math.random() * 8) + 1;
+            }
+            while (colonneM === colonneP);
+            ligneM = ligneP + Math.abs(colonneP - colonneM);
+            if (ligneM > 8) {
+                ligneM = ligneP - Math.abs(colonneP - colonneM);
+            }
+        } while (ligneM < 0 || ligneM > 8);
+        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+    }
+
+    genererReine = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+        //piece qui mange 
+        colonneP = Math.floor(Math.random() * 8) + 1;
+        ligneP = Math.floor(Math.random() * 8) + 1;
+        //piece qui sera mangé 
+        colonneM = Math.floor(Math.random() * 8) + 1;
+        do { ligneM = Math.floor(Math.random() * 8) + 1; }
+        while ((colonneM === colonneP && ligneM === ligneP) || (ligneM !== ligneP && colonneM !== colonneP
+            && ligneM !== (ligneP + Math.abs(colonneP - colonneM) || ligneP - Math.abs(colonneP - colonneM))));
+        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+    }
+
+    genererRoi = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+        //piece qui mange 
+        colonneP = Math.floor(Math.random() * 8) + 1;
+        ligneP = Math.floor(Math.random() * 8) + 1;
+        //piece qui sera mangé 
+        do {
+            colonneM = Math.floor(Math.random() * 3) + (colonneP - 1);
+            ligneM = Math.floor(Math.random() * 3) + (ligneP - 1);
+        }
+        while (colonneM > 8 || colonneM < 1 || ligneM > 8 || ligneM < 1 ||
+            (ligneM === ligneP && colonneM === colonneP));
+        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+    }
+
+    genererPieceAleatoire() {
         const { chess } = this.state;
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coulP, coulM, couleur;
+        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coul, coulM, couleur;
         chess.clear();
 
         //choix couleur
         if (Math.random() < 0.5) {
             couleur = 'b';
-            coulP = 'b';
+            coul = 'b';
             coulM = 'w';
             chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
             chess.remove('a8');
@@ -338,58 +379,101 @@ class Nomenclature3 extends React.Component {
 
         }
         else {
-            coulP = 'w';
+            coul = 'w';
             coulM = 'b';
         }
 
         // premiere etape choisir piece
-        const pieces = ['p', 'r', 'n', 'q'];
+        const pieces = ['p', 'r', 'n', 'b', 'q', 'k'];
         const piece = pieces[Math.floor(Math.random() * pieces.length)];
         this.piece = piece;
 
         // 3 cas
-        if (piece === 'p' || piece === 'q') { // pions
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPionOuDame(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        if (piece === 'p') { // pions
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPion(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
         else if (piece === 'r') { // tours
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererTour(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
-        else { // fou
+        else if (piece === 'n') { // cavaliers
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererCavalier(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
+        else if (piece === 'b') { // fou
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererFou(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        }
+        else if (piece === 'q') { // reine
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererReine(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        }
+        else if (piece === 'k') { // roi
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererRoi(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        }
 
+        // liste des positions
         this.positionPieceP = `${alpha[colonneP - 1]}${ligneP}`;
         this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
         this.positionPieceA = `${alpha[colonneA - 1]}${ligneA}`;
 
-        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
-        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceA) // A
-        chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
+        if (Math.random() < 0.5) {
+            chess.put({ type: `${piece}`, color: `${coul}` }, this.positionPieceA) // A
+        }
+        if (Math.random() < 0.7) {
+            chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
+            this.optionManger = `manger la reine`;
+        } else if (piece === 'p') {
+            if (coul === 'b' && ligneP === 7) {
+                colonneM = colonneP;
+                if (Math.random() < 0.5) { ligneM = 5 } else ligneM = 6;
+            } else if (coul === 'w' && ligneP === 2) {
+                colonneM = colonneP;
+                if (Math.random() < 0.5) { ligneM = 4 } else ligneM = 3;
+            }
+            colonneM = colonneP;
+            this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
+        }
+
+        chess.put({ type: `${piece}`, color: `${coul}` }, this.positionPieceP); // P
 
         if (piece === 'p') this.nomPiece = `le pion`
         else if (piece === 'r') this.nomPiece = `la tour`
         else if (piece === 'n') this.nomPiece = `le cavalier`
+        else if (piece === 'b') this.nomPiece = `le fou`
         else if (piece === 'q') this.nomPiece = `la reine`
-        this.nomPiece += ` en ${this.positionPieceP}`
+        else if (piece === 'k') this.nomPiece = `le roi`
 
-        this.pos = `${alpha[colonneM - 1]}${ligneM}`; // position de la piece mangé
+        this.pos = this.positionPieceM;
 
-        // trouver le coup
-        let coup = '';
+        var coup = '';
         if (piece !== 'p') {
             coup += piece.toUpperCase();
         }
 
-        if (colonneA === colonneP) {
-            coup += ligneP;
+        if (chess.get(this.positionPieceA) && piece !== 'p') {
+            if (colonneA === colonneP) {
+                coup += ligneP;
+            }
+            else coup += alpha[colonneP - 1];
         }
-        else coup += alpha[colonneP - 1];
 
-        coup += 'x';
+        if (chess.get(this.positionPieceM)) {
+            if (piece === 'p') {
+                coup += alpha[colonneP - 1];
+            }
+            coup += 'x';
+        }
         coup += alpha[colonneM - 1] + ligneM;
-        this.coup = coup;
+        if (piece === 'p' && (ligneM === 1 || ligneM === 8)) {
+            coup += '=Q';
+        }
 
+        this.coup = coup;
         this.setState({ chess: chess });
+
+        // deplacement
+        setTimeout(() => {
+            const { chess } = this.state;
+            chess.move(this.coup);
+            this.setState({ chess: chess });
+        }, 1000);
     }
 
     // couleur des cases
@@ -478,7 +562,6 @@ class Nomenclature3 extends React.Component {
             this.soundWin.play();
             const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
-            this.state.chess.move(this.coup);
             this.setState({
                 message: text,
                 chess: this.state.chess,
@@ -508,6 +591,7 @@ class Nomenclature3 extends React.Component {
                 this.genererPieceAleatoire();
         }, 3000); // Efface le message après 3 secondes
     }
+
 
     handleUpdate = () => {
         try {
@@ -550,7 +634,23 @@ class Nomenclature3 extends React.Component {
         }
     }
 
-    MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
+    handleClickReplay = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+
+        const { chess } = this.state;
+        chess.undo();
+        this.setState({ chess: chess, });
+
+        setTimeout((deplacement) => {
+            const { chess } = this.state;
+            this.setState({ chess: chess, });
+            chess.move(this.coup);
+        }, 1000);
+    }
+
+
+    MaterialUISwitch = styled(Switch)(({ disabled }) => ({
         width: 62,
         height: 34,
         padding: 7,
@@ -627,19 +727,25 @@ class Nomenclature3 extends React.Component {
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
                         customSquare={this.customSquare}
+                        animationDuration={500}
                         boardOrientation={this.state.orientation}
                     />
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
-                        Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
+                        Ecrivez le coup réalisé par <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                        </span>
                     </i>
                     <FormControlLabel
                         control={<this.MaterialUISwitch
                             checked={this.state.orientation === 'white'}
+                            disabled={true}
                         />}
-                        label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                        label={
+                            <div style={{ color: this.state.orientation === 'white' ? 'white' : 'black' }}>
+                                {this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'}
+                            </div>
+                        }
                         onChange={this.handleOrientation}
                         style={{
                             color: this.state.orientation === 'white' ? 'white' : 'black',
@@ -721,7 +827,6 @@ class Nomenclature3 extends React.Component {
                                 onKeyDown={this.handleKeyPress}
                                 ref={this.monInputRef} />
                             <button className="bouton-3D button-clean"
-                                key="clean"
                                 title="supprimer"
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
@@ -732,17 +837,27 @@ class Nomenclature3 extends React.Component {
                             </button>
                         </Stack>
 
-                        <button className="bouton-3D"
-                            key="valider"
-                            title="Valider"
-                            {...(this.state.inputValue.length < 3 && { disabled: true })}
-                            onMouseEnter={() => this.handlePieceHover()}
-                            onMouseUp={this.handleClick}
-                            onMouseDown={() => this.handlePieceDown()}>
-                            <span className="texte-3D">
-                                Valider
-                            </span>
-                        </button>
+                        <Stack className="stack" spacing={2} direction="row" alignItems="center">
+                            <button className="bouton-3D"
+                                title="Valider"
+                                {...(this.state.inputValue.length < 3 && { disabled: true })}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClick}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D">
+                                    Valider
+                                </span>
+                            </button>
+                            <button className="bouton-3D button-replay"
+                                title="Refaire"
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickReplay}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D texte-replay">
+                                    Refaire
+                                </span>
+                            </button>
+                        </Stack>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}
@@ -753,4 +868,4 @@ class Nomenclature3 extends React.Component {
     }
 }
 
-export default Nomenclature3;
+export default Nomenclature4;

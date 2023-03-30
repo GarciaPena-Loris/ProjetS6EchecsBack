@@ -14,6 +14,7 @@ import Nomenclature1 from '../Exercices/Nomenclature/Nomenclature1';
 import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
 import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
 import Nomenclature4 from '../Exercices/Nomenclature/Nomenclature4';
+import Nomenclature5 from '../Exercices/Nomenclature/Nomenclature5';
 
 export default function NiveauxPage() {
     const location = useLocation();
@@ -94,10 +95,17 @@ export default function NiveauxPage() {
                 updateGlobalElo={updateGlobalElo} />,
             4: <Nomenclature4
                 idExercice={exercice.id}
-                pointsGagnes="10"
+                pointsGagnes="15"
                 pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
+            5: <Nomenclature5
+                idExercice={exercice.id}
+                pointsGagnes="10"
+                pointsPerdus="8"
+                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
+                updateGlobalElo={updateGlobalElo} />
+
             // etc...
         },
         // etc...
