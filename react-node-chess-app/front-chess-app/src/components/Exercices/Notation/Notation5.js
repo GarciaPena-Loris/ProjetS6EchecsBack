@@ -1,5 +1,5 @@
 import React from "react";
-import './Nomenclature.css';
+import './Notation.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
@@ -21,7 +21,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 import { Howl, Howler } from 'howler';
 
-class Nomenclature4 extends React.Component {
+class Notation4 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -854,7 +854,7 @@ class Nomenclature4 extends React.Component {
                                 onMouseUp={this.handleClickReplay}
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D texte-replay">
-                                    Refaire
+                                    Rejouer
                                 </span>
                             </button>
                         </Stack>
@@ -868,4 +868,4 @@ class Nomenclature4 extends React.Component {
     }
 }
 
-export default Nomenclature4;
+export default Notation4;

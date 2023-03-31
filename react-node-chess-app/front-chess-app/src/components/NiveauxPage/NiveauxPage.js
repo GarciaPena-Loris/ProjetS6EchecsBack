@@ -10,11 +10,11 @@ import { Howl, Howler } from 'howler';
 import "./NiveauxPage.css"
 
 // imporation des composants de chaque niveau
-import Nomenclature1 from '../Exercices/Nomenclature/Nomenclature1';
-import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
-import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
-import Nomenclature4 from '../Exercices/Nomenclature/Nomenclature4';
-import Nomenclature5 from '../Exercices/Nomenclature/Nomenclature5';
+import Notation1 from '../Exercices/Notation/Notation1';
+import Notation2 from '../Exercices/Notation/Notation2';
+import Notation3 from '../Exercices/Notation/Notation3';
+import Notation4 from '../Exercices/Notation/Notation4';
+import Notation5 from '../Exercices/Notation/Notation5';
 
 export default function NiveauxPage() {
     const location = useLocation();
@@ -74,32 +74,32 @@ export default function NiveauxPage() {
     // Créez une structure de données pour stocker les composants de chaque niveau
     const niveaux = {
         1: {
-            1: <Nomenclature1
+            1: <Notation1
                 idExercice={exercice.id}
                 pointsGagnes="5"
                 pointsPerdus="2"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo}
                 matches={matches} />,
-            2: <Nomenclature2
+            2: <Notation2
                 idExercice={exercice.id}
                 pointsGagnes="8"
                 pointsPerdus="3"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
-            3: <Nomenclature3
+            3: <Notation3
                 idExercice={exercice.id}
                 pointsGagnes="10"
                 pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
-            4: <Nomenclature4
+            4: <Notation4
                 idExercice={exercice.id}
                 pointsGagnes="15"
                 pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
-            5: <Nomenclature5
+            5: <Notation5
                 idExercice={exercice.id}
                 pointsGagnes="10"
                 pointsPerdus="8"

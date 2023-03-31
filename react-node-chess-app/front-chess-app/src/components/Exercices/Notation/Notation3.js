@@ -1,27 +1,18 @@
 import React from "react";
-import './Nomenclature.css';
+import './Notation.css';
 import '../../Components.css';
-import { Chessboard } from 'react-chessboard'
-import { Chess } from 'chess.js'
-// validation réponse
+import { Chessboard } from 'react-chessboard';
+import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
 import { Stack } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { styled } from '@mui/material/styles';
+import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import {
-    faChessKing as whiteKing,
-    faChessQueen as whiteQueen,
-    faChessRook as whiteRook,
-    faChessBishop as whiteBishop,
-    faChessKnight as whiteKnight,
-    faChessPawn as whitePawn
-} from '@fortawesome/free-regular-svg-icons'
 import { Howl, Howler } from 'howler';
 
-class Nomenclature4 extends React.Component {
+
+class Notation3 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -30,6 +21,9 @@ class Nomenclature4 extends React.Component {
             showCorrect: false,
             showIncorrect: false,
             orientation: "white",
+            coordonnees: true,
+            selectedLanguage: 'fr',
+            piecesLanguage: ['P', 'T', 'C', 'D'],
             chess: new Chess()
         };
         // validation réponse
@@ -42,6 +36,9 @@ class Nomenclature4 extends React.Component {
 
         this.nomPiece = '';
         this.pos = '';
+        this.coup = [];
+        this.realCoup = '';
+        this.indexPiece = 0;
         this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
@@ -62,6 +59,12 @@ class Nomenclature4 extends React.Component {
         });
         this.soundWrong = new Howl({
             src: ['/sons/evil.ogg']
+        });
+        this.switchOn = new Howl({
+            src: ['/sons/switchOn.mp3']
+        });
+        this.switchOff = new Howl({
+            src: ['/sons/switchOff.mp3']
         });
     }
 
@@ -337,15 +340,16 @@ class Nomenclature4 extends React.Component {
         }
 
         // premiere etape choisir piece
-        const pieces = ['p', 'r', 'n', 'q'];
-        const piece = pieces[Math.floor(Math.random() * pieces.length)];
+        const pieces = ['P', 'R', 'N', 'Q'];
+        this.indexPiece = Math.floor(Math.random() * pieces.length);
+        let piece = pieces[this.indexPiece];
         this.piece = piece;
 
         // 3 cas
-        if (piece === 'p' || piece === 'q') { // pions
+        if (piece === 'P' || piece === 'Q') { // pions
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPionOuDame(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
-        else if (piece === 'r') { // tours
+        else if (piece === 'R') { // tours
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererTour(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
         else { // fou
@@ -356,31 +360,59 @@ class Nomenclature4 extends React.Component {
         this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
         this.positionPieceA = `${alpha[colonneA - 1]}${ligneA}`;
 
-        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceP) // P
-        chess.put({ type: `${piece}`, color: `${coulP}` }, this.positionPieceA) // A
+        chess.put({ type: `${piece.toLowerCase()}`, color: `${coulP}` }, this.positionPieceP) // P
+        chess.put({ type: `${piece.toLowerCase()}`, color: `${coulP}` }, this.positionPieceA) // A
         chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
 
-        if (piece === 'p') this.nomPiece = `le pion`
-        else if (piece === 'r') this.nomPiece = `la tour`
-        else if (piece === 'n') this.nomPiece = `le cavalier`
-        else if (piece === 'q') this.nomPiece = `la reine`
+        if (piece === 'P') this.nomPiece = `le pion`
+        else if (piece === 'R') this.nomPiece = `la tour`
+        else if (piece === 'N') this.nomPiece = `le cavalier`
+        else if (piece === 'Q') this.nomPiece = `la dame`
+        this.nomPiece += ` en ${this.positionPieceP}`
 
         this.pos = `${alpha[colonneM - 1]}${ligneM}`; // position de la piece mangé
 
         // trouver le coup
         let coup = '';
-        if (piece !== 'p') {
-            coup += piece.toUpperCase();
-        }
 
-        if (colonneA === colonneP) {
+        if (piece === 'N' && colonneP !== colonneA && ligneP !== ligneA) {
+            // cas 1
+            coup += this.state.piecesLanguage[this.indexPiece];
             coup += ligneP;
-        }
-        else coup += alpha[colonneP - 1];
+            coup += 'x';
+            coup += alpha[colonneM - 1] + ligneM;
+            this.coup.push(coup);
 
-        coup += 'x';
-        coup += alpha[colonneM - 1] + ligneM;
-        this.coup = coup;
+            // cas 2
+            coup = '';
+            coup += this.state.piecesLanguage[this.indexPiece];
+            coup += alpha[colonneP - 1];
+            coup += 'x';
+            coup += alpha[colonneM - 1] + ligneM;
+            this.coup.push(coup);
+
+            if (piece !== 'P') {
+                this.realCoup = pieces[this.indexPiece] + this.coup[1].slice(1);
+            }
+            else {
+                this.realCoup = this.coup[1];
+            }
+        }
+        else {
+            if (piece !== 'P') {
+                coup += this.state.piecesLanguage[this.indexPiece];
+            }
+            if (colonneA === colonneP) {
+                coup += ligneP;
+            }
+            else coup += alpha[colonneP - 1];
+
+            coup += 'x';
+            coup += alpha[colonneM - 1] + ligneM;
+            this.coup.push(coup);
+            this.realCoup = this.coup[0];
+
+        }
 
         this.setState({ chess: chess });
     }
@@ -462,16 +494,47 @@ class Nomenclature4 extends React.Component {
         }
     }
 
+    handleCoordonnees = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ coordonnees: true });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ coordonnees: false });
+        }
+    }
+
+    handleLanguageChange = (event) => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+
+        const listePiecesLangue = {
+            fr: ['P', 'T', 'C', 'D'],
+            en: ['P', 'R', 'N', 'Q'],
+            es: ['P', 'T', 'A', 'D'],
+            de: ['B', 'T', 'L', 'D'],
+            it: ['P', 'T', 'A', 'R'],
+            ru: ['П', 'Л', 'К', 'Ф'],
+            zh: ['卒', '車', '馬', '后'],
+        }
+        this.coup.forEach((coup, index) => {
+            this.coup[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+        })
+        this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
+    }
+
     handleClick = () => {
         Howler.volume(0.3);
         this.soundUp.play();
         const { inputValue } = this.state;
-        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            Howler.volume(0.3);
+        if (this.coup.includes(inputValue) || (this.piece === 'P' && this.coup.includes(inputValue.slice(1)))) {
+            Howler.volume(0.5);
             this.soundWin.play();
             const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
-            this.state.chess.move(this.coup);
+            this.state.chess.move(this.realCoup);
             this.setState({
                 message: text,
                 chess: this.state.chess,
@@ -481,9 +544,9 @@ class Nomenclature4 extends React.Component {
             });
         }
         else {
-            Howler.volume(1);
+            Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! La piéce était en ${this.coup[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -493,6 +556,7 @@ class Nomenclature4 extends React.Component {
             });
         }
         setTimeout(() => {
+            this.coup = [];
             this.setState({ showCorrect: false, showIncorrect: false, message: '' });
 
             if (this.points !== 0)
@@ -543,7 +607,7 @@ class Nomenclature4 extends React.Component {
         }
     }
 
-    MaterialUISwitch = styled(Switch)(({ disabled }) => ({
+    MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
         width: 62,
         height: 34,
         padding: 7,
@@ -586,17 +650,49 @@ class Nomenclature4 extends React.Component {
             opacity: 0.5,
         },
     }));
-
+    Android12Switch = styled(Switch)(({ theme }) => ({
+        padding: 8,
+        '& .MuiSwitch-track': {
+            borderRadius: 22 / 2,
+            '&:before, &:after': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 16,
+                height: 16,
+            },
+            '&:before': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                    theme.palette.getContrastText(theme.palette.primary.main),
+                )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+                left: 12,
+            },
+            '&:after': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                    theme.palette.getContrastText(theme.palette.primary.main),
+                )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+                right: 12,
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            boxShadow: 'none',
+            width: 16,
+            height: 16,
+            margin: 2,
+        },
+    }));
+    theme = createTheme({
+        palette: {
+            secondary: {
+                main: '#af80dc',
+            },
+        },
+    });
 
     render() {
         const piecesBlanchesNom = [
-            "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
-        ]
-        const piecesBlanchesIcon = [
-            whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
-        ]
-        const piecesBlanchesInput = [
-            "P", "R", "B", "N", "Q", "K"
+            "Pion", "Tour", "Cavalier", "Dame",
         ]
         let lignes = this.state.orientation === 'white'
             ? ["8", "7", "6", "5", "4", "3", "2", "1"]
@@ -621,40 +717,61 @@ class Nomenclature4 extends React.Component {
                         arePiecesDraggable={false}
                         customSquare={this.customSquare}
                         boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
+                        animationDuration={800}
                     />
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine </span>
+                        </span> mange <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
                     </i>
-                    <FormControlLabel
-                        control={<this.MaterialUISwitch
-                            checked={this.state.orientation === 'white'}
-                            disabled={true}
-                        />}
-                        label={
-                            <div style={{ color: this.state.orientation === 'white' ? 'white' : 'black' }}>
-                                {this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'}
-                            </div>
-                        }
-                        onChange={this.handleOrientation}
-                        style={{
-                            color: this.state.orientation === 'white' ? 'white' : 'black',
-                        }}
-                    />
+                    <div className="option">
+                        <FormControlLabel
+                            control={<this.MaterialUISwitch
+                                checked={this.state.orientation === 'white'}
+                            />}
+                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            onChange={this.handleOrientation}
+                            style={{
+                                color: this.state.orientation === 'white' ? 'white' : 'black',
+                            }}
+                        />
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnée'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                            <option value="fr">Français 🇫🇷</option>
+                            <option value="en">English 🇬🇧</option>
+                            <option value="es">Español 🇪🇸</option>
+                            <option value="de">Deutsch 🇩🇪</option>
+                            <option value="it">Italiano 🇮🇹</option>
+                            <option value="ru">Русский 🇷🇺</option>
+                            <option value="cn">中文 🇨🇳</option>
+                        </select>
+                    </div>
                     <div className="boutons">
                         <div className="groupe-butons" >
-                            {piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
+                            {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
                                         key={piecesBlanchesNom[index]}
                                         title={piecesBlanchesNom[index]}
                                         onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(piecesBlanchesInput[index])}
+                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
                                         onMouseDown={() => this.handlePieceDown()}>
                                         <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            <FontAwesomeIcon icon={line} />
+                                            {line}
                                         </span>
                                     </button>
                                 );
@@ -751,4 +868,4 @@ class Nomenclature4 extends React.Component {
     }
 }
 
-export default Nomenclature4;
+export default Notation3;

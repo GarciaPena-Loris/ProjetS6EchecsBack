@@ -177,6 +177,18 @@
   background-color: var(--couleur-erreur);
 }
 
+.language-selector {
+  padding: 10px;
+  font-size: 0.7vw;
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  border: none;
+  cursor: pointer;
+}
+
+.option {
+  margin: 0 1%;
+}
 
 @media only screen and (max-width: 1200px) {
   .container-general {
