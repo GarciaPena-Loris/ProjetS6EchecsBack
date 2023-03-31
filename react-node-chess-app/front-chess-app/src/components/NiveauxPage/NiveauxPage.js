@@ -15,6 +15,7 @@ import Notation2 from '../Exercices/Notation/Notation2';
 import Notation3 from '../Exercices/Notation/Notation3';
 import Notation4 from '../Exercices/Notation/Notation4';
 import Notation5 from '../Exercices/Notation/Notation5';
+import Notation6 from '../Exercices/Notation/Notation6';
 
 export default function NiveauxPage() {
     const location = useLocation();
@@ -104,7 +105,13 @@ export default function NiveauxPage() {
                 pointsGagnes="10"
                 pointsPerdus="8"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo} />
+                updateGlobalElo={updateGlobalElo} />,
+            6: <Notation6
+                idExercice={exercice.id}
+                pointsGagnes="15"
+                pointsPerdus="10"
+                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
+                updateGlobalElo={updateGlobalElo} />,
 
             // etc...
         },
