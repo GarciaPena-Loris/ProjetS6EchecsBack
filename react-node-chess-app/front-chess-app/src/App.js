@@ -13,6 +13,7 @@ import Inscription from "./components/Inscription/Inscription";
 import SelectionExercices from "./components/SelectionExercices/SelectionExercices.js";
 import Exercices from "./components/ExercicePage/ExercicePage";
 import Niveaux from "./components/NiveauxPage/NiveauxPage";
+import Compte from "./components/Compte/Compte.js";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/selectionExercices" element={<RequireAuth component={SelectionExercices} />} />
           <Route path="/exercices" element={<RequireAuth component={Exercices} />} />
           <Route path="/niveaux" element={<RequireAuth component={Niveaux} />} />
+          <Route path="/compte" element={<RequireAuth component={Compte} />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
         </GlobalProvider>

@@ -59,4 +59,16 @@ router.get('/allLevels/:id_exercise', async (req, res) => {
   }
 });
 
+// Get max elo of levels From exercise Id
+router.get('/maxElo/:id_exercise', async (req, res) => {
+  try {
+    const id_exercise = req.params.id_exercise;
+    const levels = await Level.getLevelMaxEloByExerciseId(id_exercise);
+    res.json(levels);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

@@ -69,6 +69,17 @@ class User {
         });
     }
 
+    static async updateAvatarUser(name, urlImage) {
+        return new Promise((resolve, reject) => {
+            connection.query("UPDATE users SET imageProfil = ? WHERE name = ?", [urlImage, name], (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(result.affectedRows);
+            });
+        });
+    }
+
     static async changePassword(userId, currentPassword, newPassword) {
         return new Promise(async (resolve, reject) => {
             try {

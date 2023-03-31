@@ -93,6 +93,17 @@ class Levels {
             });
         });
     }
+
+    static async getLevelMaxEloByExerciseId(id_exercise) {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT MAX(required_elo) AS 'eloMax' FROM levels WHERE id_exercise = ?", [id_exercise], (error, results) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(results[0]);
+            });
+        });
+    }
 }
 
 module.exports = Levels;
