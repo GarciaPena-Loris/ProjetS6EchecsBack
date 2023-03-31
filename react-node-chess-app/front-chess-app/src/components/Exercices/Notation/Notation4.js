@@ -36,7 +36,7 @@ class Notation3 extends React.Component {
 
         this.nomPiece = '';
         this.pos = '';
-        this.coup = [];
+        this.coups = [];
         this.realCoup = '';
         this.indexPiece = 0;
         this.idExercice = props.idExercice;
@@ -381,7 +381,7 @@ class Notation3 extends React.Component {
             coup += ligneP;
             coup += 'x';
             coup += alpha[colonneM - 1] + ligneM;
-            this.coup.push(coup);
+            this.coups.push(coup);
 
             // cas 2
             coup = '';
@@ -389,14 +389,9 @@ class Notation3 extends React.Component {
             coup += alpha[colonneP - 1];
             coup += 'x';
             coup += alpha[colonneM - 1] + ligneM;
-            this.coup.push(coup);
+            this.coups.push(coup);
 
-            if (piece !== 'P') {
-                this.realCoup = pieces[this.indexPiece] + this.coup[1].slice(1);
-            }
-            else {
-                this.realCoup = this.coup[1];
-            }
+            this.realCoup = pieces[this.indexPiece] + this.coups[1].slice(1);
         }
         else {
             if (piece !== 'P') {
@@ -409,8 +404,8 @@ class Notation3 extends React.Component {
 
             coup += 'x';
             coup += alpha[colonneM - 1] + ligneM;
-            this.coup.push(coup);
-            this.realCoup = this.coup[0];
+            this.coups.push(coup);
+            this.realCoup = pieces[this.indexPiece] + this.coups[0].slice(1);
 
         }
 
@@ -519,8 +514,8 @@ class Notation3 extends React.Component {
             ru: ['П', 'Л', 'К', 'Ф'],
             zh: ['卒', '車', '馬', '后'],
         }
-        this.coup.forEach((coup, index) => {
-            this.coup[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+        this.coups.forEach((coup, index) => {
+            this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
         })
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
     }
@@ -529,7 +524,7 @@ class Notation3 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
         const { inputValue } = this.state;
-        if (this.coup.includes(inputValue) || (this.piece === 'P' && this.coup.includes(inputValue.slice(1)))) {
+        if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
             Howler.volume(0.5);
             this.soundWin.play();
             const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
@@ -546,7 +541,7 @@ class Notation3 extends React.Component {
         else {
             Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.coup[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! La piéce était en ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -556,7 +551,7 @@ class Notation3 extends React.Component {
             });
         }
         setTimeout(() => {
-            this.coup = [];
+            this.coups = [];
             this.setState({ showCorrect: false, showIncorrect: false, message: '' });
 
             if (this.points !== 0)
@@ -772,7 +767,7 @@ class Notation3 extends React.Component {
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
+                                        key={line}
                                         title={piecesBlanchesNom[index]}
                                         onMouseEnter={() => this.handlePieceHover()}
                                         onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
