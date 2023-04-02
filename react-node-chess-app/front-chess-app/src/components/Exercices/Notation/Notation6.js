@@ -21,12 +21,11 @@ class Notation4 extends React.Component {
             orientation: "white",
             selectedLanguage: 'fr',
             piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
-            moveFrom: '',
             rightClickedSquares: {},
-            moveSquares: {},
-            optionSquares: {},
             chess: new Chess()
         };
+        this.couleurP = '#af80dc';
+        this.couleurM = '#ff555f';
         // validation réponse
         this.pointsGagnes = props.pointsGagnes;
         this.pointsPerdus = props.pointsPerdus;
@@ -37,6 +36,11 @@ class Notation4 extends React.Component {
         this.name = decoded.name;
 
         this.realCoup = '';
+        this.languageCoup = '';
+        this.couleur = '';
+        this.showHelp = false;
+        this.caseOrigine = '';
+        this.caseDestination = '';
         this.idExercice = props.idExercice;
 
         this.soundHover = new Howl({
@@ -52,7 +56,7 @@ class Notation4 extends React.Component {
             src: ['/sons/win.wav']
         });
         this.soundWrong = new Howl({
-            src: ['/sons/evil.ogg']
+            src: ['/sons/wrong.wav']
         });
         this.switchOn = new Howl({
             src: ['/sons/switchOn.mp3']
@@ -67,19 +71,32 @@ class Notation4 extends React.Component {
     }
 
     genererPieceAleatoire() {
-        const { chess } = this.state;
+        const newChess = new Chess();
+
+        // reset les variables
+        this.languageCoup = '';
+        this.couleur = '';
+        this.realCoup = '';
+        this.showHelp = false;
+        this.caseOrigine = '';
+        this.caseDestination = '';
 
         // effectuer un nombre aléatoire de coups aléatoires
         const nbCoups = Math.floor(Math.random() * 15) + 5;
         for (let i = 0; i < nbCoups; i++) {
-            const coups = chess.moves();
+            const coups = newChess.moves();
             const coup = coups[Math.floor(Math.random() * coups.length)];
-            chess.move(coup);
+            newChess.move(coup);
         }
+        console.log("🚀 ~ file: Notation6.js:85 ~ Notation4 ~ genererPieceAleatoire ~ nbCoups:", nbCoups)
         if (nbCoups % 2 === 0) {
+            this.couleur = 'w';
+            console.log('blanc');
             this.setState({ orientation: "white" });
         }
         else {
+            this.couleur = 'b';
+            console.log('noir');
             this.setState({ orientation: "black" });
         }
 
@@ -94,20 +111,27 @@ class Notation4 extends React.Component {
             cn: ['卒', '马', '象', '车', '后', '帅'],
         }
 
-        const coups = chess.moves();
-        let coup = coups[Math.floor(Math.random() * coups.length)];
+        const coups = newChess.moves();
+        const verboseCoups = newChess.moves({ verbose: true });
+        const selectedCoup = Math.floor(Math.random() * coups.length);
+        let coup = coups[selectedCoup];
+        let verboseCoup = verboseCoups[selectedCoup];
 
-        if (coup.length > 2) {
+        this.caseOrigine = verboseCoup.from;
+        this.caseDestination = verboseCoup.to;
+        this.realCoup = coup;
+
+        if (coup.length > 2 && coup.charAt(0) !== 'x') {
             const index = listePiecesLangue['en'].indexOf(coup.charAt(0));
             const piece = listePiecesLangue[this.state.selectedLanguage][index];
 
-            this.realCoup = piece + coup.slice(1);
+            this.languageCoup = piece + coup.slice(1);
         }
         else {
-            this.realCoup = coup;
+            this.languageCoup = coup;
         }
 
-        this.setState({ chess: chess });
+        this.setState({ chess: newChess });
     }
 
     // handles
@@ -116,6 +140,11 @@ class Notation4 extends React.Component {
     handlePieceHover = () => {
         Howler.volume(0.1);
         this.soundHover.play();
+    };
+
+    handlePieceDown = () => {
+        Howler.volume(0.3);
+        this.soundDown.play();
     };
 
     handleCoordonnees = (event) => {
@@ -143,53 +172,13 @@ class Notation4 extends React.Component {
             ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
             cn: ['卒', '马', '象', '车', '后', '帅'],
         }
-        if (this.realCoup.length > 2) {
-            const index = listePiecesLangue[this.state.selectedLanguage].indexOf(this.realCoup.charAt(0));
+        if (this.languageCoup.length > 2) {
+            const index = listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0));
             const piece = listePiecesLangue[event.target.value][index];
 
-            this.realCoup = piece + this.realCoup.slice(1);
+            this.languageCoup = piece + this.languageCoup.slice(1);
         }
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
-    }
-
-    handleClick = () => {
-        Howler.volume(0.3);
-        this.soundUp.play();
-        const { inputValue } = this.state;
-        if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
-            Howler.volume(0.3);
-            this.soundWin.play();
-            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
-            this.points = this.pointsGagnes;
-            this.setState({
-                message: text,
-                chess: this.state.chess,
-                inputValue: '',
-                showCorrect: true,
-                showIncorrect: false
-            });
-        }
-        else {
-            Howler.volume(1);
-            this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
-            this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
-            this.setState({
-                message: text,
-                inputValue: '',
-                showCorrect: false,
-                showIncorrect: true
-            });
-        }
-        setTimeout(() => {
-            this.coups = [];
-            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
-
-            if (this.points !== 0)
-                this.handleUpdate();
-            else
-                this.genererPieceAleatoire();
-        }, 3000); // Efface le message après 3 secondes
     }
 
 
@@ -219,69 +208,79 @@ class Notation4 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 })
                 .catch((error) => {
                     console.log(error);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 });
         } catch (error) {
             console.error(error);
         }
     }
 
-    // afficher coup possible
+    // verifier mouvements
+    onDrop = (sourceSquare, targetSquare, piece) => {
+        const { chess } = this.state;
+        let coupJoue = '';
+        let coupAEffectue = '';
+        // si pas pion
+        if (this.realCoup.length > 2 && this.realCoup.charAt(0) !== 'x') {
+            coupJoue = piece + targetSquare;
+            coupAEffectue = this.couleur + this.realCoup.replace(/[+#]/g, "");
+        }
+        else { // si pion
+            coupJoue = piece.charAt(0) + targetSquare;
+            coupAEffectue = this.couleur + this.realCoup;
+        }
+        console.log("🚀 ~ file: Notation6.js:266 ~ Notation4 ~ coupJoue:", coupJoue)
+        console.log("🚀 ~ file: Notation6.js:268 ~ Notation4 ~ coupAEffectue:", coupAEffectue)
 
-    getMoveOptions= (square) => {
-        const moves = this.state.chess.moves({
-            square,
-            verbose: true,
-        });
-        if (moves.length === 0) {
-            return false;
+
+        // verif coup
+        if (coupJoue === coupAEffectue) {
+            console.log("gg");
+            Howler.volume(0.3);
+            this.soundWin.play();
+            chess.move(this.realCoup);
+
+            const text = `Bonne réponse ! Vous avez effecuté le bon mouvement, vous gagné ${this.pointsGagnes} points.`;
+            this.points = this.pointsGagnes;
+            this.setState({
+                message: text,
+                chess: chess,
+                showCorrect: true,
+                showIncorrect: false
+            });
+
+            setTimeout(() => {
+                this.setState({ showCorrect: false, showIncorrect: false, message: '', rightClickedSquares: {} });
+                this.handleUpdate();
+                this.genererPieceAleatoire();
+            }, 3000); // Efface le message après 3 secondes
+        }
+        else {
+            console.log("raté");
+            Howler.volume(0.5);
+            this.soundWrong.play();
+            let text = `Mauvaise réponse ! Vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points. 
+            Une aide s'affichent sur le plateau.`;
+            this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
+            this.setState({
+                message: text,
+                showCorrect: false,
+                showIncorrect: true
+            });
+
+            setTimeout(() => {
+                this.handleUpdate();
+                this.showHelp = true;
+                this.setState({ showCorrect: false, showIncorrect: false, message: '', rightClickedSquares: {} });
+            }, 3000); // Supprime le message après 3 secondes
         }
 
-        const newSquares = {};
-        moves.map((move) => {
-            newSquares[move.to] = {
-                background:
-                    this.state.chess.get(move.to) && this.state.chess.get(move.to).color !== this.state.chess.get(square).color
-                        ? "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)"
-                        : "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
-                borderRadius: "50%",
-            };
-            return move;
-        });
-        newSquares[square] = {
-            background: "rgba(255, 255, 0, 0.4)",
-        };
-        this.setState({ optionSquares: newSquares });
-        return true;
     }
 
-    onSquareClick= (square) => {
+    onSquareClick = (square) => {
         this.setState({ rightClickedSquares: {} });
-
-        let resetFirstMove = (square) => {
-            const hasOptions = this.getMoveOptions(square);
-            if (hasOptions)
-                this.setState({ moveFrom: square });
-        }
-
-        // from square
-        if (!this.state.moveFrom) {
-            resetFirstMove(square);
-            return;
-        }
-
-        // attempt to make move
-
-
-        this.setState({ moveFrom: "", optionSquares: {} });
     }
 
     onSquareRightClick = (square) => {
@@ -298,8 +297,19 @@ class Notation4 extends React.Component {
 
             return { rightClickedSquares: newRightClickedSquares };
         });
-
     }
+
+    // couleur des cases
+    customSquare = (props) => {
+        const { children, square, style } = props;
+        console.log("🚀 ~ file: Notation6.js:305 ~ Notation4 ~ customSquare=React.forwardRef ~ props:", props)
+        const backgroundColor = this.showHelp && (square === this.caseOrigine ? this.couleurP : (square === this.caseDestination ? this.couleurM : null));
+        return (
+            <div style={{ ...style, backgroundColor }}>
+                {children}
+            </div>
+        );
+    };
 
     Android12Switch = styled(Switch)(({ theme, disabled }) => ({
         padding: 8,
@@ -352,25 +362,16 @@ class Notation4 extends React.Component {
                         customSquare={this.customSquare}
                         boardOrientation={this.state.orientation}
                         showBoardNotation={this.state.coordonnees}
-                        animationDuration={800}
-                        arePiecesDraggable={false}
+                        animationDuration={0}
                         onSquareClick={this.onSquareClick}
                         onSquareRightClick={this.onSquareRightClick}
-                        customBoardStyle={{
-                            borderRadius: "4px",
-                            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
-                        }}
-                        customSquareStyles={{
-                            ...this.state.moveSquares,
-                            ...this.state.optionSquares,
-                            ...this.state.rightClickedSquares,
-                        }}
+                        customSquareStyles={this.state.rightClickedSquares}
+                        onPieceDrop={this.onDrop}
                     />
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
-                        Faite le coup <span style={{ color: `${this.couleurP}` }}> {this.realCoup}
-                        </span>
+                        Faite le coup <span style={{ color: `${this.couleurP}` }}> {this.languageCoup} </span>
                     </i>
                     <div className="option">
                         <ThemeProvider theme={this.theme}>
