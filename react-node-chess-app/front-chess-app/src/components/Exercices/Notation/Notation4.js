@@ -30,6 +30,8 @@ class Notation3 extends React.Component {
         this.pointsGagnes = props.pointsGagnes;
         this.pointsPerdus = props.pointsPerdus;
         this.points = 0;
+        this.showedOrientation = false;
+
         // decode token
         const decoded = decodeToken(sessionStorage.token);
         this.name = decoded.name;
@@ -58,7 +60,7 @@ class Notation3 extends React.Component {
             src: ['/sons/win.wav']
         });
         this.soundWrong = new Howl({
-            src: ['/sons/evil.ogg']
+            src: ['/sons/wrong.wav']
         });
         this.switchOn = new Howl({
             src: ['/sons/switchOn.mp3']
@@ -77,7 +79,7 @@ class Notation3 extends React.Component {
     }
 
 
-    genererPionOuDame = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+    genererPion = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         if (couleur === 'b') {
             // position piece qui mange
             colonneP = Math.floor(Math.random() * 6) + 1;
@@ -106,6 +108,70 @@ class Notation3 extends React.Component {
         }
         return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
     }
+
+    genererDame = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+        if (0.5 < Math.random()) { // lignes
+            console.log("ligne");
+            if (couleur === 'b') {
+                // position piece qui mange
+                colonneP = Math.floor(Math.random() * 6) + 1;
+                ligneP = Math.floor(Math.random() * 7) + 2;
+
+                // position piece ambigue
+                colonneA = colonneP + 2;
+                ligneA = ligneP;
+
+                // position piece mangé
+                colonneM = colonneP + 1;
+                ligneM = ligneP - 1;
+            }
+            else {
+                // position piece qui mange
+                colonneP = Math.floor(Math.random() * 6) + 1;
+                ligneP = Math.floor(Math.random() * 7) + 1;
+
+                // position piece ambigue
+                colonneA = colonneP + 2;
+                ligneA = ligneP;
+
+                // position piece mangé
+                colonneM = colonneP + 1;
+                ligneM = ligneP + 1;
+            }
+        }
+        else { // colonnes
+            console.log("colonne");
+            if (couleur === 'b') {
+                // position pièce qui mange
+                colonneP = Math.floor(Math.random() * 7) + 1;
+                ligneP = Math.floor(Math.random() * 6) + 1;
+
+                // position pièce ambigüe
+                colonneA = colonneP;
+                ligneA = ligneP + 2;
+
+                // position pièce mangée
+                colonneM = colonneP + 1;
+                ligneM = ligneP + 1;
+            }
+            else {
+                // position pièce qui mange
+                colonneP = Math.floor(Math.random() * 7) + 1;
+                ligneP = Math.floor(Math.random() * 6) + 3;
+
+                // position pièce ambigüe
+                colonneA = colonneP;
+                ligneA = ligneP - 2;
+
+                // position pièce mangée
+                colonneM = colonneP + 1;
+                ligneM = ligneP - 1;
+            }
+        }
+
+        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+    }
+
 
     genererTour = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         // position piece qui mange
@@ -319,6 +385,7 @@ class Notation3 extends React.Component {
 
     genererPieceAleatoire = () => {
         const { chess } = this.state;
+        this.coups = [];
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coulP, coulM, couleur;
@@ -346,8 +413,11 @@ class Notation3 extends React.Component {
         this.piece = piece;
 
         // 3 cas
-        if (piece === 'P' || piece === 'Q') { // pions
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPionOuDame(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        if (piece === 'P') { // pions
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPion(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        }
+        else if (piece === 'Q') {
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererDame(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
         else if (piece === 'R') { // tours
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererTour(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
@@ -405,9 +475,13 @@ class Notation3 extends React.Component {
             coup += 'x';
             coup += alpha[colonneM - 1] + ligneM;
             this.coups.push(coup);
-            this.realCoup = pieces[this.indexPiece] + this.coups[0].slice(1);
 
+            if (piece !== 'P')
+                this.realCoup = pieces[this.indexPiece] + this.coups[0].slice(1);
+            else
+                this.realCoup = this.coups[0];
         }
+        console.log("🚀 ~ file: Notation4.js:410 ~ Notation3 ~ this.coups[0]:", this.coups[0])
 
         this.setState({ chess: chess });
     }
@@ -493,6 +567,7 @@ class Notation3 extends React.Component {
         Howler.volume(0.3);
         if (event.target.checked) {
             this.switchOff.play();
+            this.showedOrientation = true;
             this.setState({ coordonnees: true });
         }
         else {
@@ -521,14 +596,18 @@ class Notation3 extends React.Component {
     }
 
     handleClick = () => {
-        Howler.volume(0.3);
+        Howler.volume(0.2);
         this.soundUp.play();
         const { inputValue } = this.state;
+        console.log("🚀 ~ file: Notation4.js:535 ~ Notation3 ~ inputValue:", inputValue)
         if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
-            Howler.volume(0.5);
+            Howler.volume(0.2);
             this.soundWin.play();
-            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
+            if (this.showedOrientation) {
+                this.points = this.points - 5;
+            }
+            const text = `Bonne réponse ! Le mouvement est bien ${inputValue}, vous gagné ${this.points} points.`;
             this.state.chess.move(this.realCoup);
             this.setState({
                 message: text,
@@ -541,7 +620,7 @@ class Notation3 extends React.Component {
         else {
             Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! Le mouvement était ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -551,7 +630,8 @@ class Notation3 extends React.Component {
             });
         }
         setTimeout(() => {
-            this.coups = [];
+            this.showedOrientation = false;
+            this.orientation = false;
             this.setState({ showCorrect: false, showIncorrect: false, message: '' });
 
             if (this.points !== 0)
@@ -742,7 +822,6 @@ class Notation3 extends React.Component {
                             <FormControlLabel
                                 control={<this.Android12Switch
                                     checked={this.state.coordonnees === true}
-                                    disabled={true}
                                     color="secondary"
                                 />}
                                 label={'Coordonnée'}

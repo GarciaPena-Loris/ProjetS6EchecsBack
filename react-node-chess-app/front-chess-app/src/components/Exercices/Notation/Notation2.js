@@ -60,7 +60,7 @@ class Notation2 extends React.Component {
             src: ['/sons/win.wav']
         });
         this.soundWrong = new Howl({
-            src: ['/sons/evil.ogg']
+            src: ['/sons/wrong.wav']
         });
         this.switchOn = new Howl({
             src: ['/sons/switchOn.mp3']
@@ -450,7 +450,7 @@ class Notation2 extends React.Component {
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
             Howler.volume(0.3);
             this.soundWin.play();
-            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            const text = `Bonne réponse ! Le mouvement est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
             this.state.chess.move(this.realCoup);
             this.setState({
@@ -464,7 +464,7 @@ class Notation2 extends React.Component {
         else {
             Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! Le mouvement était ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,

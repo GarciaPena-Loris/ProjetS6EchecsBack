@@ -25,7 +25,8 @@ class Notation4 extends React.Component {
             chess: new Chess()
         };
         this.couleurP = '#af80dc';
-        this.couleurM = '#ff555f';
+        this.couleurO = '#ff555f';
+
         // validation réponse
         this.pointsGagnes = props.pointsGagnes;
         this.pointsPerdus = props.pointsPerdus;
@@ -38,7 +39,6 @@ class Notation4 extends React.Component {
         this.realCoup = '';
         this.languageCoup = '';
         this.couleur = '';
-        this.showHelp = false;
         this.caseOrigine = '';
         this.caseDestination = '';
         this.idExercice = props.idExercice;
@@ -85,7 +85,11 @@ class Notation4 extends React.Component {
         const nbCoups = Math.floor(Math.random() * 15) + 5;
         for (let i = 0; i < nbCoups; i++) {
             const coups = newChess.moves();
-            const coup = coups[Math.floor(Math.random() * coups.length)];
+            let coup = '';
+            do {
+                coup = coups[Math.floor(Math.random() * coups.length)];
+            }
+            while (coup.includes('x'));
             newChess.move(coup);
         }
         console.log("🚀 ~ file: Notation6.js:85 ~ Notation4 ~ genererPieceAleatoire ~ nbCoups:", nbCoups)
@@ -224,13 +228,17 @@ class Notation4 extends React.Component {
         let coupAEffectue = '';
         // si pas pion
         if (this.realCoup.length > 2 && this.realCoup.charAt(0) !== 'x') {
-            coupJoue = piece + targetSquare;
-            coupAEffectue = this.couleur + this.realCoup.replace(/[+#]/g, "");
+            coupJoue = piece;
         }
         else { // si pion
-            coupJoue = piece.charAt(0) + targetSquare;
-            coupAEffectue = this.couleur + this.realCoup;
+            coupJoue = piece.charAt(0);
         }
+        if (chess.get(targetSquare)) {
+            coupJoue = coupJoue + 'x';
+        }
+        coupJoue = coupJoue + targetSquare
+        coupAEffectue = this.couleur + this.realCoup.replace(/[+#]/g, "");
+
         console.log("🚀 ~ file: Notation6.js:266 ~ Notation4 ~ coupJoue:", coupJoue)
         console.log("🚀 ~ file: Notation6.js:268 ~ Notation4 ~ coupAEffectue:", coupAEffectue)
 
@@ -238,7 +246,7 @@ class Notation4 extends React.Component {
         // verif coup
         if (coupJoue === coupAEffectue) {
             console.log("gg");
-            Howler.volume(0.3);
+            Howler.volume(0.2);
             this.soundWin.play();
             chess.move(this.realCoup);
 
@@ -255,7 +263,7 @@ class Notation4 extends React.Component {
                 this.setState({ showCorrect: false, showIncorrect: false, message: '', rightClickedSquares: {} });
                 this.handleUpdate();
                 this.genererPieceAleatoire();
-            }, 3000); // Efface le message après 3 secondes
+            }, 2000); // Efface le message après 3 secondes
         }
         else {
             console.log("raté");
@@ -272,18 +280,24 @@ class Notation4 extends React.Component {
 
             setTimeout(() => {
                 this.handleUpdate();
-                this.showHelp = true;
-                this.setState({ showCorrect: false, showIncorrect: false, message: '', rightClickedSquares: {} });
-            }, 3000); // Supprime le message après 3 secondes
+
+                this.setState({
+                    rightClickedSquares: {
+                        ...this.state.rightClickedSquares,
+                        [this.caseOrigine]: { backgroundColor: this.couleurO },
+                        [this.caseDestination]: { backgroundColor: this.couleurP },
+                    },
+                });
+
+
+                this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+            }, 2500); // Supprime le message après 3 secondes
         }
 
     }
 
-    onSquareClick = (square) => {
-        this.setState({ rightClickedSquares: {} });
-    }
-
     onSquareRightClick = (square) => {
+        console.log("🚀 ~ file: Notation6.js:297 ~ Notation4 ~ square:", square)
         const colour = "rgba(0, 0, 255, 0.4)";
         this.setState(prevState => {
             const newRightClickedSquares = {
@@ -298,18 +312,6 @@ class Notation4 extends React.Component {
             return { rightClickedSquares: newRightClickedSquares };
         });
     }
-
-    // couleur des cases
-    customSquare = (props) => {
-        const { children, square, style } = props;
-        console.log("🚀 ~ file: Notation6.js:305 ~ Notation4 ~ customSquare=React.forwardRef ~ props:", props)
-        const backgroundColor = this.showHelp && (square === this.caseOrigine ? this.couleurP : (square === this.caseDestination ? this.couleurM : null));
-        return (
-            <div style={{ ...style, backgroundColor }}>
-                {children}
-            </div>
-        );
-    };
 
     Android12Switch = styled(Switch)(({ theme, disabled }) => ({
         padding: 8,
@@ -359,11 +361,9 @@ class Notation4 extends React.Component {
                     <Chessboard
                         key="board"
                         position={this.state.chess.fen()}
-                        customSquare={this.customSquare}
                         boardOrientation={this.state.orientation}
                         showBoardNotation={this.state.coordonnees}
-                        animationDuration={0}
-                        onSquareClick={this.onSquareClick}
+                        animationDuration={800}
                         onSquareRightClick={this.onSquareRightClick}
                         customSquareStyles={this.state.rightClickedSquares}
                         onPieceDrop={this.onDrop}

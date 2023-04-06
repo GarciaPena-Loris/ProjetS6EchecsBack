@@ -53,7 +53,7 @@ class Notation extends React.Component {
       src: ['/sons/win.wav']
     });
     this.soundWrong = new Howl({
-      src: ['/sons/evil.ogg']
+      src: ['/sons/wrong.wav']
     });
     this.switchOn = new Howl({
       src: ['/sons/switchOn.mp3']

@@ -109,7 +109,7 @@ export default function NiveauxPage() {
             6: <Notation6
                 idExercice={exercice.id}
                 pointsGagnes="3"
-                pointsPerdus="1"
+                pointsPerdus="5"
                 exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
                 updateGlobalElo={updateGlobalElo} />,
 
