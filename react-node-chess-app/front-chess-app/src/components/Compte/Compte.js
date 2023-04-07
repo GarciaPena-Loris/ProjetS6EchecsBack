@@ -7,12 +7,9 @@ import { decodeToken } from "react-jwt";
 import Avatar from 'react-avatar';
 import AvatarCompte from "./AvatarCompte";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
-//import ProgressBar from 'react-bootstrap/ProgressBar';
 import ProgressBar from "@ramonak/react-progress-bar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faChessKing as whiteKing,
-    faChessQueen as whiteQueen,
     faChessPawn as whitePawn
 } from '@fortawesome/free-regular-svg-icons'
 
