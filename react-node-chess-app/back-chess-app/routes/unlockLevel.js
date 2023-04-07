@@ -56,38 +56,63 @@ router.put('/save/:name/:id', async (req, res) => {
     const parts = message.split('/');
 
     const idCode = parts[0];
+    console.log("🚀 ~ file: unlockLevel.js:59 ~ router.put ~ idCode:", idCode)
     const nameCode = parts[1];
+    console.log("🚀 ~ file: unlockLevel.js:61 ~ router.put ~ nameCode:", nameCode)
     const actualEloCode = parseInt(parts[2]);
+    console.log("🚀 ~ file: unlockLevel.js:63 ~ router.put ~ actualEloCode:", actualEloCode)
     const pointsCode = parseInt(parts[3]);
+    console.log("🚀 ~ file: unlockLevel.js:65 ~ router.put ~ pointsCode:", pointsCode)
 
+    let newEloExercise = 0;
+    let newEloUser = 0;
     // Verification validity
     if ((nameParam == nameCode && nameCode == decoded.name) && (idParam == idCode)) { // Verif name and id
-      const actuelEloExercise = await EloExercise.getEloFromEloExerciseBIdyName(idParam, nameParam);
+      const actuelEloExercise = await EloExercise.getEloFromEloExerciseBIdyName(idCode, nameParam);
 
       if ((actuelEloExercise == actualEloCode) && (pointsParam == pointsCode)) { // Verif points
-        // get actuel exercise from level id
-        const id_exercise_obj = await Levels.getExerciseByLevelId(idCode);
+        // changer elo exercise
+        if (actualEloCode + pointsCode <= 0) {
+          // change elo exercise to 0
+          await EloExercise.updateTo0EloExercise(idCode, nameParam);
+          newEloExercise = 0;
+        }
+        else {
+          // change elo exercise
+          await EloExercise.updateEloExercise(idCode, nameParam, pointsCode);
+          newEloExercise = actualEloCode + pointsCode;
 
-        // change elo exercise
-        await EloExercise.updateEloExercise(id_exercise_obj.id_exercise, nameParam, pointsCode);
+          //check if user can unlock new levels
+          if (pointsCode > 0) {
+            // get level unlockable
+            const unlockableLevels = await Levels.getUnlockableLevels(idCode, actualEloCode + pointsCode);
 
-        if (pointsCode > 0) {
-          // get level unlockable
-          const unlockableLevels = await Levels.getUnlockableLevels(id_exercise_obj.id_exercise, actualEloCode + pointsCode);
-
-          // Vérifier si l'utilisateur peut débloquer de nouveaux niveaux
-          unlockableLevels.forEach(async level => {
-            await UnlockLevel.addUnlockLevel(level.id, nameCode);
-          });
+            // Vérifier si l'utilisateur peut débloquer de nouveaux niveaux
+            unlockableLevels.forEach(async level => {
+              await UnlockLevel.addUnlockLevel(level.id, nameCode);
+            });
+          }
         }
 
-        // change elo user 
-        await User.changeEloUser(nameCode, Math.ceil((Math.abs(pointsCode) * 5) / 100) * Math.sign(pointsCode));
+        // changer elo user
+        // get actual elo
+        const eloUser = await User.getEloUserByName(nameCode);
 
-        // get new elo
-        const newEloUser = await User.getEloUserByName(nameCode);
-
-        res.json({ newEloExercise: (actualEloCode + pointsCode), newEloUser: newEloUser.global_elo });
+        const newPointsElo = Math.ceil((Math.abs(pointsCode) * 5) / 100) * Math.sign(pointsCode);
+        if (eloUser === 0) {
+          res.json({ newEloExercise: newEloExercise, newEloUser: 0 });
+        }
+        else if (eloUser.global_elo + newPointsElo <= 0) {
+          // change elo user to 0 
+          await User.changeTo0EloUser(nameCode);
+          res.json({ newEloExercise: newEloExercise, newEloUser: 0 });
+        }
+        else {
+          // change elo user 
+          await User.changeEloUser(nameCode, newPointsElo);
+          newEloUser = eloUser.global_elo + newPointsElo;
+          res.json({ newEloExercise: newEloExercise, newEloUser: newEloUser });
+        }
       }
       else {
         res.status(406).json({ error: "Points do not correspond" });

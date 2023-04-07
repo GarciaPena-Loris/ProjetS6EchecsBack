@@ -1,5 +1,5 @@
 .level-container {
-    margin: 0 20%;
+    margin: 0 20vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -15,7 +15,7 @@
 }
 
 .level-label {
-    font-size: 2em;
+    font-size: 2vw;
     font-weight: bold;
     color: #fff;
 }
@@ -23,11 +23,12 @@
 .back-button {
     width: 13%;
     padding: 0.7% 0;
+    font-size: 1vw;
     font-weight: 600;
 }
 
 .level-elo {
-    font-size: 1em;
+    font-size: 1vw;
     color: #fff;
 }
 
@@ -37,4 +38,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+@media only screen and (max-width: 1400px) {
+    .level-container {
+        margin: 0 15vw;
+    }
 }

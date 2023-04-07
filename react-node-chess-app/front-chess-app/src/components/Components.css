@@ -177,8 +177,70 @@ nav a {
     color: #fff;
 }
 
+/* css button custom from  https://www.joshwcomeau.com/animation/3d-button/*/
+.bouton-3D {
+    border: none;
+    border-radius: 12px;
+    background: var(--couleur-theme-fonce);
+    padding: 0;
+    margin: 2% 0;
+    cursor: pointer;
+}
+
+.texte-3D {
+    display: block;
+    padding: 0.3rem 1rem;
+    border-radius: 12px;
+    font-size: 1.2vw;
+    background: var(--couleur-theme);
+    color: rgb(255, 255, 255);
+    transform: translateY(-4px);
+}
+
+.bouton-3D[disabled] {
+    background: gray;
+    cursor: not-allowed;
+}
+
+.bouton-3D[disabled] .texte-3D {
+    transform: none;
+    background: darkgray;
+}
+
+.bouton-3D[disabled]:hover .texte-3D {
+    transform: none;
+}
+
+.bouton-3D:active .texte-3D {
+    transform: translateY(-2px);
+}
+
+.bouton-3D:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.texte-3D {
+    transition:
+        transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.bouton-3D:hover .texte-3D {
+    transform: translateY(-6px);
+    transition:
+        transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.bouton-3D:active .texte-3D {
+    transform: translateY(-2px);
+    transition: transform 34ms;
+}
+
+/* --- */
+
+
 :root {
     --couleur-theme: #7e9d4e;
+    --couleur-theme-fonce: #5c742f;
     --couleur-erreur: #c63935;
     --police-ecriture: 'Helvetica Neue', sans-serif;
 }

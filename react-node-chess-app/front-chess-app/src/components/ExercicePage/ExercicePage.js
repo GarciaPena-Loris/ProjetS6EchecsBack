@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, useLocation } from 'react-router-dom';
 import "../Components.css"
 import "./ExercicePage.css"
+import { Howl, Howler } from 'howler';
 
 export default function ExercicePage() {
     const [dataLevels, setDataLevels] = useState([]);
@@ -11,10 +12,31 @@ export default function ExercicePage() {
     const location = useLocation();
     const exercice = location.state.exercice;
     const exerciceId = exercice.id;
+    const soundHover = new Howl({
+        src: ['/sons/hover.mp3']
+    });
+    const soundDown = new Howl({
+        src: ['/sons/clicdown.wav']
+    });
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
 
     //fonction pour les boutons 
     const handleLevelClick = (level, index) => {
+        Howler.volume(0.3);
+        soundUp.play();
         navigate('/niveaux', { state: { exercice: exercice, niveau: level, index: index } });
+    };
+
+    const handlePieceHover = () => {
+        Howler.volume(0.1);
+        soundHover.play();
+    };
+
+    const handlePieceDown = () => {
+        Howler.volume(0.3);
+        soundDown.play();
     };
 
 
@@ -55,7 +77,14 @@ export default function ExercicePage() {
                     <div key={level.id} className="level-row">
                         <div className="level-name-container">
                             <div className="level-name">{level.name}</div>
-                            <button className="level-button" onClick={() => handleLevelClick(level, (index + 1))}>Niveau {index + 1} </button>
+                            <button className="bouton-3D"
+                                onClick={() => handleLevelClick(level, (index + 1))}
+                                onMouseEnter={() => handlePieceHover()}
+                                onMouseDown={() => handlePieceDown()}>
+                                <span className="texte-3D"> {/* Retourne à la page précédente */}
+                                    Niveau {index + 1}
+                                </span>
+                            </button>
                         </div>
                         <div className="level-name-container">
                             <div className="level-description">{level.rules}</div>
