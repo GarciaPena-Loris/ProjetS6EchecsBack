@@ -38,6 +38,7 @@
 }
 
 .avatar-thumbnail:hover{
+  opacity: 0.9;
 }
 
 .image-container-compte {
@@ -96,4 +97,8 @@
 .nomxp-div {
   flex: 1;
   align-items: left;
+}
+
+.name_display{
+  font-size: 50px;
 }
