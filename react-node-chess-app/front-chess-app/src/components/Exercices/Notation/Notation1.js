@@ -23,6 +23,7 @@ class Notation extends React.Component {
       coordonnees: true,
       selectedLanguage: 'fr',
       piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
+      coloredSquares: {},
       chess: new Chess(),
     };
     this.pointsGagnes = props.pointsGagnes;
@@ -84,30 +85,16 @@ class Notation extends React.Component {
     let piece = pieces[this.indexPiece];
     this.position = `${alpha[colonneP - 1]}${ligneP}`;
 
+
     this.coup = this.state.piecesLanguage[this.indexPiece] + this.position;
     chess.put({ type: piece, color: color }, this.position); // Place la pièce sur le plateau
 
-    this.setState({ chess: chess });
+    this.setState({
+      chess: chess, coloredSquares: {
+        [this.position]: { backgroundColor: this.couleurCase },
+      },
+    });
   };
-
-  // couleur des cases
-  customSquare = React.forwardRef((props, ref) => {
-    const { children, square, style } = props;
-    if (square === this.position) {
-      return (
-        <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurCase }}> {/* pièce qui mange */}
-          {children}
-        </div>
-      );
-    }
-    else {
-      return (
-        <div ref={ref} style={{ ...style, position: "relative" }}>
-          {children}
-        </div>
-      );
-    }
-  });
 
   // handles
 
@@ -363,12 +350,12 @@ class Notation extends React.Component {
       ? ["a", "b", "c", "d", "e", "f", "g", "h"]
       : ["h", "g", "f", "e", "d", "c", "b", "a"];
     const custom = [
-      "x", "O-O", "O-O-O", "=", "e.p.", "+", "#"
+      "x", "O-O", "O-O-O", "=", "+", "#"
       // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
-      //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
+      //"=" pour la promotion, "+" pour echec, "#" pour le mat
     ]
     const customCoup = [
-      "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+      "prise", "petit roque", "grand roque", "promotion", "echec", "mat"
     ]
     return (
       <div className="container-general">
@@ -377,7 +364,7 @@ class Notation extends React.Component {
             key="board"
             position={this.state.chess.fen()}
             arePiecesDraggable={false}
-            customSquare={this.customSquare}
+            customSquareStyles={this.state.coloredSquares}
             boardOrientation={this.state.orientation}
             showBoardNotation={this.state.coordonnees}
           />

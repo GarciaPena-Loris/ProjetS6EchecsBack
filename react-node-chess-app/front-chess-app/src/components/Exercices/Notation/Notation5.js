@@ -11,7 +11,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { Howl, Howler } from 'howler';
 
-class Notation4 extends React.Component {
+
+class Notation5 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -19,32 +20,41 @@ class Notation4 extends React.Component {
             message: '',
             showCorrect: false,
             showIncorrect: false,
-            coordonnees: false,
+            orientation: "white",
+            coordonnees: true,
             selectedLanguage: 'fr',
             piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
+            coloredSquares: {},
             chess: new Chess()
         };
         // validation réponse
         this.pointsGagnes = props.pointsGagnes;
         this.pointsPerdus = props.pointsPerdus;
+        this.idExercice = props.idExercice;
         this.points = 0;
+
         // decode token
         const decoded = decodeToken(sessionStorage.token);
         this.name = decoded.name;
 
-        this.nomPiece = '';
-        this.pos = '';
-        this.coups = [];
+        this.couleurP = '#ff555f';
+        this.couleurM = '#af80dc';
+        this.coupChoisis = '';
+        this.indexCoup = 0;
+        this.couleur = '';
+        this.pieceConcernee = '';
         this.realCoup = '';
-        this.indexPiece = 0;
-        this.idExercice = props.idExercice;
-        this.couleurP = '#af80dc';
-        this.couleurM = '#ff555f';
+        this.languageCoup = '';
 
-        this.positionPieceP = ``;
-        this.positionPieceM = ``;
-        this.positionPieceA = ``;
-        this.optionManger = ``;
+        this.listePiecesLangue = {
+            en: ['P', 'R', 'B', 'N', 'Q', 'K'],
+            fr: ['P', 'T', 'F', 'C', 'D', 'R'],
+            es: ['P', 'T', 'A', 'C', 'D', 'R'],
+            de: ['B', 'S', 'L', 'T', 'D', 'K'],
+            it: ['P', 'T', 'A', 'C', 'D', 'R'],
+            ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
+            cn: ['卒', '马', '象', '车', '后', '帅'],
+        }
 
         this.monInputRef = React.createRef();
 
@@ -63,472 +73,272 @@ class Notation4 extends React.Component {
         this.soundWrong = new Howl({
             src: ['/sons/wrong.wav']
         });
+        this.switchOn = new Howl({
+            src: ['/sons/switchOn.mp3']
+        });
+        this.switchOff = new Howl({
+            src: ['/sons/switchOff.mp3']
+        });
+
     }
 
     componentDidMount() {
         this.genererPieceAleatoire();
-        if (Math.random() < 0.5) {
-            this.setState({ orientation: "black" });
-        }
+
         this.monInputRef.current.focus();
     }
 
-    genererPion = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        if (couleur === 'b') {
-            // position piece qui mange
-            colonneP = Math.floor(Math.random() * 6) + 1;
-            ligneP = Math.floor(Math.random() * 7) + 2;
-
-            // position piece ambigue
-            colonneA = colonneP + 2;
-            ligneA = ligneP;
-
-            // position piece mangé
-            colonneM = colonneP + 1;
-            ligneM = ligneP - 1;
+    genererRoque = (chess) => {
+        let coloredSquares = {};
+        this.realCoup = 'O-O';
+        this.languageCoup = 'O-O';
+        if (this.orientation === 'black') {
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'h8': { backgroundColor: this.couleurM },
+                'e8': { backgroundColor: this.couleurP },
+            };
+            chess.load('rnbqk2r/pppp1ppp/5n2/4p3/1bP1P3/5NP1/PP1P1P1P/RNBQKB1R b KQkq - 0 4');
         }
         else {
-            // position piece qui mange
-            colonneP = Math.floor(Math.random() * 5) + 1;
-            ligneP = Math.floor(Math.random() * 7) + 1;
-
-            // position piece ambigue
-            colonneA = colonneP + 2;
-            ligneA = ligneP;
-
-            // position piece mangé
-            colonneM = colonneP + 1;
-            ligneM = ligneP + 1;
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'e1': { backgroundColor: this.couleurM },
+                'h1': { backgroundColor: this.couleurP },
+            };
+            chess.load('r1bqk1nr/pppp2pp/2n2p2/1B2p3/1b2P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 7');
         }
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+        return [chess, coloredSquares];
     }
 
-    genererTour = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        // position piece qui mange
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-
-        if (Math.random() < 0.5) { // choix entre L ou I
-            // position I
-            if (Math.random() < 0.5) { // choix entre ligne ou colonne
-                // meme colonne
-                // position piece mangé
-                colonneM = colonneP;
-                do {
-                    ligneM = Math.floor(Math.random() * 6) + 2;
-                }
-                while (ligneM === ligneP);
-
-                // position piece ambigue
-                colonneA = colonneP;
-                if (ligneM < ligneP) { // position en dessous
-                    ligneA = Math.floor(Math.random() * (ligneM - 1)) + 1;
-                }
-                else { // position au dessus
-                    ligneA = Math.floor(Math.random()) + (ligneM + 1);
-                }
-            }
-            else { // meme ligne
-                // position piece mangé
-                ligneM = ligneP;
-                do {
-                    colonneM = Math.floor(Math.random() * 6) + 2; ///// warning
-                }
-                while (colonneM === colonneP);
-
-                // position piece ambigue
-                ligneA = ligneP;
-                if (colonneM < colonneP) { // position à gauche
-                    colonneA = Math.floor(Math.random() * (colonneM - 1)) + 1;
-                }
-                else { // position à droite
-                    colonneA = Math.floor(Math.random()) + (colonneM + 1);
-                }
-            }
+    genererGrandRoque = (chess) => {
+        let coloredSquares = {};
+        this.realCoup = 'O-O-O';
+        this.languageCoup = 'O-O-O';
+        if (this.orientation === 'black') {
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'e8': { backgroundColor: this.couleurM },
+                'a8': { backgroundColor: this.couleurP },
+            };
+            chess.load('r3kbnr/ppp1pppp/2n5/3q4/3P2b1/2P2N2/PP2PPPP/R1BQKB1R b KQkq - 0 7');
         }
-        else { // position L
-            if (Math.random() < 0.5) { // choix entre ligne ou colonne
-                // meme colonne
-
-                // position piece mangé
-                colonneM = colonneP;
-                do {
-                    ligneM = Math.floor(Math.random() * 8) + 1;
-                }
-                while (ligneM === ligneP);
-
-                // position piece ambigue
-                ligneA = ligneM;
-                do {
-                    colonneA = Math.floor(Math.random() * 8) + 1;
-                }
-                while (colonneA === colonneM);
-            }
-            else { // meme ligne
-
-                // position piece mangé
-                ligneM = ligneP;
-                do {
-                    colonneM = Math.floor(Math.random() * 8) + 1;
-                }
-                while (colonneM === colonneP);
-
-                // position piece ambigue
-                colonneA = colonneM;
-                do {
-                    ligneA = Math.floor(Math.random() * 8) + 1;
-                }
-                while (ligneA === ligneM);
-            }
+        else {
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'a1': { backgroundColor: this.couleurM },
+                'e1': { backgroundColor: this.couleurP },
+            };
+            chess.load('r1q1kbnr/ppp2ppp/2npb3/4p1BQ/4P3/2NP4/PPP2PPP/R3KBNR w KQkq - 3 6');
         }
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+        return [chess, coloredSquares];
     }
 
-    genererCavalier = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        // position piece qui mange
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
+    genererPriseEnPassant = (chess) => {
+        let coloredSquares = {};
+        if (this.orientation === 'black') {
+            chess.load('rnbqkbnr/pp1ppppp/8/8/2p1P3/2P5/PP1P1PPP/RNBQKBNR w KQkq - 0 3');
+            this.realCoup = "cxd3";
+            this.languageCoup = "cxd3";
 
-        // 4 cas
-        if (colonneP <= 4 && ligneP <= 4) { // bas gauche
-            if (Math.random() < 0.5) { // x+2 y+1
-                // position piece mangé
-                colonneM = colonneP + 2
-                ligneM = ligneP + 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM + 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM + 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP + 1
-                ligneM = ligneP + 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM + 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM + 2
-                }
-            }
+            setTimeout(() => {
+                chess.move("d4");
+                coloredSquares = {
+                    ...this.state.coloredSquares,
+                    'c4': { backgroundColor: this.couleurM },
+                    'd3': { backgroundColor: this.couleurP },
+                };
+                this.setState({ chess: chess, coloredSquares: coloredSquares });
+            }, 1000); // Effectue le coup d4 apres apres 1 sec.
         }
-        if (colonneP > 4 && ligneP <= 4) {  // bas droite
-            if (Math.random() < 0.5) { // x-2 y+1
-                // position piece mangé
-                colonneM = colonneP - 2
-                ligneM = ligneP + 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM - 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM + 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP - 1
-                ligneM = ligneP + 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM - 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM + 2
-                }
-            }
+        else {
+            chess.load('rnbqkbnr/pp1ppppp/8/2p1P3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2');
+            this.realCoup = "exd6";
+            this.languageCoup = "exd6";
+
+            setTimeout(() => {
+                chess.move("d5");
+                coloredSquares = {
+                    ...this.state.coloredSquares,
+                    'e5': { backgroundColor: this.couleurM },
+                    'd6': { backgroundColor: this.couleurP },
+                };
+                this.setState({ chess: chess, coloredSquares: coloredSquares });
+            }, 2000); // Effectue le coup d5 apres apres 1 sec.
         }
-        if (colonneP <= 4 && ligneP > 4) { // haut gauche
-            if (Math.random() < 0.5) { // x+2 y+1
-                // position piece mangé
-                colonneM = colonneP + 2
-                ligneM = ligneP - 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM + 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM - 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP + 1
-                ligneM = ligneP - 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM + 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM - 2
-                }
-            }
-        }
-        if (colonneP > 4 && ligneP > 4) { // haut droite
-            if (Math.random() < 0.5) { // x+2 y+1
-                // position piece mangé
-                colonneM = colonneP - 2
-                ligneM = ligneP - 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM - 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM - 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP - 1
-                ligneM = ligneP - 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM - 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM - 2
-                }
-            }
-        }
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+        return [chess, coloredSquares];
     }
 
-    genererFou = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        do {
-            do {
-                colonneM = Math.floor(Math.random() * 8) + 1;
-            }
-            while (colonneM === colonneP);
-            ligneM = ligneP + Math.abs(colonneP - colonneM);
-            if (ligneM > 8) {
-                ligneM = ligneP - Math.abs(colonneP - colonneM);
-            }
-        } while (ligneM < 1 || ligneM > 8);
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererReine = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        colonneM = Math.floor(Math.random() * 8) + 1;
-        do { ligneM = Math.floor(Math.random() * 8) + 1; }
-        while ((colonneM === colonneP && ligneM === ligneP) || (ligneM !== ligneP && colonneM !== colonneP
-            && ligneM !== (ligneP + Math.abs(colonneP - colonneM) || ligneP - Math.abs(colonneP - colonneM))));
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererRoi = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        do {
-            colonneM = Math.floor(Math.random() * 3) + (colonneP - 1);
-            ligneM = Math.floor(Math.random() * 3) + (ligneP - 1);
+    genererEchec = (chess) => {
+        let coloredSquares = {};
+        if (this.orientation === 'black') {
+            this.realCoup = 'Qh4+';
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'd8': { backgroundColor: this.couleurM },
+                'e1': { backgroundColor: this.couleurP },
+            };
+            chess.load('rnbqkbnr/pppp1ppp/8/4P3/8/8/PPPPP1PP/RNBQKBNR b KQkq - 0 2');
         }
-        while (colonneM > 8 || colonneM < 1 || ligneM > 8 || ligneM < 1 ||
-            (ligneM === ligneP && colonneM === colonneP));
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+        else {
+            this.realCoup = 'Qh5+';
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'd1': { backgroundColor: this.couleurM },
+                'e8': { backgroundColor: this.couleurP },
+            };
+            chess.load('rnbqkbnr/ppppp1pp/8/5p2/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2');
+
+        }
+        return [chess, coloredSquares];
     }
 
-    genererPieceAleatoire() {
-        const { chess } = this.state;
-        const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    genererEchecMat = (chess) => {
+        let coloredSquares = {};
+        if (this.orientation === 'black') {
+            this.realCoup = 'Qxf2#';
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'h4': { backgroundColor: this.couleurM },
+                'e1': { backgroundColor: this.couleurP },
+            };
+            chess.load('rnb1k1nr/pppp1ppp/8/2b1B3/7q/1P3N2/P1PPPPPP/RN1QKB1R b KQkq - 2 4');
+        }
+        else {
+            this.realCoup = 'Qxf7#';
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'h5': { backgroundColor: this.couleurM },
+                'e8': { backgroundColor: this.couleurP },
+            };
+            chess.load('r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4');
 
-        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coul, coulM, couleur;
+        }
+        return [chess, coloredSquares];
+    }
+
+    genererPromotionDame = (chess) => {
+        let coloredSquares = {};
+        if (this.orientation === 'black') {
+            this.realCoup = 'a1=Q+';
+
+            this.languageCoup = this.realCoup.replace('Q', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')]);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'a2': { backgroundColor: this.couleurM },
+                'g1': { backgroundColor: this.couleurP },
+            };
+            chess.load('b4rk1/3n4/1Q1p3p/7B/2P5/3P4/p6P/6K1 b KQkq - 0 1');
+        }
+        else {
+            this.realCoup = 'c8=Q+';
+
+            this.languageCoup = this.realCoup.replace('Q', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')]);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'c7': { backgroundColor: this.couleurM },
+                'e8': { backgroundColor: this.couleurP },
+            };
+            chess.load('4k1r1/2P5/8/1n5R/3n1p2/P2B4/8/5K2 w KQkq - 0 1');
+        }
+        return [chess, coloredSquares];
+    }
+
+    genererPromotionCheval = (chess) => {
+        let coloredSquares = {};
+        if (this.orientation === 'black') {
+            this.realCoup = 'f1=N#';
+
+            this.languageCoup = this.realCoup.replace('N', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('N')]);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'f2': { backgroundColor: this.couleurM },
+                'h2': { backgroundColor: this.couleurP },
+            };
+
+            chess.load('8/8/2q4k/2b5/5p2/r7/1P3p1K/8 b KQkq - 0 1');
+        }
+        else {
+            this.realCoup = 'c8=N#';
+
+            this.languageCoup = this.realCoup.replace('N', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('N')]);
+            coloredSquares = {
+                ...this.state.coloredSquares,
+                'c7': { backgroundColor: this.couleurM },
+                'a7': { backgroundColor: this.couleurP },
+            };
+            chess.load('8/k1P5/7R/2P2p2/5B2/P4Q2/3K4/8 w KQkq - 0 1');
+        }
+        return [chess, coloredSquares];
+    }
+
+
+    genererPieceAleatoire = () => {
+        let { chess } = this.state;
         chess.clear();
-
+        
         //choix couleur
         if (Math.random() < 0.5) {
-            couleur = 'b';
-            coul = 'b';
-            coulM = 'w';
-            chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
-            chess.remove('a8');
-            chess.remove('b8');
-
+            this.orientation = 'black';
+            this.couleur = "noir";
         }
         else {
-            coul = 'w';
-            coulM = 'b';
+            this.orientation = 'white';
+            this.couleur = "blanc";
+        }
+        
+        // choix piece
+        const coupsPossible = ['Roque', 'Grand-Roque', 'Prise-en-passant', 'Echec', 'Echec-et-Mat', 'Promotion-dame', 'Promotion-cheval'];
+        this.coupChoisis = coupsPossible[this.indexCoup];
+
+        
+        let coloredSquares = {};
+        // pour chaque piece
+        if (this.coupChoisis === 'Roque') {
+            this.consigne = 'le petit roque';
+            this.pieceConcernee = 'coté ' + this.couleur;
+            [chess, coloredSquares] = this.genererRoque(chess);
+        }
+        else if (this.coupChoisis === 'Grand-Roque') {
+            this.consigne = 'le grand roque';
+            this.pieceConcernee = 'coté ' + this.couleur;
+            [chess, coloredSquares] = this.genererGrandRoque(chess);
+        }
+        else if (this.coupChoisis === 'Prise-en-passant') {
+            this.consigne = 'la prise en passant';
+            this.pieceConcernee = 'du pion blanc';
+            [chess, coloredSquares] = this.genererPriseEnPassant(chess);
+        }
+        else if (this.coupChoisis === 'Echec') {
+            this.consigne = 'un échec';
+            this.pieceConcernee = 'avec la dame';
+            [chess, coloredSquares] = this.genererEchec(chess);
+        }
+        else if (this.coupChoisis === 'Echec-et-Mat') {
+            this.consigne = 'un échec et mat';
+            this.pieceConcernee = 'avec la dame';
+            [chess, coloredSquares] = this.genererEchecMat(chess);
+        }
+        else if (this.coupChoisis === 'Promotion-dame') {
+            this.consigne = "une promotion d'un pion en dame";
+            this.pieceConcernee = 'faisant un echec';
+            [chess, coloredSquares] = this.genererPromotionDame(chess);
+        }
+        else if (this.coupChoisis === 'Promotion-cheval') {
+            this.consigne = "une promotion d'un pion en cheval";
+            this.pieceConcernee = 'faisant un echec et mat';
+            [chess, coloredSquares] = this.genererPromotionCheval(chess);
         }
 
-        // premiere etape choisir piece
-        const pieces = ['P', 'R', 'B', 'N', 'Q', 'K'];
-        this.indexPiece = Math.floor(Math.random() * pieces.length);
-        let piece = pieces[this.indexPiece];
-        this.piece = piece;
+        // si this.index est inferieur ou égale a la taille de coupsPossible alors index augmente de un sinon un revient a 0
+        this.indexCoup >= coupsPossible.length - 1 ? this.indexCoup = 0 : this.indexCoup++;
 
-        // 3 cas
-        if (piece === 'P') { // pions
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPion(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'R') { // tours
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererTour(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'N') { // cavaliers
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererCavalier(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'B') { // fou
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererFou(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'Q') { // reine
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererReine(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'K') { // roi
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererRoi(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-
-        // liste des positions
-        this.positionPieceP = `${alpha[colonneP - 1]}${ligneP}`;
-        this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
-        this.positionPieceA = `${alpha[colonneA - 1]}${ligneA}`;
-
-        if (Math.random() < 0.5) {
-            chess.put({ type: `${piece.toLowerCase()}`, color: `${coul}` }, this.positionPieceA) // A
-        }
-        if (Math.random() < 0.7) {
-            chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
-            this.optionManger = `manger la reine`;
-        } else if (piece === 'P') {
-            if (coul === 'b' && ligneP === 7) {
-                colonneM = colonneP;
-                if (Math.random() < 0.5) { ligneM = 5 } else ligneM = 6;
-            } else if (coul === 'w' && ligneP === 2) {
-                colonneM = colonneP;
-                if (Math.random() < 0.5) { ligneM = 4 } else ligneM = 3;
-            }
-            colonneM = colonneP;
-            this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
-        }
-
-        chess.put({ type: `${piece.toLowerCase()}`, color: `${coul}` }, this.positionPieceP); // P
-
-        if (piece === 'P') this.nomPiece = `le pion`
-        else if (piece === 'R') this.nomPiece = `la tour`
-        else if (piece === 'N') this.nomPiece = `le cavalier`
-        else if (piece === 'B') this.nomPiece = `le fou`
-        else if (piece === 'Q') this.nomPiece = `la reine`
-        else if (piece === 'K') this.nomPiece = `le roi`
-
-        this.pos = this.positionPieceM;
-
-        let coup = '';
-        if (piece === 'N' && colonneP !== colonneA && ligneP !== ligneA && chess.get(this.positionPieceA)) {
-            // cas 1
-            coup += this.state.piecesLanguage[this.indexPiece];
-            coup += ligneP;
-
-            if (chess.get(this.positionPieceM)) {
-                coup += 'x';
-            }
-            coup += alpha[colonneM - 1] + ligneM;
-            this.coups.push(coup);
-
-            // cas 2
-            coup = '';
-            coup += this.state.piecesLanguage[this.indexPiece];
-            coup += alpha[colonneP - 1];
-            if (chess.get(this.positionPieceM)) {
-                coup += 'x';
-            }
-            coup += alpha[colonneM - 1] + ligneM;
-            this.coups.push(coup);
-
-            this.realCoup = pieces[this.indexPiece] + this.coups[1].slice(1);
-        }
-        else {
-            if (piece !== 'P') {
-                coup += this.state.piecesLanguage[this.indexPiece];
-            }
-
-            if (chess.get(this.positionPieceA) && piece !== 'P') {
-                if (colonneA === colonneP) {
-                    coup += ligneP;
-                }
-                else coup += alpha[colonneP - 1];
-            }
-
-            if (chess.get(this.positionPieceM)) {
-                if (piece === 'P') {
-                    coup += alpha[colonneP - 1];
-                }
-                coup += 'x';
-            }
-            coup += alpha[colonneM - 1] + ligneM;
-            if (piece === 'P' && (ligneM === 1 || ligneM === 8)) {
-                coup += '=Q';
-            }
-
-            this.coups.push(coup);
-            if (this.piece !== 'P') {
-                this.realCoup = pieces[this.indexPiece] + this.coups[0].slice(1);
-            }
-            else
-                this.realCoup = this.coups[0];
-                
-        }
-        this.setState({ chess: chess });
-
-        // deplacement
-        setTimeout(() => {
-            const { chess } = this.state;
-            chess.move(this.realCoup);
-            this.setState({ chess: chess });
-        }, 1000);
-    }
-
-    // couleur des cases
-    customSquare = React.forwardRef((props, ref) => {
-        const { children, square, style } = props;
-        if (square === this.positionPieceP) {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
-                    {children}
-                </div>
-            );
-        }
-        else if (square === this.positionPieceM) {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
-                    {children}
-                </div>
-            );
-        }
-        else {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative" }}>
-                    {children}
-                </div>
-            );
-        }
-    });
+        this.setState({ chess: chess, coloredSquares: coloredSquares, orientation: this.orientation === 'white' ? 'white' : 'black' });
+    };
 
     // handles
 
@@ -569,46 +379,73 @@ class Notation4 extends React.Component {
         this.soundDown.play();
     };
 
+    handleCoordonnees = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ coordonnees: true });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ coordonnees: false });
+        }
+    }
+
+    handleClickReplay = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+
+        const { chess } = this.state;
+        const oldMove = chess.undo().to;
+        this.setState({ chess: chess, });
+
+        setTimeout(() => {
+            const { chess } = this.state;
+            this.setState({ chess: chess, });
+            chess.move(oldMove);
+        }, 1000);
+    }
+
     handleLanguageChange = (event) => {
         Howler.volume(0.3);
         this.soundUp.play();
 
-        const listePiecesLangue = {
-            en: ['P', 'R', 'B', 'N', 'Q', 'K'],
-            fr: ['P', 'T', 'F', 'C', 'D', 'R'],
-            es: ['P', 'T', 'A', 'C', 'D', 'R'],
-            de: ['B', 'S', 'L', 'T', 'D', 'K'],
-            it: ['P', 'T', 'A', 'C', 'D', 'R'],
-            ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
-            cn: ['卒', '马', '象', '车', '后', '帅'],
+        if (this.coupChoisis === 'Echec' || this.coupChoisis === 'Echec-et-Mat') {
+            // Recupere la traduction de la piece a partir de la notation de la piece actuelle
+            this.languageCoup = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0))] + this.realCoup.slice(1);
         }
-        this.coups.forEach((coup, index) => {
-            this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
-        })
-        this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
+        else if (this.coupChoisis === 'Promotion-cheval' || this.coupChoisis === 'Promotion-dame') {
+            // Recupere la traduction de la piece a partir de la notation de la piece actuelle
+            const actualPiece = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(3))];
+            const futurePiece = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(actualPiece)];
+            this.languageCoup = this.languageCoup.replace(actualPiece, futurePiece);
+        }
+        this.setState({ selectedLanguage: event.target.value, piecesLanguage: this.listePiecesLangue[event.target.value] });
     }
 
+
     handleClick = () => {
-        Howler.volume(0.3);
+        Howler.volume(0.5);
         this.soundUp.play();
-        const { inputValue } = this.state;
-        if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
+        const { inputValue, chess } = this.state;
+        if (inputValue === this.languageCoup) {
             Howler.volume(0.3);
             this.soundWin.play();
-            const text = `Bonne réponse ! Le mouvement est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
+            chess.move(this.realCoup);
             this.setState({
                 message: text,
-                chess: this.state.chess,
+                chess: chess,
                 inputValue: '',
                 showCorrect: true,
                 showIncorrect: false
             });
         }
         else {
-            Howler.volume(1);
+            Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! Le mouvement était ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! Le coup était ${this.languageCoup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -618,8 +455,7 @@ class Notation4 extends React.Component {
             });
         }
         setTimeout(() => {
-            this.coups = [];
-            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+            this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
 
             if (this.points !== 0)
                 this.handleUpdate();
@@ -627,7 +463,6 @@ class Notation4 extends React.Component {
                 this.genererPieceAleatoire();
         }, 3000); // Efface le message après 3 secondes
     }
-
 
     handleUpdate = () => {
         try {
@@ -670,69 +505,8 @@ class Notation4 extends React.Component {
         }
     }
 
-    handleClickReplay = () => {
-        Howler.volume(0.3);
-        this.soundUp.play();
-
-        const { chess } = this.state;
-        chess.undo();
-        this.setState({ chess: chess, });
-
-        setTimeout((deplacement) => {
-            const { chess } = this.state;
-            this.setState({ chess: chess, });
-            chess.move(this.realCoup);
-        }, 1000);
-    }
-
-
-    MaterialUISwitch = styled(Switch)(({ disabled }) => ({
-        width: 62,
-        height: 34,
-        padding: 7,
-        cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
-        '& .MuiSwitch-switchBase': {
-            margin: 1,
-            padding: 0,
-            transform: 'translateX(6px)',
-            '&.Mui-checked': {
-                color: '#fff',
-                transform: 'translateX(22px)',
-                '& .MuiSwitch-thumb:before': {
-                    backgroundColor: "white",
-                    borderRadius: '50%',
-                },
-                '& + .MuiSwitch-track': {
-                    opacity: 1,
-                    backgroundColor: disabled ? 'rgba(255, 255, 255, 0.5)' : '#cccccc',
-                },
-            },
-        },
-        '& .MuiSwitch-thumb': {
-            backgroundColor: '#001e3c',
-            width: 32,
-            height: 32,
-            '&:before': {
-                content: "''",
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                left: 0,
-                top: 0,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundColor: disabled ? '#c7c7c7' : 'black',
-                borderRadius: '50%',
-            },
-        },
-        '& .Mui-disabled': {
-            opacity: 0.5,
-        },
-    }));
-
-    Android12Switch = styled(Switch)(({ theme, disabled }) => ({
+    Android12Switch = styled(Switch)(({ theme }) => ({
         padding: 8,
-        cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
         '& .MuiSwitch-track': {
             borderRadius: 22 / 2,
             '&:before, &:after': {
@@ -782,12 +556,12 @@ class Notation4 extends React.Component {
             ? ["a", "b", "c", "d", "e", "f", "g", "h"]
             : ["h", "g", "f", "e", "d", "c", "b", "a"];
         const custom = [
-            "x", "O-O", "O-O-O", "=", "e.p.", "+"
+            "x", "O-O", "O-O-O", "=", "+", "#"
             // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
-            //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
+            //"=" pour la promotion, "+" pour echec, "#" pour le mat
         ]
         const customCoup = [
-            "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+            "prise", "petit roque", "grand roque", "promotion", "echec", "mat"
         ]
         return (
             <div className="container-general">
@@ -796,49 +570,34 @@ class Notation4 extends React.Component {
                         key="board"
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
-                        customSquare={this.customSquare}
                         boardOrientation={this.state.orientation}
                         showBoardNotation={this.state.coordonnees}
+                        customSquareStyles={this.state.coloredSquares}
+
                         animationDuration={800}
                     />
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
-                        Ecrivez le coup réalisé par <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                        Ecrivez le coup pour faire <span style={{ color: `${this.couleurP}` }}> {this.consigne}
+                        </span> <span style={{ color: `${this.couleurM}` }}> {this.pieceConcernee}
                         </span>
                     </i>
                     <div className="option">
-                        <FormControlLabel
-                            control={<this.MaterialUISwitch
-                                checked={this.state.orientation === 'white'}
-                                disabled={true}
-                            />}
-                            label={
-                                <div style={{ color: this.state.orientation === 'white' ? 'white' : 'black' }}>
-                                    {this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'}
-                                </div>
-                            }
-                            style={{
-                                color: this.state.orientation === 'white' ? 'white' : 'black',
-                            }}
-                        />
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
                                 control={<this.Android12Switch
                                     checked={this.state.coordonnees === true}
-                                    disabled={true}
                                     color="secondary"
                                 />}
                                 label={'Coordonnée'}
+                                onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
                                 }}
                             />
                         </ThemeProvider>
-                        <select className="language-selector" 
-                        value={this.state.selectedLanguage} 
-                        onMouseDown={() => this.handlePieceDown()} 
-                        onChange={this.handleLanguageChange}>
+                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
                             <option value="fr">Français 🇫🇷</option>
                             <option value="en">English 🇬🇧</option>
                             <option value="es">Español 🇪🇸</option>
@@ -915,7 +674,7 @@ class Notation4 extends React.Component {
                         </div>
                     </div>
                     <div className="input">
-                        <Stack spacing={2} direction="row" alignItems="center">
+                        <Stack key="stack" spacing={2} direction="row" alignItems="center">
                             <input className="reponse-input"
                                 type="text"
                                 placeholder="Entrez la position..."
@@ -924,6 +683,7 @@ class Notation4 extends React.Component {
                                 onKeyDown={this.handleKeyPress}
                                 ref={this.monInputRef} />
                             <button className="bouton-3D button-clean"
+                                key="clean"
                                 title="supprimer"
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
@@ -945,7 +705,7 @@ class Notation4 extends React.Component {
                                     Valider
                                 </span>
                             </button>
-                            <button className="bouton-3D button-replay"
+                            {this.coupChoisis === 'Prise-en-passant' && <button className="bouton-3D button-replay"
                                 title="Refaire"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickReplay}
@@ -953,7 +713,7 @@ class Notation4 extends React.Component {
                                 <span className="texte-3D texte-replay">
                                     Rejouer
                                 </span>
-                            </button>
+                            </button>}
                         </Stack>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
@@ -965,4 +725,4 @@ class Notation4 extends React.Component {
     }
 }
 
-export default Notation4;
+export default Notation5;

@@ -24,6 +24,7 @@ class Notation2 extends React.Component {
             coordonnees: true,
             selectedLanguage: 'fr',
             piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
+            coloredSquares: {},
             chess: new Chess()
         };
         // validation réponse
@@ -332,35 +333,14 @@ class Notation2 extends React.Component {
             this.realCoup = this.coup;
         }
 
-        this.setState({ chess: chess });
+        this.setState({
+            chess: chess, coloredSquares: {
+                [this.positionPieceP]: { backgroundColor: this.couleurP },
+                [this.positionPieceM]: { backgroundColor: this.couleurM },
+            },
+        });
     };
     //#endregion
-
-    // couleur des cases
-    customSquare = React.forwardRef((props, ref) => {
-        const { children, square, style } = props;
-        if (square === this.positionPieceP) {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
-                    {children}
-                </div>
-            );
-        }
-        else if (square === this.positionPieceM) {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
-                    {children}
-                </div>
-            );
-        }
-        else {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative" }}>
-                    {children}
-                </div>
-            );
-        }
-    });
 
     // handles
 
@@ -450,7 +430,7 @@ class Notation2 extends React.Component {
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
             Howler.volume(0.3);
             this.soundWin.play();
-            const text = `Bonne réponse ! Le mouvement est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
             this.state.chess.move(this.realCoup);
             this.setState({
@@ -464,7 +444,7 @@ class Notation2 extends React.Component {
         else {
             Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! Le mouvement était ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! Le coup était ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -618,12 +598,12 @@ class Notation2 extends React.Component {
             ? ["a", "b", "c", "d", "e", "f", "g", "h"]
             : ["h", "g", "f", "e", "d", "c", "b", "a"];
         const custom = [
-            "x", "O-O", "O-O-O", "=", "e.p.", "+"
+            "x", "O-O", "O-O-O", "=", "+", "#"
             // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
-            //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
+            //"=" pour la promotion, "+" pour echec, "#" pour le mat
         ]
         const customCoup = [
-            "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
+            "prise", "petit roque", "grand roque", "promotion", "echec", "mat"
         ]
         return (
             <div className="container-general">
@@ -632,7 +612,7 @@ class Notation2 extends React.Component {
                         key="board"
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
-                        customSquare={this.customSquare}
+                        customSquareStyles={this.state.coloredSquares}
                         boardOrientation={this.state.orientation}
                         showBoardNotation={this.state.coordonnees}
                         animationDuration={800}
