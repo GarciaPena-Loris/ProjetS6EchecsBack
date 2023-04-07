@@ -64,6 +64,9 @@ class Notation8 extends React.Component {
         this.switchOff = new Howl({
             src: ['/sons/switchOff.mp3']
         });
+        this.pieceDrop = new Howl({
+            src: ['/sons/wood.wav']
+        });
     }
 
     componentDidMount() {
@@ -252,24 +255,31 @@ class Notation8 extends React.Component {
 
         // verif coup
         if (coupJoue === coupAEffectue) {
-            Howler.volume(0.2);
-            this.soundWin.play();
+            Howler.volume(1);
             chess.move(this.realCoup);
-
-            const text = `Bonne réponse ! Vous avez effecuté le bon mouvement, vous gagné ${this.pointsGagnes} points.`;
-            this.points = this.pointsGagnes;
-            this.setState({
-                message: text,
-                chess: chess,
-                showCorrect: true,
-                showIncorrect: false
-            });
+            this.setState({ chess: chess });
+            this.pieceDrop.play();
 
             setTimeout(() => {
-                this.setState({ showCorrect: false, showIncorrect: false, message: '', rightClickedSquares: {} });
-                this.handleUpdate();
-                this.genererPieceAleatoire();
-            }, 2000); // Efface le message après 3 secondes
+                Howler.volume(0.2);
+                this.soundWin.play();
+
+                const text = `Bonne réponse ! Vous avez effecuté le bon mouvement, vous gagné ${this.pointsGagnes} points.`;
+                this.points = this.pointsGagnes;
+                this.setState({
+                    message: text,
+                    chess: chess,
+                    showCorrect: true,
+                    showIncorrect: false
+                });
+
+                setTimeout(() => {
+                    this.setState({ showCorrect: false, showIncorrect: false, message: '', rightClickedSquares: {} });
+                    this.handleUpdate();
+                    this.genererPieceAleatoire();
+                }, 2000); // Efface le message après 3 secondes
+            }, 300); // Efface le message après 3 secondes
+
         }
         else {
             Howler.volume(0.2);

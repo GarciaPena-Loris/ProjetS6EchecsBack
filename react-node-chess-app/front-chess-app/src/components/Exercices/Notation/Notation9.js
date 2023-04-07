@@ -65,6 +65,9 @@ class Notation9 extends React.Component {
         this.switchOff = new Howl({
             src: ['/sons/switchOff.mp3']
         });
+        this.pieceDrop = new Howl({
+            src: ['/sons/wood.wav']
+        });
     }
 
     componentDidMount() {
@@ -73,7 +76,7 @@ class Notation9 extends React.Component {
 
     genererPieceAleatoire() {
         const newChess = new Chess();
-        
+
         // reset les variables
         this.languageCoup = '';
         this.couleur = '';
@@ -99,7 +102,7 @@ class Notation9 extends React.Component {
         let nbCoups = 0;
         let x = Math.floor(Math.random() * 2);
         let coups = '';
-        let verboseCoups ='';
+        let verboseCoups = '';
         let index = 0;
         if (x === 0) { // coup avec sans x
             nbCoups = Math.floor(Math.random() * 15) + 5;
@@ -279,28 +282,34 @@ class Notation9 extends React.Component {
 
         // verif coup
         if (coupJoue === coupAEffectue) {
-            Howler.volume(0.2);
-            this.soundWin.play();
+            Howler.volume(1);
             chess.move(this.realCoup);
-
-            this.points = this.pointsGagnes;
-            if (this.showedCoordonnes) {
-                this.points -= 3;
-            }
-            const text = `Bonne réponse ! Vous avez effecuté le bon mouvement, vous gagné ${this.points} points.`;
-            this.setState({
-                message: text,
-                chess: chess,
-                showCorrect: true,
-                showIncorrect: false
-            });
+            this.setState({ chess: chess });
+            this.pieceDrop.play();
 
             setTimeout(() => {
-            this.showedCoordonnes = false;
-                this.setState({ showCorrect: false, showIncorrect: false, message: '', coordonnees: false, rightClickedSquares: {} });
-                this.handleUpdate();
-                this.genererPieceAleatoire();
-            }, 2000); // Efface le message après 3 secondes
+                Howler.volume(0.2);
+                this.soundWin.play();
+
+                this.points = this.pointsGagnes;
+                if (this.showedCoordonnes) {
+                    this.points -= 3;
+                }
+                const text = `Bonne réponse ! Vous avez effecuté le bon mouvement, vous gagné ${this.points} points.`;
+                this.setState({
+                    message: text,
+                    chess: chess,
+                    showCorrect: true,
+                    showIncorrect: false
+                });
+
+                setTimeout(() => {
+                    this.showedCoordonnes = false;
+                    this.setState({ showCorrect: false, showIncorrect: false, message: '', coordonnees: false, rightClickedSquares: {} });
+                    this.handleUpdate();
+                    this.genererPieceAleatoire();
+                }, 2000); // Efface le message après 3 secondes
+            }, 300); // Efface le message après 3 secondes
         }
         else {
             Howler.volume(0.2);
@@ -316,8 +325,8 @@ class Notation9 extends React.Component {
 
             setTimeout(() => {
                 this.handleUpdate();
-
                 this.setState({
+                    coordonnees: true,
                     rightClickedSquares: {
                         [this.caseOrigine]: { backgroundColor: this.couleurO },
                         [this.caseDestination]: { backgroundColor: this.couleurD },

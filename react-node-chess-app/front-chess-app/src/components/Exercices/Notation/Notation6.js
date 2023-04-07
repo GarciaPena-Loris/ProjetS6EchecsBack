@@ -72,6 +72,9 @@ class Notation6 extends React.Component {
         this.switchOff = new Howl({
             src: ['/sons/switchOff.mp3']
         });
+        this.pieceDrop = new Howl({
+            src: ['/sons/wood.wav']
+        });
     }
 
     componentDidMount() {
@@ -210,9 +213,12 @@ class Notation6 extends React.Component {
 
         // deplacement
         setTimeout(() => {
+            Howler.volume(1);
             const { chess } = this.state;
             chess.move(this.realCoup);
+            
             this.setState({ chess: chess });
+            this.pieceDrop.play();
         }, 1000);
     }
 
@@ -516,7 +522,7 @@ class Notation6 extends React.Component {
                         customSquareStyles={this.state.coloredSquares}
                         boardOrientation={this.state.orientation}
                         showBoardNotation={this.state.coordonnees}
-                        animationDuration={800}
+                        animationDuration={300}
                     />
                 </div>
                 <div className="elements-droite">
