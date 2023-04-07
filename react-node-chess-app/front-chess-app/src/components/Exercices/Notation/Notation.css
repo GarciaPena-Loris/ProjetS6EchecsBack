@@ -37,6 +37,10 @@
   flex-direction: column;
 }
 
+.orientation-selector {
+  cursor: crosshair;
+}
+
 /* css button custom from  https://www.joshwcomeau.com/animation/3d-button/*/
 .pushable {
   border: none;

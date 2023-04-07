@@ -630,9 +630,7 @@ class Notation2 extends React.Component {
                             />}
                             label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
                             onChange={this.handleOrientation}
-                            style={{
-                                color: this.state.orientation === 'white' ? 'white' : 'black',
-                            }}
+                            
                         />
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel

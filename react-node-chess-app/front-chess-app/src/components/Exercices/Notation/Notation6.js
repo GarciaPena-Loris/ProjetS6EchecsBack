@@ -29,6 +29,8 @@ class Notation6 extends React.Component {
         this.pointsGagnes = props.pointsGagnes;
         this.pointsPerdus = props.pointsPerdus;
         this.points = 0;
+        this.showedCoordonnees = false;
+
         // decode token
         const decoded = decodeToken(sessionStorage.token);
         this.name = decoded.name;
@@ -64,6 +66,12 @@ class Notation6 extends React.Component {
         this.soundWrong = new Howl({
             src: ['/sons/wrong.wav']
         });
+        this.switchOn = new Howl({
+            src: ['/sons/switchOn.mp3']
+        });
+        this.switchOff = new Howl({
+            src: ['/sons/switchOff.mp3']
+        });
     }
 
     componentDidMount() {
@@ -74,431 +82,129 @@ class Notation6 extends React.Component {
         this.monInputRef.current.focus();
     }
 
-    genererPion = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        if (couleur === 'b') {
-            // position piece qui mange
-            colonneP = Math.floor(Math.random() * 6) + 1;
-            ligneP = Math.floor(Math.random() * 7) + 2;
-
-            // position piece ambigue
-            colonneA = colonneP + 2;
-            ligneA = ligneP;
-
-            // position piece mangé
-            colonneM = colonneP + 1;
-            ligneM = ligneP - 1;
-        }
-        else {
-            // position piece qui mange
-            colonneP = Math.floor(Math.random() * 5) + 1;
-            ligneP = Math.floor(Math.random() * 7) + 1;
-
-            // position piece ambigue
-            colonneA = colonneP + 2;
-            ligneA = ligneP;
-
-            // position piece mangé
-            colonneM = colonneP + 1;
-            ligneM = ligneP + 1;
-        }
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererTour = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        // position piece qui mange
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-
-        if (Math.random() < 0.5) { // choix entre L ou I
-            // position I
-            if (Math.random() < 0.5) { // choix entre ligne ou colonne
-                // meme colonne
-                // position piece mangé
-                colonneM = colonneP;
-                do {
-                    ligneM = Math.floor(Math.random() * 6) + 2;
-                }
-                while (ligneM === ligneP);
-
-                // position piece ambigue
-                colonneA = colonneP;
-                if (ligneM < ligneP) { // position en dessous
-                    ligneA = Math.floor(Math.random() * (ligneM - 1)) + 1;
-                }
-                else { // position au dessus
-                    ligneA = Math.floor(Math.random()) + (ligneM + 1);
-                }
-            }
-            else { // meme ligne
-                // position piece mangé
-                ligneM = ligneP;
-                do {
-                    colonneM = Math.floor(Math.random() * 6) + 2; ///// warning
-                }
-                while (colonneM === colonneP);
-
-                // position piece ambigue
-                ligneA = ligneP;
-                if (colonneM < colonneP) { // position à gauche
-                    colonneA = Math.floor(Math.random() * (colonneM - 1)) + 1;
-                }
-                else { // position à droite
-                    colonneA = Math.floor(Math.random()) + (colonneM + 1);
-                }
-            }
-        }
-        else { // position L
-            if (Math.random() < 0.5) { // choix entre ligne ou colonne
-                // meme colonne
-
-                // position piece mangé
-                colonneM = colonneP;
-                do {
-                    ligneM = Math.floor(Math.random() * 8) + 1;
-                }
-                while (ligneM === ligneP);
-
-                // position piece ambigue
-                ligneA = ligneM;
-                do {
-                    colonneA = Math.floor(Math.random() * 8) + 1;
-                }
-                while (colonneA === colonneM);
-            }
-            else { // meme ligne
-
-                // position piece mangé
-                ligneM = ligneP;
-                do {
-                    colonneM = Math.floor(Math.random() * 8) + 1;
-                }
-                while (colonneM === colonneP);
-
-                // position piece ambigue
-                colonneA = colonneM;
-                do {
-                    ligneA = Math.floor(Math.random() * 8) + 1;
-                }
-                while (ligneA === ligneM);
-            }
-        }
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererCavalier = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        // position piece qui mange
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-
-        // 4 cas
-        if (colonneP <= 4 && ligneP <= 4) { // bas gauche
-            if (Math.random() < 0.5) { // x+2 y+1
-                // position piece mangé
-                colonneM = colonneP + 2
-                ligneM = ligneP + 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM + 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM + 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP + 1
-                ligneM = ligneP + 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM + 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM + 2
-                }
-            }
-        }
-        if (colonneP > 4 && ligneP <= 4) {  // bas droite
-            if (Math.random() < 0.5) { // x-2 y+1
-                // position piece mangé
-                colonneM = colonneP - 2
-                ligneM = ligneP + 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM - 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM + 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP - 1
-                ligneM = ligneP + 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM - 2
-                    ligneA = ligneM + 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM + 2
-                }
-            }
-        }
-        if (colonneP <= 4 && ligneP > 4) { // haut gauche
-            if (Math.random() < 0.5) { // x+2 y+1
-                // position piece mangé
-                colonneM = colonneP + 2
-                ligneM = ligneP - 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM + 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM - 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP + 1
-                ligneM = ligneP - 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM + 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM + 1
-                    ligneA = ligneM - 2
-                }
-            }
-        }
-        if (colonneP > 4 && ligneP > 4) { // haut droite
-            if (Math.random() < 0.5) { // x+2 y+1
-                // position piece mangé
-                colonneM = colonneP - 2
-                ligneM = ligneP - 1
-                if (Math.random() < 0.5) { // x+2 y+1
-                    // position piece ambigue
-                    colonneA = colonneM - 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM - 2
-                }
-            }
-            else {
-                // position piece mangé
-                colonneM = colonneP - 1
-                ligneM = ligneP - 2
-                // position piece ambigue
-                if (Math.random() < 0.5) { // x+2 y+1
-                    colonneA = colonneM - 2
-                    ligneA = ligneM - 1
-                }
-                else {
-                    colonneA = colonneM - 1
-                    ligneA = ligneM - 2
-                }
-            }
-        }
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererFou = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        do {
-            do {
-                colonneM = Math.floor(Math.random() * 8) + 1;
-            }
-            while (colonneM === colonneP);
-            ligneM = ligneP + Math.abs(colonneP - colonneM);
-            if (ligneM > 8) {
-                ligneM = ligneP - Math.abs(colonneP - colonneM);
-            }
-        } while (ligneM < 1 || ligneM > 8);
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererReine = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        colonneM = Math.floor(Math.random() * 8) + 1;
-        do { ligneM = Math.floor(Math.random() * 8) + 1; }
-        while ((colonneM === colonneP && ligneM === ligneP) || (ligneM !== ligneP && colonneM !== colonneP
-            && ligneM !== (ligneP + Math.abs(colonneP - colonneM) || ligneP - Math.abs(colonneP - colonneM))));
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererRoi = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        do {
-            colonneM = Math.floor(Math.random() * 3) + (colonneP - 1);
-            ligneM = Math.floor(Math.random() * 3) + (ligneP - 1);
-        }
-        while (colonneM > 8 || colonneM < 1 || ligneM > 8 || ligneM < 1 ||
-            (ligneM === ligneP && colonneM === colonneP));
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
     genererPieceAleatoire() {
-        const { chess } = this.state;
-        const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const newChess = new Chess();
 
-        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coul, coulM, couleur;
-        chess.clear();
+        // reset les variables
+        this.languageCoup = '';
+        this.realCoup = '';
+        this.showedCoordonnees = false;
+        this.caseOrigine = '';
+        this.caseDestination = '';
 
-        //choix couleur
-        if (Math.random() < 0.5) {
-            couleur = 'b';
-            coul = 'b';
-            coulM = 'w';
-            chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
-            chess.remove('a8');
-            chess.remove('b8');
+        // effectuer un nombre aléatoire de coups aléatoires
 
+        // recuperer un coup aléatoire
+        const listePiecesLangue = {
+            en: ['P', 'R', 'B', 'N', 'Q', 'K'],
+            fr: ['P', 'T', 'F', 'C', 'D', 'R'],
+            es: ['P', 'T', 'A', 'C', 'D', 'R'],
+            de: ['B', 'S', 'L', 'T', 'D', 'K'],
+            it: ['P', 'T', 'A', 'C', 'D', 'R'],
+            ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
+            cn: ['卒', '马', '象', '车', '后', '帅'],
+        }
+        const listePieceInitiale = {
+            p: 'pion',
+            b: 'fou',
+            n: 'cavalier',
+            r: 'tour',
+            q: 'queen',
+            k: 'king',
+        }
+
+        // Choisi entre coup avec x et coup sans x
+        let nbCoups = 0;
+        let x = Math.floor(Math.random() * 3);
+        let coups = '';
+        let verboseCoups = '';
+        let index = 0;
+        if (x === 0) { // coup avec sans x
+            nbCoups = Math.floor(Math.random() * 15) + 4;
+            for (let i = 0; i < nbCoups; i++) {
+                const coups = newChess.moves();
+                let coup = '';
+                do {
+                    coup = coups[Math.floor(Math.random() * coups.length)];
+                }
+                while (coup.includes('x'));
+                newChess.move(coup);
+            }
+
+            coups = newChess.moves();
+            verboseCoups = newChess.moves({ verbose: true });
+            index = Math.floor(Math.random() * coups.length);
+        }
+        else if (x === 1) { // coup avec x
+            nbCoups = Math.floor(Math.random() * 10) + 4;
+            for (let i = 0; i < nbCoups; i++) {
+                const coups = newChess.moves();
+                newChess.move(coups[Math.floor(Math.random() * coups.length)]);
+            }
+            let listeCoups = newChess.moves();
+
+            while (!listeCoups.some(coup => coup.includes("x"))) {
+                newChess.move(listeCoups[Math.floor(Math.random() * listeCoups.length)]);
+                nbCoups++;
+                listeCoups = newChess.moves();
+            }
+
+            coups = newChess.moves();
+            verboseCoups = newChess.moves({ verbose: true });
+            const coupAvecX = coups.find(coup => coup.includes('x'));
+            index = coups.indexOf(coupAvecX);
         }
         else {
-            coul = 'w';
-            coulM = 'b';
-        }
-
-        // premiere etape choisir piece
-        const pieces = ['P', 'R', 'B', 'N', 'Q', 'K'];
-        this.indexPiece = Math.floor(Math.random() * pieces.length);
-        let piece = pieces[this.indexPiece];
-        this.piece = piece;
-
-        // 3 cas
-        if (piece === 'P') { // pions
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPion(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'R') { // tours
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererTour(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'N') { // cavaliers
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererCavalier(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'B') { // fou
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererFou(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'Q') { // reine
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererReine(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'K') { // roi
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererRoi(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-
-        // liste des positions
-        this.positionPieceP = `${alpha[colonneP - 1]}${ligneP}`;
-        this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
-        this.positionPieceA = `${alpha[colonneA - 1]}${ligneA}`;
-
-        if (Math.random() < 0.5) {
-            chess.put({ type: `${piece.toLowerCase()}`, color: `${coul}` }, this.positionPieceA) // A
-        }
-        if (Math.random() < 0.7) {
-            chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
-            this.optionManger = `manger la reine`;
-        } else if (piece === 'P') {
-            if (coul === 'b' && ligneP === 7) {
-                colonneM = colonneP;
-                if (Math.random() < 0.5) { ligneM = 5 } else ligneM = 6;
-            } else if (coul === 'w' && ligneP === 2) {
-                colonneM = colonneP;
-                if (Math.random() < 0.5) { ligneM = 4 } else ligneM = 3;
+            nbCoups = Math.floor(Math.random() * 10) + 4;
+            for (let i = 0; i < nbCoups; i++) {
+                const coups = newChess.moves();
+                newChess.move(coups[Math.floor(Math.random() * coups.length)]);
             }
-            colonneM = colonneP;
-            this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
+            let listeCoups = newChess.moves();
+
+            while (!listeCoups.some(coup => coup.includes("+") || coup.includes("#"))) {
+                newChess.move(listeCoups[Math.floor(Math.random() * listeCoups.length)]);
+                nbCoups++;
+                listeCoups = newChess.moves();
+            }
+
+            coups = newChess.moves();
+            verboseCoups = newChess.moves({ verbose: true });
+            const coupAvecPlusOuDiese = coups.find(coup => /[+#]/.test(coup));
+            index = coups.indexOf(coupAvecPlusOuDiese);
         }
 
-        chess.put({ type: `${piece.toLowerCase()}`, color: `${coul}` }, this.positionPieceP); // P
-
-        if (piece === 'P') this.nomPiece = `le pion`
-        else if (piece === 'R') this.nomPiece = `la tour`
-        else if (piece === 'N') this.nomPiece = `le cavalier`
-        else if (piece === 'B') this.nomPiece = `le fou`
-        else if (piece === 'Q') this.nomPiece = `la reine`
-        else if (piece === 'K') this.nomPiece = `le roi`
-
-        this.pos = this.positionPieceM;
-
-        let coup = '';
-        if (piece === 'N' && colonneP !== colonneA && ligneP !== ligneA && chess.get(this.positionPieceA)) {
-            // cas 1
-            coup += this.state.piecesLanguage[this.indexPiece];
-            coup += ligneP;
-
-            if (chess.get(this.positionPieceM)) {
-                coup += 'x';
-            }
-            coup += alpha[colonneM - 1] + ligneM;
-            this.coups.push(coup);
-
-            // cas 2
-            coup = '';
-            coup += this.state.piecesLanguage[this.indexPiece];
-            coup += alpha[colonneP - 1];
-            if (chess.get(this.positionPieceM)) {
-                coup += 'x';
-            }
-            coup += alpha[colonneM - 1] + ligneM;
-            this.coups.push(coup);
-
-            this.realCoup = pieces[this.indexPiece] + this.coups[1].slice(1);
+        if (nbCoups % 2 === 0) {
+            this.setState({ orientation: "white" });
         }
         else {
-            if (piece !== 'P') {
-                coup += this.state.piecesLanguage[this.indexPiece];
-            }
-
-            if (chess.get(this.positionPieceA) && piece !== 'P') {
-                if (colonneA === colonneP) {
-                    coup += ligneP;
-                }
-                else coup += alpha[colonneP - 1];
-            }
-
-            if (chess.get(this.positionPieceM)) {
-                if (piece === 'P') {
-                    coup += alpha[colonneP - 1];
-                }
-                coup += 'x';
-            }
-            coup += alpha[colonneM - 1] + ligneM;
-            if (piece === 'P' && (ligneM === 1 || ligneM === 8)) {
-                coup += '=Q';
-            }
-
-            this.coups.push(coup);
-            if (this.piece !== 'P') {
-                this.realCoup = pieces[this.indexPiece] + this.coups[0].slice(1);
-            }
-            else
-                this.realCoup = this.coups[0];
-
+            this.setState({ orientation: "black" });
         }
+
+        // Recupere un coup avev prise
+        let coup = coups[index];
+        let verboseCoup = verboseCoups[index];
+
+        this.caseOrigine = verboseCoup.from;
+        this.caseDestination = verboseCoup.to;
+        this.realCoup = coup;
+
+        if (coup.charAt(0) === coup.charAt(0).toUpperCase()) {
+            const index = listePiecesLangue['en'].indexOf(coup.charAt(0));
+            const piece = listePiecesLangue[this.state.selectedLanguage][index];
+
+            this.languageCoup = piece + coup.slice(1);
+        }
+        else {
+            this.languageCoup = coup;
+        }
+
+        this.nomPiece = listePieceInitiale[verboseCoup.piece];
+
         this.setState({
-            chess: chess, coloredSquares: {
-                [this.positionPieceP]: { backgroundColor: this.couleurP },
-                [this.positionPieceM]: { backgroundColor: this.couleurM },
+            chess: newChess, coloredSquares: {
+                [this.caseOrigine]: { backgroundColor: this.couleurP },
+                [this.caseDestination]: { backgroundColor: this.couleurM },
             },
         });
 
@@ -517,7 +223,7 @@ class Notation6 extends React.Component {
     };
 
     handleKeyPress = (event) => {
-        if (this.state.inputValue.length >= 3) {
+        if (this.state.inputValue.length >= 2) {
             if (event.key === "Enter") {
                 // Appeler la fonction de vérification
                 this.handleClick();
@@ -562,21 +268,52 @@ class Notation6 extends React.Component {
             ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
             cn: ['卒', '马', '象', '车', '后', '帅'],
         }
-        this.coups.forEach((coup, index) => {
-            this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
-        })
+        if (this.realCoup.charAt(0) === this.realCoup.charAt(0).toUpperCase()) {
+            const index = listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0));
+            const piece = listePiecesLangue[event.target.value][index];
+
+            this.languageCoup = piece + this.languageCoup.slice(1);
+        }
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
+    }
+
+    handleOrientation = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ orientation: 'white' });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ orientation: 'black' });
+        }
+    }
+
+    handleCoordonnees = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.showedCoordonnees = true;
+            this.setState({ coordonnees: true });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ coordonnees: false });
+        }
     }
 
     handleClick = () => {
         Howler.volume(0.3);
         this.soundUp.play();
         const { inputValue } = this.state;
-        if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
-            Howler.volume(0.3);
+        if (inputValue === this.languageCoup || (this.piece === 'P' && inputValue === 'P' + this.languageCoup)) {
+            Howler.volume(0.2);
             this.soundWin.play();
-            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
+            if (this.showedCoordonnees) {
+                this.points -= 10;
+            }
+            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.points} points.`;
             this.setState({
                 message: text,
                 chess: this.state.chess,
@@ -586,7 +323,7 @@ class Notation6 extends React.Component {
             });
         }
         else {
-            Howler.volume(1);
+            Howler.volume(0.3);
             this.soundWrong.play();
             let text = `Mauvaise réponse ! Le coup était ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
@@ -791,25 +528,20 @@ class Notation6 extends React.Component {
                         <FormControlLabel
                             control={<this.MaterialUISwitch
                                 checked={this.state.orientation === 'white'}
-                                disabled={true}
                             />}
                             label={
-                                <div style={{ color: this.state.orientation === 'white' ? 'white' : 'black' }}>
-                                    {this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'}
-                                </div>
+                                this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'
                             }
-                            style={{
-                                color: this.state.orientation === 'white' ? 'white' : 'black',
-                            }}
+                            onChange={this.handleOrientation}
                         />
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
                                 control={<this.Android12Switch
                                     checked={this.state.coordonnees === true}
-                                    disabled={true}
                                     color="secondary"
                                 />}
                                 label={'Coordonnée'}
+                                onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
                                 }}
@@ -917,7 +649,7 @@ class Notation6 extends React.Component {
                         <Stack className="stack" spacing={2} direction="row" alignItems="center">
                             <button className="bouton-3D"
                                 title="Valider"
-                                {...(this.state.inputValue.length < 3 && { disabled: true })}
+                                {...(this.state.inputValue.length < 2 && { disabled: true })}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClick}
                                 onMouseDown={() => this.handlePieceDown()}>

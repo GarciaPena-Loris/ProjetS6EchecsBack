@@ -782,17 +782,11 @@ class Notation4 extends React.Component {
                         <FormControlLabel
                             control={<this.MaterialUISwitch
                                 checked={this.state.orientation === 'white'}
-                                disabled={true}
                             />}
                             label={
-                                <div style={{ color: this.state.orientation === 'white' ? 'white' : 'black' }}>
-                                    {this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'}
-                                </div>
+                                this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'
                             }
                             onChange={this.handleOrientation}
-                            style={{
-                                color: this.state.orientation === 'white' ? 'white' : 'black',
-                            }}
                         />
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel

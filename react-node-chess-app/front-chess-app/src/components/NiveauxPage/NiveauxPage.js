@@ -110,8 +110,8 @@ export default function NiveauxPage() {
             />,
             6: <Notation6
                 {...sharedProps}
-                pointsGagnes="3"
-                pointsPerdus="5"
+                pointsGagnes="15"
+                pointsPerdus="10"
             />,
             7: <Notation7
                 {...sharedProps}
