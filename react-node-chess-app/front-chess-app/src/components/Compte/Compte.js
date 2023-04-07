@@ -183,7 +183,7 @@ export default function Compte() {
             />
             <h1>
             {dataCompte.global_elo+" "}  
-            <FontAwesomeIcon icon={whitePawn} size="l" />
+            <FontAwesomeIcon icon={whitePawn} size="lg" />
             </h1>
             {showPopup && (
                 <div className="avatar-popup" onClick={handleClosePopup}>
