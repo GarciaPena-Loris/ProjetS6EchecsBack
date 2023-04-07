@@ -10,11 +10,15 @@ import { Howl, Howler } from 'howler';
 import "./NiveauxPage.css"
 
 // imporation des composants de chaque niveau
-import Nomenclature1 from '../Exercices/Nomenclature/Nomenclature1';
-import Nomenclature2 from '../Exercices/Nomenclature/Nomenclature2';
-import Nomenclature3 from '../Exercices/Nomenclature/Nomenclature3';
-import Nomenclature4 from '../Exercices/Nomenclature/Nomenclature4';
-import Nomenclature5 from '../Exercices/Nomenclature/Nomenclature5';
+import Notation1 from '../Exercices/Notation/Notation1';
+import Notation2 from '../Exercices/Notation/Notation2';
+import Notation3 from '../Exercices/Notation/Notation3';
+import Notation4 from '../Exercices/Notation/Notation4';
+import Notation5 from '../Exercices/Notation/Notation5';
+import Notation6 from '../Exercices/Notation/Notation6';
+import Notation7 from '../Exercices/Notation/Notation7';
+import Notation8 from '../Exercices/Notation/Notation8';
+import Notation9 from '../Exercices/Notation/Notation9';
 
 export default function NiveauxPage() {
     const location = useLocation();
@@ -69,43 +73,61 @@ export default function NiveauxPage() {
         setActualExerciceElo();
     }, [exercice.id]);
 
-
+    const sharedProps = {
+        idExercice: exercice.id,
+        exerciceElo,
+        setExerciceElo,
+        updateGlobalElo,
+    };
 
     // Créez une structure de données pour stocker les composants de chaque niveau
     const niveaux = {
         1: {
-            1: <Nomenclature1
-                idExercice={exercice.id}
+            1: <Notation1
+                {...sharedProps}
                 pointsGagnes="5"
                 pointsPerdus="2"
-                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo}
                 matches={matches} />,
-            2: <Nomenclature2
-                idExercice={exercice.id}
+            2: <Notation2
+                {...sharedProps}
                 pointsGagnes="8"
                 pointsPerdus="3"
-                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo} />,
-            3: <Nomenclature3
-                idExercice={exercice.id}
+            />,
+            3: <Notation3
+                {...sharedProps}
                 pointsGagnes="10"
                 pointsPerdus="5"
-                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo} />,
-            4: <Nomenclature4
-                idExercice={exercice.id}
+            />,
+            4: <Notation4
+                {...sharedProps}
                 pointsGagnes="15"
                 pointsPerdus="5"
-                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo} />,
-            5: <Nomenclature5
-                idExercice={exercice.id}
+            />,
+            5: <Notation5
+                {...sharedProps}
                 pointsGagnes="10"
                 pointsPerdus="8"
-                exerciceElo={exerciceElo} setExerciceElo={setExerciceElo}
-                updateGlobalElo={updateGlobalElo} />
-
+            />,
+            6: <Notation6
+                {...sharedProps}
+                pointsGagnes="15"
+                pointsPerdus="10"
+            />,
+            7: <Notation7
+                {...sharedProps}
+                pointsGagnes="5"
+                pointsPerdus="15"
+            />,
+            8: <Notation8
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
+            9: <Notation9
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
             // etc...
         },
         // etc...

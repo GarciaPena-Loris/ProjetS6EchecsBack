@@ -6,10 +6,11 @@ import "./Navbar.css"
 function Navbar() {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
-    const { globalElo } = useContext(GlobalContext );
+    const { globalElo } = useContext(GlobalContext);
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('globalElo');
         navigate('/');
     };
 
