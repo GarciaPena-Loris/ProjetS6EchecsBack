@@ -161,7 +161,7 @@ export default function NiveauxPage() {
                     onClick={() => {
                         Howler.volume(0.3);
                         soundUp.play();
-                        navigate(-1)
+                        navigate('/exercices', { state: {exercice: exercice} });
                     }}
                     onMouseEnter={() => handlePieceHover()}
                     onMouseDown={() => handlePieceDown()}>

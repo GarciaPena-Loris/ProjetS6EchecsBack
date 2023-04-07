@@ -38,7 +38,7 @@ function Navbar() {
                 )}
             </ul>
             <div className='element-droite'>
-                {globalElo && (
+                {globalElo && token && (
                     <span className='elo'>{globalElo} points d'élo </span>
                 )}
                 {token && (
