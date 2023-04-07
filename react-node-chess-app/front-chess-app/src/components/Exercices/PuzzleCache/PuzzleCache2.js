@@ -86,7 +86,7 @@ class PuzzleCache extends React.Component {
                 this.state.pos=possibleMoves[randomIndex].slice(-3,-1);
             }
             else{this.state.pos=possibleMoves[randomIndex].slice(-2);}
-            this.state.text='Quelle pièce (p,n,b,r,q,k) va être mangé en  ';
+            this.state.text='Quelle pièce (p,n,b,r,q,k) peut être mangé en  ';
             this.coup=this.state.chess.get(this.state.pos).type;
             console.log(this.coup);
             console.log(this.coup);
@@ -188,9 +188,29 @@ class PuzzleCache extends React.Component {
 
     handleClick = () => {
         const { inputValue, chess } = this.state;
-
-        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            const text = `Bonne réponse ! La pièce est en ${this.state.pos}, vous gagné ${this.pointsGagne} points.`;
+        let compareValue='';
+        switch(this.coup){
+            case 'p':
+                compareValue='pion';
+                break;
+            case 'n':
+                compareValue='cavalier';
+                break;
+            case 'b':
+                compareValue='fou';
+                break;
+            case 'r':
+                compareValue='tour';
+                break;
+            case 'q':
+                compareValue='dame';
+                break;
+            case 'k':
+                compareValue='roi';
+                break;
+        }
+        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup) || inputValue === compareValue) {
+            const text = `Bonne réponse ! Vous gagné ${this.pointsGagne} points.`;
             this.points = this.pointsGagne;
             this.setState({
                 correctMessage: text,
@@ -207,11 +227,11 @@ class PuzzleCache extends React.Component {
         else {
             let text = '';
             if (this.props.exerciceElo <= 0) {
-                text = `Mauvaise réponse ! Le coup n'est pas '${inputValue}', vous perdez 0 points.`;
+                text = `Mauvaise réponse ! Vous perdez 0 points. Tentez une autre réponse.`;
                 this.points = 0;
             }
             else {
-                text = `Mauvaise réponse ! Le coup n'est pas '${inputValue}', vous perdez ${this.pointsPerdu} points.`;
+                text = `Mauvaise réponse ! Vous perdez ${this.pointsPerdu} points. Tentez une autre réponse.`;
                 this.points = -(this.pointsPerdu);
             }
             this.setState({

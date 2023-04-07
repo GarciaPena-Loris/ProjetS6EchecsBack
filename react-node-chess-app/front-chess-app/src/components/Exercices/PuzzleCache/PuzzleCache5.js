@@ -86,7 +86,7 @@ class PuzzleCache extends React.Component {
                 this.state.pos=possibleMoves[randomIndex].slice(-3,-1);
             }
             else{this.state.pos=possibleMoves[randomIndex].slice(-2);}
-            this.state.text='Quelle pièce (p,n,b,r,q,k) va être mangé en  ';
+            this.state.text='Quelle pièce (p,n,b,r,q,k) peut être mangé en  ';
             this.coup=this.state.chess.get(this.state.pos).type;
             console.log(this.coup);
             console.log(this.coup);
@@ -294,28 +294,18 @@ class PuzzleCache extends React.Component {
     }
 
     customPieces = () => {
-        const piecesBlanche = ["wN", "wB", "wR", "wQ"];
-        const roiBlanc = ["wK"];
-        const pionBlanc = ["wP"];
-        // const piecesNoire = ["bN", "bB", "bR", "bW"];
-        // const pionNoir = ["bP"];
-        // const roiNoir = ["wK"];
+        const piecesBlanche = ["wN", "wB", "wR", "wQ","wP", "wK"];
+        const piecesNoire = ["bN", "bB", "bR", "bQ", "bP", "bK"];
         const returnPieces = {};
         piecesBlanche.map((p) => {
             returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://leadgenapp.io/wp-content/uploads/2022/03/28f3b36507394f083b344ea49bbf8bb5.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
+                <img src="https://images.vexels.com/media/users/3/189293/isolated/lists/dccc31fcb7e0ed37bcbabd61bf8b0ffc-pear-icon-stroke.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
             );
             return null;
         });
-        pionBlanc.map((p) => {
+        piecesNoire.map((p) => {
             returnPieces[p] = ({ squareWidth }) => (
                 <img src="https://images.vexels.com/media/users/3/189293/isolated/lists/dccc31fcb7e0ed37bcbabd61bf8b0ffc-pear-icon-stroke.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        roiBlanc.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://static-00.iconduck.com/assets.00/king-crown-icon-256x256-i86nwpgg.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
             );
             return null;
         });
