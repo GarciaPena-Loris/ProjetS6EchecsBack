@@ -182,7 +182,7 @@ export default function Compte() {
                 setShowPopup={setShowPopup}
             />
             <h1>
-            {dataCompte.global_elo+" "}  
+            {eloUndefined(dataCompte.global_elo)+" "}  
             <FontAwesomeIcon icon={whitePawn} size="lg" />
             </h1>
             {showPopup && (
