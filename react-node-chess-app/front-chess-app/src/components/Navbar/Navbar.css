@@ -11,10 +11,6 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
-.elo {
-    
-}
-
 .logout {
     margin-left: auto;
 }
@@ -33,3 +29,14 @@
     background-color: #262421;
     color: #fff;
 }
+
+.element-droite{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.elo{
+    margin-right: 3%;
+}
+

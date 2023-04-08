@@ -19,6 +19,7 @@
   font-size: 1.5em;
   margin: 0;
   margin-top: 1%;
+  margin-bottom: 2%;
 }
 
 .levels-container {
@@ -84,4 +85,15 @@
   background-color: #7e9d4e;
   color: #fff;
   transform: translateY(-7px);
+}
+
+.barxp-div-exo {
+  display: flex;
+  flex-direction: column;
+  margin-left: 200px;
+  margin-right: 200px;
+}
+
+.progression-xp{
+  font-size: large;
 }

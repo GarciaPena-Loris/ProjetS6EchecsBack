@@ -21,11 +21,16 @@ import Notation8 from '../Exercices/Notation/Notation8';
 import Notation9 from '../Exercices/Notation/Notation9';
 
 export default function NiveauxPage() {
+    const [dataUnlock, setDataUnlock] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
     const exercice = location.state.exercice;
-    const niveau = location.state.niveau;
+    //const niveau = location.state.niveau;
     const index = location.state.index;
+    const nxtLevel = location.state.nxtLevel;
+    const dataLevels = location.state.dataLevels;
+    const decoded = decodeToken(sessionStorage.token);
+    const name = decoded.name;
     const [exerciceElo, setExerciceElo] = useState(null);
     const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
     const matches = useMediaQuery("(min-width:1200px)");
@@ -39,9 +44,10 @@ export default function NiveauxPage() {
         src: ['/sons/clicup.wav']
     });
 
-    // console.log(exercice);
-    // console.log(niveau);
-    // console.log(index);
+    //console.log(exercice);
+    //console.log(niveau);
+    //console.log(index);
+    //console.log(nxtLevel);
 
     useEffect(() => {
         async function setActualExerciceElo() {
@@ -72,6 +78,28 @@ export default function NiveauxPage() {
         }
         setActualExerciceElo();
     }, [exercice.id]);
+
+
+    //recupere la list des niveaux debloquées
+    useEffect(() => {
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: 'http://localhost:3001/unlockLevel/' + name,
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.token}`
+            }
+        };
+
+        axios.request(config)
+            .then((response) => {
+                //console.log(JSON.stringify(response.data));
+                setDataUnlock(response.data.map(obj => obj.id_level));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [])
 
     const sharedProps = {
         idExercice: exercice.id,
@@ -143,10 +171,22 @@ export default function NiveauxPage() {
         soundDown.play();
     };
 
+    const handleLevelClick = (index) => {
+        Howler.volume(0.3);
+        soundUp.play();
+        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: dataLevels} });
+    };
 
     // Récupérez le composant à afficher en fonction des id
-    const NiveauComponent = niveaux[exercice.id][index];
+    let NiveauComponent = niveaux[exercice.id][index];
 
+    function verifUnlock(id) {
+        //console.log(id);
+        //console.log(dataUnlock);
+        return dataUnlock.includes(id);
+    }
+
+    
     return (
         <div className="level-container">
             <div className="level-header">
@@ -154,7 +194,7 @@ export default function NiveauxPage() {
                     onClick={() => {
                         Howler.volume(0.3);
                         soundUp.play();
-                        navigate(-1)
+                        navigate('/exercices', { state: {exercice: exercice} });
                     }}
                     onMouseEnter={() => handlePieceHover()}
                     onMouseDown={() => handlePieceDown()}>
@@ -162,8 +202,18 @@ export default function NiveauxPage() {
                         ← Retour
                     </span>
                 </button>
-                <div className="level-label">Exercice <i>{exercice.name}</i> : <i>niveau {index}</i></div>
+                <div className="level-label"><i>{exercice.name}</i> : <i>niveau {index}</i></div>
                 <span className="level-elo">{exerciceElo !== null && exerciceElo} points d'élo pour cet <b>exercice</b></span>
+                {(index !== Object.keys(niveaux[exercice.id]).length ) &&
+                    <button className="bouton-3D"
+                        onClick={() => handleLevelClick((index + 1))}
+                        onMouseEnter={() => handlePieceHover()}
+                        onMouseDown={() => handlePieceDown()}
+                        disabled={!verifUnlock(nxtLevel.id)}>
+                        <span className="texte-3D"> {/* Retourne à la page précédente */}
+                            Suivant →
+                        </span>
+                    </button>}
             </div>
             {/* Affichez le composant récupéré */}
             <div className="level-jeux">

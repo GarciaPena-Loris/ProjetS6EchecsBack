@@ -97,17 +97,21 @@ export default function Inscription() {
                     password === confirmPassword ?
                     (
                         <button
-                            className="bouton-custom bouton-custom-form"
+                            className="bouton-3D"
                             type="submit">
-                            S'inscrire
+                            <span className="texte-3D">
+                                S'inscrire
+                            </span>
                         </button>
                     ) :
                     (
                         <button
-                            className="bouton-custom bouton-custom-form"
+                            className="bouton-3D"
                             type="submit"
                             disabled={true}>
-                            S'inscrire
+                            <span className="texte-3D">
+                                S'inscrire
+                            </span>
                         </button>
                     )}
             </form>

@@ -34,7 +34,14 @@
                 "action": "allow"
             },
             {
-                "resource": "users/*",
+                "resource": "users/updateAvatar/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/updateName/*",
                 "methods": [
                     "PUT"
                 ],
@@ -56,6 +63,13 @@
             },
             {
                 "resource": "levels/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "unlockLevel/*",
                 "methods": [
                     "GET"
                 ],

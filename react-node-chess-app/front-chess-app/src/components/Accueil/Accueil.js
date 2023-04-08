@@ -24,18 +24,30 @@ export default function Accueil() {
   return (
     <div>
       <div>
-        <h1 className="titre">BLIND CHESS</h1>
-        <img src={imageAccueil} alt="imgAcceuil" width="600" height="600"></img>
+        <h1 className="titre">Bienvenue sur MentalChess !</h1>
+        <img className="img" src="https://i.imgur.com/0EKRDDl.png" alt="imgAcceuil" width="700" height="700"></img>
       </div>
       <div className="divMargin">
         {!sessionStorage.getItem('token') ? (
           <>
-            <button onClick={handleClickConnexion} className="bouton-custom">Se connecter</button>
+            <button onClick={handleClickConnexion} className="bouton-3D">
+              <span className="texte-3D">
+                Se Connecter
+              </span>
+            </button>
             <div className="space"></div>
-            <button onClick={handleClickInscription} className="bouton-custom">S'inscrire</button>
+            <button onClick={handleClickInscription} className="bouton-3D">
+            <span className="texte-3D">
+                S'inscrire
+              </span>
+            </button>
           </>
         ) : (
-          <button onClick={handleClickEntrainement} className="bouton-custom">S'entraîner</button>
+          <button onClick={handleClickEntrainement} className="bouton-3D">
+            <span className="texte-3D">
+                S'entrainer
+              </span>
+          </button>
         )}
       </div>
     </div>

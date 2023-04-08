@@ -93,7 +93,7 @@ router.post('/signin', (req, res) => {
 
       try {
         // If the name and password are correct, return a JWT to the client
-        const token = jwt.sign({ name: user.name, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        const token = jwt.sign({ name: user.name, role: user.role, imageProfil : user.imageProfil }, process.env.JWT_SECRET, { expiresIn: '24h' });
         console.log(token);
         res.json({ token });
       }
@@ -108,12 +108,35 @@ router.post('/signin', (req, res) => {
 
 
 // Update an existing user
-router.put('/:name', async (req, res) => {
+router.put('/updateName/:name', async (req, res) => {
   try {
     const name = req.params.name;
     const newName = req.body;
-    const updatedUser = await User.updateNameUser(name, newName);
-    res.json(updatedUser);
+    const decoded = req.decoded;
+    if (decoded.name == name) {
+      const updatedUser = await User.updateNameUser(name, newName);
+      res.json(updatedUser);
+    }
+    else {
+      res.status(403).json({ error: "Action not allowed." });
+      }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/updateAvatar/:name', async (req, res) => {
+  try {
+    const name = req.params.name;
+    const {imageProfil} = req.body;
+    const decoded = req.decoded;
+    if (decoded.name == name) {
+      const updatedUser = await User.updateAvatarUser(name, imageProfil);
+      res.json(updatedUser);
+    }
+    else {
+      res.status(403).json({ error: "Action not allowed." });
+      }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

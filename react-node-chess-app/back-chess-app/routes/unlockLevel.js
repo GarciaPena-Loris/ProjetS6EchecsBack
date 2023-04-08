@@ -17,6 +17,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get all UnlockLevel by Name
+router.get('/:name', async (req, res) => {
+  try {
+    const progress = await UnlockLevel.getAllUnlockLevelByName(req.params.name);
+    res.json(progress);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
 // Get a single UnlockLevel by Name
 router.get('/:name/:id', async (req, res) => {
   try {

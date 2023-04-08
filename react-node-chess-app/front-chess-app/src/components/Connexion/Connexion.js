@@ -12,8 +12,7 @@ export default function Connexion() {
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
     const [reponseServeur, setReponseServeur] = useState("");
-    const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
-
+    const { updateGlobalElo, updateGlobalAvatar } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
 
     const handleConnexion = async (event) => {
         event.preventDefault();
@@ -49,10 +48,13 @@ export default function Connexion() {
                 axios(config)
                     .then(function (response) {
                         updateGlobalElo(response.data.global_elo);
+                        updateGlobalAvatar(decoded.imageProfil);
                         navigate('/selectionExercices');
                     })
                     .catch(function (error) {
                         console.log(error.response);
+                        console.log(error);
+
                     });
             })
             .catch(function (error) {
@@ -86,13 +88,17 @@ export default function Connexion() {
                     onChange={(event) => setMotDePasse(event.target.value)} />
                 {nomCompte !== "" && motDePasse !== "" ? (
                     <button
-                        className="bouton-custom bouton-custom-form">
-                        Se connecter
+                        className="bouton-3D">
+                        <span className="texte-3D">
+                            Se connecter
+                        </span>
                     </button>) : (
                     <button
-                        className="bouton-custom bouton-custom-form"
+                        className="bouton-3D"
                         disabled>
-                        Se connecter
+                        <span className="texte-3D">
+                            Se connecter
+                        </span>
                     </button>
                 )}
             </form>

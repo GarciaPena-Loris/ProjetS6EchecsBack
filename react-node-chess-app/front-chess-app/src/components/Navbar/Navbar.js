@@ -1,12 +1,13 @@
 import { React, useContext } from 'react';
+import Avatar from 'react-avatar';
 import { Link, useNavigate } from 'react-router-dom';
-import { GlobalContext  } from '../GlobalContext/GlobalContext';
+import { GlobalContext } from '../GlobalContext/GlobalContext';
 import "./Navbar.css"
 
 function Navbar() {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
-    const { globalElo } = useContext(GlobalContext);
+    const { globalElo, globalAvatar } = useContext(GlobalContext);
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
@@ -22,8 +23,6 @@ function Navbar() {
                 {token ? (
                     <>
                         <li><Link to="/selectionExercices">Exercices</Link></li>
-                        <li>|</li>
-                        <li><Link to="/compte">Mon compte</Link></li>
                     </>
                 ) : (
                     <>
@@ -39,9 +38,16 @@ function Navbar() {
                     </>
                 )}
             </ul>
-            {globalElo && (
-                <span className='elo'>{globalElo} points d'élo général</span>
-            )}
+            <div className='element-droite'>
+                {globalElo && token && (
+                    <span className='elo'>{globalElo} points d'élo </span>
+                )}
+                {token && (
+                    <>
+                        <Link to="/compte"><Avatar className='avatar-navbar' size='40' round={true} src={globalAvatar} /></Link>
+                    </>
+                )}
+            </div>
         </nav>
     );
 }

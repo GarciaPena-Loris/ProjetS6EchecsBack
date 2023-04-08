@@ -12,9 +12,20 @@ class unlockLevel {
         });
     }
 
+    static async getAllUnlockLevelByName(name_user) {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT id_level FROM unlock_level WHERE name_user = ?", [name_user], (error, results) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    }
+
     static async getunlockLevelByNameId(id_level, name_user) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM unlock_level WHERE id_level = ? ADN name_user = ?", [id_level, name_user], (error, results) => {
+            connection.query("SELECT * FROM unlock_level WHERE id_level = ? AND name_user = ?", [id_level, name_user], (error, results) => {
                 if (error) {
                     return reject(error);
                 }
