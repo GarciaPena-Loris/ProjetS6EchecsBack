@@ -3,16 +3,31 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import "../Components.css"
 import "./SelectionExercices.css"
+import { Howl, Howler } from 'howler';
 
 export default function SelectionExercices() {
     const [dataExo, setDataExo] = useState([]);
     const token = sessionStorage.getItem('token');
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
     const handleExerciceClick = (exercice) => {
-        navigate('/exercices', { state: {exercice: exercice} });
+        Howler.volume(0.3);
+        soundUp.play();
+        navigate('/exercices', { state: { exercice: exercice } });
     };
-    
+
+    // son boutons
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
+    const soundHover = new Howl({
+        src: ['/sons/hover.mp3']
+    });
+    const handlePieceHover = () => {
+        Howler.volume(0.1);
+        soundHover.play();
+    };
+
     //useEffect recupere les info de chaques exercices au chargement de la page
     useEffect(() => {
         var config = {
@@ -44,6 +59,7 @@ export default function SelectionExercices() {
                             src={`${exercice.image}`}
                             alt={`Exercice ${exercice.id}`}
                             onClick={() => handleExerciceClick(exercice)}
+                            onMouseEnter={() => handlePieceHover()}
                         />
                         <p className="exo-name">{exercice.name}</p>
                     </div>
