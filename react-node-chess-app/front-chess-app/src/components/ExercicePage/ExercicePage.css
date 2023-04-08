@@ -4,22 +4,20 @@
   color: #fff;
 }
 
-.exercice-title {
-  font-size: 4em;
-  margin: 0;
-  margin-bottom: 1%;
+.bouton-retour {
+  display: flex;
+  justify-content: flex-start;
 }
 
-.exercice-description-name {
-  font-size: 2em;
-  color: #7e9d4e;
+.exercice-title {
+  font-size: 4em;
+  margin-top: -5%;
 }
 
 .exercice-description {
   font-size: 1.5em;
   margin: 0;
   margin-top: 1%;
-  margin-bottom: 2%;
 }
 
 .levels-container {

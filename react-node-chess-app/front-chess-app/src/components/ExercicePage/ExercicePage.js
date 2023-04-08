@@ -5,7 +5,6 @@ import "../Components.css"
 import "./ExercicePage.css"
 import { Howl, Howler } from 'howler';
 import { decodeToken } from "react-jwt";
-import { faClosedCaptioning } from "@fortawesome/free-regular-svg-icons";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 export default function ExercicePage() {
@@ -35,8 +34,8 @@ export default function ExercicePage() {
     const handleLevelClick = (index) => {
         Howler.volume(0.3);
         soundUp.play();
-        listLevels=dataLevels
-        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: listLevels} });
+        listLevels = dataLevels
+        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: listLevels } });
     };
 
     const handlePieceHover = () => {
@@ -109,7 +108,7 @@ export default function ExercicePage() {
         axios.request(config)
             .then((response) => {
                 //console.log(JSON.stringify(response.data));
-                setDataUnlock(response.data.map(obj =>obj.id_level));
+                setDataUnlock(response.data.map(obj => obj.id_level));
             })
             .catch((error) => {
                 console.log(error);
@@ -135,11 +134,22 @@ export default function ExercicePage() {
 
     return (
         <div className="exercice-page">
-            <div>
-                <h1 className="exercice-title">{exercice.name}</h1>
-                <i className="exercice-description-name">Règles du jeu :</i>
-                <p className="exercice-description">{exercice.description}</p>
-            </div>
+            <button className="bouton-3D bouton-retour"
+                onClick={() => {
+                    Howler.volume(0.3);
+                    soundUp.play();
+                    navigate('/selectionExercices');
+                }}
+                onMouseEnter={() => handlePieceHover()}
+                onMouseDown={() => handlePieceDown()}>
+                <span className="texte-3D"> {/* Retourne à la page précédente */}
+                    ← Retour
+                </span>
+            </button>
+            <h1 className="exercice-title">
+                {exercice.name}
+            </h1>
+            <p className="exercice-description">{exercice.description}</p>
             <div className="barxp-div-exo">
                 <p className="progression-xp">Progression:</p>
                 <ProgressBar

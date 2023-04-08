@@ -1,10 +1,8 @@
 .img {
-    max-width: 100% !important;
-    height: auto !important;
-  }
+  width: 20% !important;
+  border-radius: 50%;
+}
 
-  @media (max-width: 3000px) {
-    .img {
-      max-width: 50%;
-    }
-  }
+.titre {
+  color: var(--couleur-theme);
+}

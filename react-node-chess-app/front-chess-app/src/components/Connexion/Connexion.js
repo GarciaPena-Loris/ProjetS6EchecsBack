@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
 import { decodeToken } from "react-jwt";
+import { Howl, Howler } from 'howler';
 import "./Connexion.css"
 
 
@@ -14,7 +15,21 @@ export default function Connexion() {
     const [reponseServeur, setReponseServeur] = useState("");
     const { updateGlobalElo, updateGlobalAvatar } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
 
+    // son boutons
+    const soundDown = new Howl({
+        src: ['/sons/clicdown.wav']
+    });
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
+    const handlePieceDown = () => {
+        Howler.volume(0.3);
+        soundDown.play();
+    };
+
     const handleConnexion = async (event) => {
+        Howler.volume(0.3);
+        soundUp.play();
         event.preventDefault();
         const formData = {
             'name': nomCompte,
@@ -86,9 +101,10 @@ export default function Connexion() {
                     placeholder="Mot de passe"
                     value={motDePasse}
                     onChange={(event) => setMotDePasse(event.target.value)} />
-                {nomCompte !== "" && motDePasse !== "" ? (
+                {nomCompte !== "" && motDePasse.length >= 5 ? (
                     <button
-                        className="bouton-3D">
+                        className="bouton-3D"
+                        onMouseDown={handlePieceDown}>
                         <span className="texte-3D">
                             Se connecter
                         </span>

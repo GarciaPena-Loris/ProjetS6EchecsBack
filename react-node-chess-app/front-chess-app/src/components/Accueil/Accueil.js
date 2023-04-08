@@ -1,23 +1,41 @@
 import React from "react";
 import "../Components.css"
+import "./Accueil.css"
 import { useNavigate } from "react-router-dom";
-import imageAccueil from "../../files/imageAccueil.png"
-
+import { Howl, Howler } from 'howler';
 
 export default function Accueil() {
+  // son boutons
+  const soundDown = new Howl({
+    src: ['/sons/clicdown.wav']
+  });
+  const soundUp = new Howl({
+    src: ['/sons/clicup.wav']
+  });
+  function handlePieceDown() {
+    Howler.volume(0.3);
+    soundDown.play();
+  };
+
 
   //fonction utile pour le router (plus particulièrement les boutons)
   const navigate = useNavigate();
   //partie fonctionnel du bouton 'se connecter'
   function handleClickConnexion() {
+    Howler.volume(0.3);
+    soundUp.play();
     navigate("/connexion");
   }
 
   function handleClickInscription() {
+    Howler.volume(0.3);
+    soundUp.play();
     navigate("/inscription");
   }
 
   function handleClickEntrainement() {
+    Howler.volume(0.3);
+    soundUp.play();
     navigate("/selectionExercices");
   }
 
@@ -25,28 +43,28 @@ export default function Accueil() {
     <div>
       <div>
         <h1 className="titre">Bienvenue sur MentalChess !</h1>
-        <img className="img" src="https://i.imgur.com/0EKRDDl.png" alt="imgAcceuil" width="700" height="700"></img>
+        <img className="img" src="https://i.imgur.com/0EKRDDl.png" alt="imgAcceuil"></img>
       </div>
       <div className="divMargin">
         {!sessionStorage.getItem('token') ? (
           <>
-            <button onClick={handleClickConnexion} className="bouton-3D">
+            <button onClick={handleClickConnexion} onMouseDown={handlePieceDown} className="bouton-3D">
               <span className="texte-3D">
-                Se Connecter
+                Se connecter
               </span>
             </button>
             <div className="space"></div>
-            <button onClick={handleClickInscription} className="bouton-3D">
-            <span className="texte-3D">
+            <button onClick={handleClickInscription} onMouseDown={handlePieceDown} className="bouton-3D">
+              <span className="texte-3D">
                 S'inscrire
               </span>
             </button>
           </>
         ) : (
-          <button onClick={handleClickEntrainement} className="bouton-3D">
+          <button onClick={handleClickEntrainement} onMouseDown={handlePieceDown} className="bouton-3D">
             <span className="texte-3D">
-                S'entrainer
-              </span>
+              S'entrainer
+            </span>
           </button>
         )}
       </div>
