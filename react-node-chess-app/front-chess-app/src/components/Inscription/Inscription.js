@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Inscription.css"
 import axios from "axios";
+import { Howl, Howler } from 'howler';
+
 
 export default function Inscription() {
     const navigate = useNavigate();
@@ -12,6 +14,24 @@ export default function Inscription() {
     const [reponseServeur, setReponseServeur] = useState("");
     const passwordIsValid = /^(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/.test(password);
 
+    // son boutons
+    const soundDown = new Howl({
+        src: ['/sons/clicdown.wav']
+    });
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
+    const soundHover = new Howl({
+        src: ['/sons/hover.mp3']
+    });
+    const handlePieceHover = () => {
+        Howler.volume(0.1);
+        soundHover.play();
+    };
+    const handlePieceDown = () => {
+        Howler.volume(0.3);
+        soundDown.play();
+    };
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -26,6 +46,8 @@ export default function Inscription() {
     };
 
     const handleSubmit = async (event) => {
+        Howler.volume(0.3);
+        soundUp.play();
         event.preventDefault();
         const formData = {
             'name': username,
@@ -98,6 +120,8 @@ export default function Inscription() {
                     (
                         <button
                             className="bouton-3D"
+                            onMouseEnter={handlePieceHover}
+                            onMouseDown={handlePieceDown}
                             type="submit">
                             <span className="texte-3D">
                                 S'inscrire

@@ -50,7 +50,6 @@ export default function SelectionExercices() {
 
     return (
         <div>
-            <h1>Sélectionnez un exercice :</h1>
             <div className="image-container">
                 {dataExo.map((exercice) => (
                     <div className="img-wrapper" key={exercice.id}>

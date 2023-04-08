@@ -30,7 +30,7 @@ function Navbar() {
     };
 
     const handleLogout = () => {
-        Howler.volume(0.1);
+        Howler.volume(0.3);
         soundUp.play();
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('globalElo');

@@ -5,7 +5,6 @@ import "../Components.css"
 import "./ExercicePage.css"
 import { Howl, Howler } from 'howler';
 import { decodeToken } from "react-jwt";
-import { faClosedCaptioning } from "@fortawesome/free-regular-svg-icons";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 export default function ExercicePage() {
