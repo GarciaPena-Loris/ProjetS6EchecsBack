@@ -34,6 +34,13 @@
                 "action": "allow"
             },
             {
+                "resource": "users/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
                 "resource": "users/updateAvatar/*",
                 "methods": [
                     "PUT"
