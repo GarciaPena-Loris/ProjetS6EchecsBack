@@ -31,7 +31,6 @@ router.get('/:name', async (req, res) => {
 router.get('/globalElo/:name', async (req, res) => {
   try {
     const globalElo = await User.getEloUserByName(req.params.name);
-    console.log("🚀 ~ file: users.js:34 ~ router.get ~ globalElo:", globalElo)
     res.json(globalElo);
   } catch (error) {
     return res.status(500).json({ error: error.message });

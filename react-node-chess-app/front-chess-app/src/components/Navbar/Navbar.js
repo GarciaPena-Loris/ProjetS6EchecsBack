@@ -11,6 +11,7 @@ function Navbar() {
 
     const handleLogout = () => {
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('globalElo');
         navigate('/');
     };
 

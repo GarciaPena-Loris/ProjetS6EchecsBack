@@ -15,6 +15,7 @@ import Exercices from "./components/ExercicePage/ExercicePage";
 import Niveaux from "./components/NiveauxPage/NiveauxPage";
 import Compte from "./components/Compte/Compte.js";
 
+
 function App() {
   return (
     <div className="App">

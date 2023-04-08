@@ -1,24 +1,18 @@
 import React from "react";
-import './Nomenclature.css';
+import './Notation.css';
 import '../../Components.css';
-import { Chessboard } from 'react-chessboard'
-import { Chess } from 'chess.js'
-// validation réponse
+import { Chessboard } from 'react-chessboard';
+import { Chess } from 'chess.js';
 import axios from "axios";
 import { decodeToken } from "react-jwt";
 import { Stack } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChessKing as whiteKing,
-    faChessQueen as whiteQueen,
-    faChessRook as whiteRook,
-    faChessBishop as whiteBishop,
-    faChessKnight as whiteKnight,
-    faChessPawn as whitePawn
-} from '@fortawesome/free-regular-svg-icons'
+import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { Howl, Howler } from 'howler';
 
-class Nomenclature4 extends React.Component {
+
+class Notation3 extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -26,6 +20,11 @@ class Nomenclature4 extends React.Component {
             message: '',
             showCorrect: false,
             showIncorrect: false,
+            orientation: "white",
+            coordonnees: true,
+            selectedLanguage: 'fr',
+            piecesLanguage: ['P', 'T', 'C', 'D'],
+            coloredSquares: {},
             chess: new Chess()
         };
         // validation réponse
@@ -38,14 +37,12 @@ class Nomenclature4 extends React.Component {
 
         this.nomPiece = '';
         this.pos = '';
+        this.coups = [];
+        this.realCoup = '';
+        this.indexPiece = 0;
         this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
-
-        this.positionPieceP = ``;
-        this.positionPieceM = ``;
-        this.positionPieceA = ``;
-        this.optionManger = ``;
 
         this.monInputRef = React.createRef();
 
@@ -62,14 +59,24 @@ class Nomenclature4 extends React.Component {
             src: ['/sons/win.wav']
         });
         this.soundWrong = new Howl({
-            src: ['/sons/evil.ogg']
+            src: ['/sons/wrong.wav']
+        });
+        this.switchOn = new Howl({
+            src: ['/sons/switchOn.mp3']
+        });
+        this.switchOff = new Howl({
+            src: ['/sons/switchOff.mp3']
         });
     }
 
     componentDidMount() {
         this.genererPieceAleatoire();
+        if (Math.random() < 0.5) {
+            this.setState({ orientation: "black" });
+        }
         this.monInputRef.current.focus();
     }
+
 
     genererPion = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         if (couleur === 'b') {
@@ -101,14 +108,77 @@ class Nomenclature4 extends React.Component {
         return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
     }
 
+    genererDame = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
+        if (0.5 < Math.random()) { // lignes
+            console.log("ligne");
+            if (couleur === 'b') {
+                // position piece qui mange
+                colonneP = Math.floor(Math.random() * 6) + 1;
+                ligneP = Math.floor(Math.random() * 7) + 2;
+
+                // position piece ambigue
+                colonneA = colonneP + 2;
+                ligneA = ligneP;
+
+                // position piece mangé
+                colonneM = colonneP + 1;
+                ligneM = ligneP - 1;
+            }
+            else {
+                // position piece qui mange
+                colonneP = Math.floor(Math.random() * 6) + 1;
+                ligneP = Math.floor(Math.random() * 7) + 1;
+
+                // position piece ambigue
+                colonneA = colonneP + 2;
+                ligneA = ligneP;
+
+                // position piece mangé
+                colonneM = colonneP + 1;
+                ligneM = ligneP + 1;
+            }
+        }
+        else { // colonnes
+            console.log("colonne");
+            if (couleur === 'b') {
+                // position pièce qui mange
+                colonneP = Math.floor(Math.random() * 7) + 1;
+                ligneP = Math.floor(Math.random() * 6) + 1;
+
+                // position pièce ambigüe
+                colonneA = colonneP;
+                ligneA = ligneP + 2;
+
+                // position pièce mangée
+                colonneM = colonneP + 1;
+                ligneM = ligneP + 1;
+            }
+            else {
+                // position pièce qui mange
+                colonneP = Math.floor(Math.random() * 7) + 1;
+                ligneP = Math.floor(Math.random() * 6) + 3;
+
+                // position pièce ambigüe
+                colonneA = colonneP;
+                ligneA = ligneP - 2;
+
+                // position pièce mangée
+                colonneM = colonneP + 1;
+                ligneM = ligneP - 1;
+            }
+        }
+
+        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
+    }
+
     genererTour = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         // position piece qui mange
         colonneP = Math.floor(Math.random() * 8) + 1;
         ligneP = Math.floor(Math.random() * 8) + 1;
 
-        if (Math.random() < 0.5) { // choix entre L ou I
+        if (Math.random() < 0.6) { // choix entre L ou I
             // position I
-            if (Math.random() < 0.5) { // choix entre ligne ou colonne
+            if (Math.random() < 0.7) { // choix entre ligne ou colonne
                 // meme colonne
                 // position piece mangé
                 colonneM = colonneP;
@@ -311,61 +381,18 @@ class Nomenclature4 extends React.Component {
         return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
     }
 
-    genererFou = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        do {
-            do {
-                colonneM = Math.floor(Math.random() * 8) + 1;
-            }
-            while (colonneM === colonneP);
-            ligneM = ligneP + Math.abs(colonneP - colonneM);
-            if (ligneM > 8) {
-                ligneM = ligneP - Math.abs(colonneP - colonneM);
-            }
-        } while (ligneM < 0 || ligneM > 8);
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererReine = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        colonneM = Math.floor(Math.random() * 8) + 1;
-        do { ligneM = Math.floor(Math.random() * 8) + 1; }
-        while ((colonneM === colonneP && ligneM === ligneP) || (ligneM !== ligneP && colonneM !== colonneP
-            && ligneM !== (ligneP + Math.abs(colonneP - colonneM) || ligneP - Math.abs(colonneP - colonneM))));
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererRoi = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
-        //piece qui mange 
-        colonneP = Math.floor(Math.random() * 8) + 1;
-        ligneP = Math.floor(Math.random() * 8) + 1;
-        //piece qui sera mangé 
-        do {
-            colonneM = Math.floor(Math.random() * 3) + (colonneP - 1);
-            ligneM = Math.floor(Math.random() * 3) + (ligneP - 1);
-        }
-        while (colonneM > 8 || colonneM < 1 || ligneM > 8 || ligneM < 1 ||
-            (ligneM === ligneP && colonneM === colonneP));
-        return [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA];
-    }
-
-    genererPieceAleatoire() {
+    genererPieceAleatoire = () => {
         const { chess } = this.state;
+        this.coups = [];
         const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coul, coulM, couleur;
+        var colonneP, colonneM, colonneA, ligneP, ligneM, ligneA, coulP, coulM, couleur;
         chess.clear();
 
         //choix couleur
         if (Math.random() < 0.5) {
             couleur = 'b';
-            coul = 'b';
+            coulP = 'b';
             coulM = 'w';
             chess.load('kK6/8/8/8/8/8/8/8 b -- - 0 1');
             chess.remove('a8');
@@ -373,129 +400,94 @@ class Nomenclature4 extends React.Component {
 
         }
         else {
-            coul = 'w';
+            coulP = 'w';
             coulM = 'b';
         }
 
         // premiere etape choisir piece
-        const pieces = ['p', 'r', 'n', 'b', 'q', 'k'];
-        const piece = pieces[Math.floor(Math.random() * pieces.length)];
+        const pieces = ['P', 'R', 'N', 'Q'];
+        this.indexPiece = Math.floor(Math.random() * pieces.length);
+        let piece = pieces[this.indexPiece];
         this.piece = piece;
 
         // 3 cas
-        if (piece === 'p') { // pions
+        if (piece === 'P') { // pions
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererPion(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
-        else if (piece === 'r') { // tours
+        else if (piece === 'Q') {
+            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererDame(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
+        }
+        else if (piece === 'R') { // tours
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererTour(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
-        else if (piece === 'n') { // cavaliers
+        else { // fou
             [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererCavalier(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
         }
-        else if (piece === 'b') { // fou
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererFou(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'q') { // reine
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererReine(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
-        else if (piece === 'k') { // roi
-            [colonneP, ligneP, colonneM, ligneM, colonneA, ligneA] = this.genererRoi(couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA);
-        }
 
-        // liste des positions
         this.positionPieceP = `${alpha[colonneP - 1]}${ligneP}`;
         this.positionPieceM = `${alpha[colonneM - 1]}${ligneM}`;
         this.positionPieceA = `${alpha[colonneA - 1]}${ligneA}`;
 
-        if (Math.random() < 0.5) {
-            chess.put({ type: `${piece}`, color: `${coul}` }, this.positionPieceA) // A
-        }
-        if (Math.random() < 0.5) {
-            chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
-            this.optionManger = `manger la reine`;
+        chess.put({ type: `${piece.toLowerCase()}`, color: `${coulP}` }, this.positionPieceP) // P
+        chess.put({ type: `${piece.toLowerCase()}`, color: `${coulP}` }, this.positionPieceA) // A
+        chess.put({ type: `q`, color: `${coulM}` }, this.positionPieceM) // M
 
-        } else if (piece === 'p') {
-            if (coul === 'b' && ligneP === 7) {
-                colonneM = colonneP;
-                if (Math.random() < 0.5) { ligneM = 5 } else ligneM = 6;
-            } else if (coul === 'w' && ligneP === 2) {
-                colonneM = colonneP;
-                if (Math.random() < 0.5) { ligneM = 4 } else ligneM = 3;
-            }
-            else { colonneM = colonneP; }
-        }
-
-        chess.put({ type: `${piece}`, color: `${coul}` }, this.positionPieceP); // P
-
-        if (piece === 'p') this.nomPiece = `le pion`
-        else if (piece === 'r') this.nomPiece = `la tour`
-        else if (piece === 'n') this.nomPiece = `le cavalier`
-        else if (piece === 'b') this.nomPiece = `le fou`
-        else if (piece === 'q') this.nomPiece = `la reine`
-        else if (piece === 'k') this.nomPiece = `le roi`
+        if (piece === 'P') this.nomPiece = `le pion`
+        else if (piece === 'R') this.nomPiece = `la tour`
+        else if (piece === 'N') this.nomPiece = `le cavalier`
+        else if (piece === 'Q') this.nomPiece = `la dame`
         this.nomPiece += ` en ${this.positionPieceP}`
 
-        this.pos = this.positionPieceM;
+        this.pos = `${alpha[colonneM - 1]}${ligneM}`; // position de la piece mangé
 
-        var coup = '';
-        if (piece !== 'p') {
-            coup += piece.toUpperCase();
+        // trouver le coup
+        let coup = '';
+
+        if (piece === 'N' && colonneP !== colonneA && ligneP !== ligneA) {
+            // cas 1
+            coup += this.state.piecesLanguage[this.indexPiece];
+            coup += ligneP;
+            coup += 'x';
+            coup += alpha[colonneM - 1] + ligneM;
+            this.coups.push(coup);
+
+            // cas 2
+            coup = '';
+            coup += this.state.piecesLanguage[this.indexPiece];
+            coup += alpha[colonneP - 1];
+            coup += 'x';
+            coup += alpha[colonneM - 1] + ligneM;
+            this.coups.push(coup);
+
+            this.realCoup = pieces[this.indexPiece] + this.coups[1].slice(1);
         }
-
-        if (chess.get(this.positionPieceA) && piece !== 'p') {
+        else {
+            if (piece !== 'P') {
+                coup += this.state.piecesLanguage[this.indexPiece];
+            }
             if (colonneA === colonneP) {
                 coup += ligneP;
             }
             else coup += alpha[colonneP - 1];
-        }
 
-        if (chess.get(this.positionPieceM)) {
-            if (piece === 'p') {
-                coup += alpha[colonneP - 1];
-            }
             coup += 'x';
-        }
-        coup += alpha[colonneM - 1] + ligneM;
-        if (piece === 'p' && (ligneM === 1 || ligneM === 8)) {
-            coup += '=Q';
+            coup += alpha[colonneM - 1] + ligneM;
+            this.coups.push(coup);
+
+            if (piece !== 'P')
+                this.realCoup = pieces[this.indexPiece] + this.coups[0].slice(1);
+            else
+                this.realCoup = this.coups[0];
+
         }
 
-        this.coup = coup;
-        this.setState({ chess: chess });
-
-        // deplacement
-        setTimeout(() => {
-            const { chess } = this.state;
-            chess.move(this.coup);
-            this.setState({ chess: chess });
-        }, 1000);
+        this.setState({
+            chess: chess, coloredSquares: {
+                [this.positionPieceP]: { backgroundColor: this.couleurP },
+                [this.positionPieceM]: { backgroundColor: this.couleurM },
+            },
+        });
     }
-
-    // couleur des cases
-    customSquare = React.forwardRef((props, ref) => {
-        const { children, square, style } = props;
-        if (square === this.positionPieceP) {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurP }}> {/* pièce qui mange */}
-                    {children}
-                </div>
-            );
-        }
-        else if (square === this.positionPieceM) {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative", backgroundColor: this.couleurM }}> {/* pièce mangé */}
-                    {children}
-                </div>
-            );
-        }
-        else {
-            return (
-                <div ref={ref} style={{ ...style, position: "relative" }}>
-                    {children}
-                </div>
-            );
-        }
-    });
 
     // handles
 
@@ -536,16 +528,59 @@ class Nomenclature4 extends React.Component {
         this.soundDown.play();
     };
 
+    handleOrientation = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ orientation: 'white' });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ orientation: 'black' });
+        }
+    }
+
+    handleCoordonnees = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ coordonnees: true });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ coordonnees: false });
+        }
+    }
+
+    handleLanguageChange = (event) => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+
+        const listePiecesLangue = {
+            fr: ['P', 'T', 'C', 'D'],
+            en: ['P', 'R', 'N', 'Q'],
+            es: ['P', 'T', 'A', 'D'],
+            de: ['B', 'T', 'L', 'D'],
+            it: ['P', 'T', 'A', 'R'],
+            ru: ['П', 'Л', 'К', 'Ф'],
+            zh: ['卒', '車', '馬', '后'],
+        }
+        this.coups.forEach((coup, index) => {
+            this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+        })
+        this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
+    }
+
     handleClick = () => {
         Howler.volume(0.3);
         this.soundUp.play();
         const { inputValue } = this.state;
-        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
-            Howler.volume(0.3);
+        if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
+            Howler.volume(0.2);
             this.soundWin.play();
-            const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
             this.points = this.pointsGagnes;
-            this.state.chess.move(this.coup);
+            this.state.chess.move(this.realCoup);
             this.setState({
                 message: text,
                 chess: this.state.chess,
@@ -555,9 +590,9 @@ class Nomenclature4 extends React.Component {
             });
         }
         else {
-            Howler.volume(1);
+            Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! La piéce était en ${this.coup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! Le coup était ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -575,7 +610,6 @@ class Nomenclature4 extends React.Component {
                 this.genererPieceAleatoire();
         }, 3000); // Efface le message après 3 secondes
     }
-
 
     handleUpdate = () => {
         try {
@@ -618,49 +652,107 @@ class Nomenclature4 extends React.Component {
         }
     }
 
-    handleClickReplay = () => {
-        Howler.volume(0.3);
-        this.soundUp.play();
-
-        const { chess } = this.state;
-        chess.undo();
-        this.setState({ chess: chess, });
-
-        setTimeout((deplacement) => {
-            const { chess } = this.state;
-            this.setState({ chess: chess, });
-            chess.move(this.coup);
-        }, 1000);
-    }
-
-
-    piecesBlanchesNom = [
-        "Pion", "Tour", "Fou", "Cavalier", "Reine", "Roi"
-    ]
-    piecesBlanchesIcon = [
-        whitePawn, whiteRook, whiteBishop, whiteKnight, whiteQueen, whiteKing
-    ]
-    piecesBlanchesInput = [
-        "P", "R", "B", "N", "Q", "K"
-    ]
-    lignes = [
-        "8", "7", "6", "5", "4", "3", "2", "1"
-    ];
-
-    colonnes = [
-        "a", "b", "c", "d", "e", "f", "g", "h"
-    ]
-    custom = [
-        "x", "O-O", "O-O-O", "=", "e.p.", "+"
-        // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
-        //"=" pour la promotion, "e.p." pour la prise en passant, "+" pour le mat
-    ]
-    customCoup = [
-        "prise", "petit roque", "grand roque", "promotion", "prise en passant", "mat"
-    ]
-
+    MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
+        width: 62,
+        height: 34,
+        padding: 7,
+        cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
+        '& .MuiSwitch-switchBase': {
+            margin: 1,
+            padding: 0,
+            transform: 'translateX(6px)',
+            '&.Mui-checked': {
+                color: '#fff',
+                transform: 'translateX(22px)',
+                '& .MuiSwitch-thumb:before': {
+                    backgroundColor: "white",
+                    borderRadius: '50%',
+                },
+                '& + .MuiSwitch-track': {
+                    opacity: 1,
+                    backgroundColor: disabled ? 'rgba(255, 255, 255, 0.5)' : '#cccccc',
+                },
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            backgroundColor: '#001e3c',
+            width: 32,
+            height: 32,
+            '&:before': {
+                content: "''",
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                left: 0,
+                top: 0,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundColor: disabled ? '#c7c7c7' : 'black',
+                borderRadius: '50%',
+            },
+        },
+        '& .Mui-disabled': {
+            opacity: 0.5,
+        },
+    }));
+    Android12Switch = styled(Switch)(({ theme }) => ({
+        padding: 8,
+        '& .MuiSwitch-track': {
+            borderRadius: 22 / 2,
+            '&:before, &:after': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 16,
+                height: 16,
+            },
+            '&:before': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                    theme.palette.getContrastText(theme.palette.primary.main),
+                )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+                left: 12,
+            },
+            '&:after': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                    theme.palette.getContrastText(theme.palette.primary.main),
+                )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+                right: 12,
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            boxShadow: 'none',
+            width: 16,
+            height: 16,
+            margin: 2,
+        },
+    }));
+    theme = createTheme({
+        palette: {
+            secondary: {
+                main: '#af80dc',
+            },
+        },
+    });
 
     render() {
+        const piecesBlanchesNom = [
+            "Pion", "Tour", "Cavalier", "Dame",
+        ]
+        let lignes = this.state.orientation === 'white'
+            ? ["8", "7", "6", "5", "4", "3", "2", "1"]
+            : ["1", "2", "3", "4", "5", "6", "7", "8"];
+        let colonnes = this.state.orientation === 'white'
+            ? ["a", "b", "c", "d", "e", "f", "g", "h"]
+            : ["h", "g", "f", "e", "d", "c", "b", "a"];
+        const custom = [
+            "x", "O-O", "O-O-O", "=", "+", "#"
+            // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
+            //"=" pour la promotion, "+" pour echec, "#" pour le mat
+        ]
+        const customCoup = [
+            "prise", "petit roque", "grand roque", "promotion", "echec", "mat"
+        ]
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
@@ -668,33 +760,68 @@ class Nomenclature4 extends React.Component {
                         key="board"
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
-                        customSquare={this.customSquare}
+                        customSquareStyles={this.state.coloredSquares}
+                        boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
+                        animationDuration={800}
                     />
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine en {this.positionPieceM} </span>
+                        </span> mange <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
                     </i>
+                    <div className="option">
+                        <FormControlLabel
+                            control={<this.MaterialUISwitch
+                                checked={this.state.orientation === 'white'}
+                            />}
+                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            onChange={this.handleOrientation}
+                            
+                        />
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnée'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                            <option value="fr">Français 🇫🇷</option>
+                            <option value="en">English 🇬🇧</option>
+                            <option value="es">Español 🇪🇸</option>
+                            <option value="de">Deutsch 🇩🇪</option>
+                            <option value="it">Italiano 🇮🇹</option>
+                            <option value="ru">Русский 🇷🇺</option>
+                            <option value="cn">中文 🇨🇳</option>
+                        </select>
+                    </div>
                     <div className="boutons">
                         <div className="groupe-butons" >
-                            {this.piecesBlanchesIcon.map((line, index) => { // pion tour fou cavalier reine roi
+                            {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={this.piecesBlanchesNom[index]}
-                                        title={this.piecesBlanchesNom[index]}
+                                        key={piecesBlanchesNom[index]}
+                                        title={piecesBlanchesNom[index]}
                                         onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.piecesBlanchesInput[index])}
+                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
                                         onMouseDown={() => this.handlePieceDown()}>
                                         <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            <FontAwesomeIcon icon={line} />
+                                            {line}
                                         </span>
                                     </button>
                                 );
                             })}
                         </div>
                         <div className="groupe-butons">
-                            {this.colonnes.map((line, index) => { // a b c d e f g h
+                            {colonnes.map((line, index) => { // a b c d e f g h
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
                                         key={line}
@@ -710,7 +837,7 @@ class Nomenclature4 extends React.Component {
                             })}
                         </div>
                         <div className="groupe-butons" >
-                            {this.lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                            {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
                                         key={line}
@@ -726,11 +853,11 @@ class Nomenclature4 extends React.Component {
                             })}
                         </div>
                         <div className="groupe-butons" >
-                            {this.custom.map((line, index) => { // x O-O O-O-O = e.p. +
+                            {custom.map((line, index) => { // x O-O O-O-O = e.p. +
                                 return (
                                     <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
                                         key={line}
-                                        title={this.customCoup[index]}
+                                        title={customCoup[index]}
                                         onMouseEnter={() => this.handlePieceHover()}
                                         onMouseUp={() => this.handlePieceUp(line)}
                                         onMouseDown={() => this.handlePieceDown()}>
@@ -752,37 +879,28 @@ class Nomenclature4 extends React.Component {
                                 onKeyDown={this.handleKeyPress}
                                 ref={this.monInputRef} />
                             <button className="bouton-3D button-clean"
+                                key="clean"
                                 title="supprimer"
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick}>
                                 <span className="texte-3D texte-clean">
-                                    ✕
+                                    ✘
                                 </span>
                             </button>
                         </Stack>
 
-                        <Stack className="stack" spacing={2} direction="row" alignItems="center">
-                            <button className="bouton-3D"
-                                title="Valider"
-                                {...(this.state.inputValue.length < 3 && { disabled: true })}
-                                onMouseEnter={() => this.handlePieceHover()}
-                                onMouseUp={this.handleClick}
-                                onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D">
-                                    Valider
-                                </span>
-                            </button>
-                            <button className="bouton-3D button-replay"
-                                title="Refaire"
-                                onMouseEnter={() => this.handlePieceHover()}
-                                onMouseUp={this.handleClickReplay}
-                                onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D texte-replay">
-                                    Refaire
-                                </span>
-                            </button>
-                        </Stack>
+                        <button className="bouton-3D"
+                            key="valider"
+                            title="Valider"
+                            {...(this.state.inputValue.length < 3 && { disabled: true })}
+                            onMouseEnter={() => this.handlePieceHover()}
+                            onMouseUp={this.handleClick}
+                            onMouseDown={() => this.handlePieceDown()}>
+                            <span className="texte-3D">
+                                Valider
+                            </span>
+                        </button>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}
@@ -793,4 +911,4 @@ class Nomenclature4 extends React.Component {
     }
 }
 
-export default Nomenclature4;
+export default Notation3;
