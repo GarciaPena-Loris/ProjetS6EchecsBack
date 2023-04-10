@@ -86,9 +86,9 @@ class Notation7 extends React.Component {
 
         // effectuer un nombre aléatoire de coups aléatoires
         const nbCoups = Math.floor(Math.random() * 15) + 5;
+        let coup = '';
         for (let i = 0; i < nbCoups; i++) {
             const coups = newChess.moves();
-            let coup = '';
             do {
                 coup = coups[Math.floor(Math.random() * coups.length)];
             }
@@ -118,14 +118,14 @@ class Notation7 extends React.Component {
         const coups = newChess.moves();
         const verboseCoups = newChess.moves({ verbose: true });
         const selectedCoup = Math.floor(Math.random() * coups.length);
-        let coup = coups[selectedCoup];
+        coup = coups[selectedCoup];
         let verboseCoup = verboseCoups[selectedCoup];
 
         this.caseOrigine = verboseCoup.from;
         this.caseDestination = verboseCoup.to;
         this.realCoup = coup;
 
-        if (coup.length > 2) {
+        if (coup.charAt(0) === coup.charAt(0).toUpperCase()) {
             const index = listePiecesLangue['en'].indexOf(coup.charAt(0));
             const piece = listePiecesLangue[this.state.selectedLanguage][index];
 
@@ -176,7 +176,7 @@ class Notation7 extends React.Component {
             ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
             cn: ['卒', '马', '象', '车', '后', '帅'],
         }
-        if (this.languageCoup.length > 2) {
+        if (this.languageCoup.charAt(0) === this.languageCoup.charAt(0).toUpperCase()) {
             const index = listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0));
             const piece = listePiecesLangue[event.target.value][index];
 

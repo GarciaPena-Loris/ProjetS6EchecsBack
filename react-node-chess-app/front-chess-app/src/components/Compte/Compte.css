@@ -42,7 +42,6 @@
 }
 
 .image-container-compte {
-  margin-top: 3%;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -101,4 +100,8 @@
 
 .name_display{
   font-size: 50px;
+}
+
+.deconnexion {
+  margin-top: 0;
 }

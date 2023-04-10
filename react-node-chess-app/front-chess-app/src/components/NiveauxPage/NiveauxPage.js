@@ -53,7 +53,6 @@ export default function NiveauxPage() {
     });
 
     //console.log(exercice);
-    //console.log(niveau);
     //console.log(index);
     //console.log(nxtLevel);
 
@@ -230,6 +229,7 @@ export default function NiveauxPage() {
                         soundUp.play();
                         navigate('/exercices', { state: { exercice: exercice } });
                     }}
+                    title={"Choix des niveaux de " + exercice.name}
                     onMouseEnter={() => handlePieceHover()}
                     onMouseDown={() => handlePieceDown()}>
                     <span className="texte-3D"> {/* Retourne à la page précédente */}
@@ -243,6 +243,7 @@ export default function NiveauxPage() {
                         onClick={() => handleLevelClick((index + 1))}
                         onMouseEnter={() => handlePieceHover()}
                         onMouseDown={() => handlePieceDown()}
+                        title={"Niveau " + (index+1) + " : " + nxtLevel.rules}
                         disabled={!verifUnlock(nxtLevel.id)}>
                         <span className="texte-3D"> {/* Retourne à la page précédente */}
                             Suivant →

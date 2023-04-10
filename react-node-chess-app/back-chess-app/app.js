@@ -53,7 +53,7 @@ app.use(cors()); //utilise le middleware cors pour pouvoir faire des échange av
 
 // Effectue les vérifications nécessaire
 app.use(verifToken.unless({ path: ['/', '/users/signin', '/users/signup'] })); //vérification du token a chaque appel sauf signin et signup
-app.use(acl.authorize); //configurer les autorisations pour les utilisateurs connectés
+app.use(acl.authorize.unless({ path: ['/', '/users/signin', '/users/signup'] })); //configurer les autorisations pour les utilisateurs connectés
 
 // Les routes
 app.use('/users', usersRouter);

@@ -40,7 +40,8 @@ class Notation5 extends React.Component {
         this.couleurP = '#ff555f';
         this.couleurM = '#af80dc';
         this.coupChoisis = '';
-        this.indexCoup = 0;
+        this.indexCoup = 2;
+        this.nombreCoupsPossible = 0;
         this.couleur = '';
         this.pieceConcernee = '';
         this.realCoup = '';
@@ -94,7 +95,6 @@ class Notation5 extends React.Component {
         this.languageCoup = 'O-O';
         if (this.orientation === 'black') {
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'h8': { backgroundColor: this.couleurM },
                 'e8': { backgroundColor: this.couleurP },
             };
@@ -102,7 +102,6 @@ class Notation5 extends React.Component {
         }
         else {
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'e1': { backgroundColor: this.couleurM },
                 'h1': { backgroundColor: this.couleurP },
             };
@@ -117,7 +116,6 @@ class Notation5 extends React.Component {
         this.languageCoup = 'O-O-O';
         if (this.orientation === 'black') {
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'e8': { backgroundColor: this.couleurM },
                 'a8': { backgroundColor: this.couleurP },
             };
@@ -125,7 +123,6 @@ class Notation5 extends React.Component {
         }
         else {
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'a1': { backgroundColor: this.couleurM },
                 'e1': { backgroundColor: this.couleurP },
             };
@@ -144,7 +141,6 @@ class Notation5 extends React.Component {
             setTimeout(() => {
                 chess.move("d4");
                 coloredSquares = {
-                    ...this.state.coloredSquares,
                     'c4': { backgroundColor: this.couleurM },
                     'd3': { backgroundColor: this.couleurP },
                 };
@@ -159,7 +155,6 @@ class Notation5 extends React.Component {
             setTimeout(() => {
                 chess.move("d5");
                 coloredSquares = {
-                    ...this.state.coloredSquares,
                     'e5': { backgroundColor: this.couleurM },
                     'd6': { backgroundColor: this.couleurP },
                 };
@@ -175,7 +170,6 @@ class Notation5 extends React.Component {
             this.realCoup = 'Qh4+';
             this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'd8': { backgroundColor: this.couleurM },
                 'e1': { backgroundColor: this.couleurP },
             };
@@ -185,7 +179,6 @@ class Notation5 extends React.Component {
             this.realCoup = 'Qh5+';
             this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'd1': { backgroundColor: this.couleurM },
                 'e8': { backgroundColor: this.couleurP },
             };
@@ -201,7 +194,6 @@ class Notation5 extends React.Component {
             this.realCoup = 'Qxf2#';
             this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'h4': { backgroundColor: this.couleurM },
                 'e1': { backgroundColor: this.couleurP },
             };
@@ -211,7 +203,6 @@ class Notation5 extends React.Component {
             this.realCoup = 'Qxf7#';
             this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')] + this.realCoup.slice(1);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'h5': { backgroundColor: this.couleurM },
                 'e8': { backgroundColor: this.couleurP },
             };
@@ -228,7 +219,6 @@ class Notation5 extends React.Component {
 
             this.languageCoup = this.realCoup.replace('Q', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')]);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'a2': { backgroundColor: this.couleurM },
                 'g1': { backgroundColor: this.couleurP },
             };
@@ -239,7 +229,6 @@ class Notation5 extends React.Component {
 
             this.languageCoup = this.realCoup.replace('Q', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('Q')]);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'c7': { backgroundColor: this.couleurM },
                 'e8': { backgroundColor: this.couleurP },
             };
@@ -255,7 +244,6 @@ class Notation5 extends React.Component {
 
             this.languageCoup = this.realCoup.replace('N', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('N')]);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'f2': { backgroundColor: this.couleurM },
                 'h2': { backgroundColor: this.couleurP },
             };
@@ -267,7 +255,6 @@ class Notation5 extends React.Component {
 
             this.languageCoup = this.realCoup.replace('N', this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf('N')]);
             coloredSquares = {
-                ...this.state.coloredSquares,
                 'c7': { backgroundColor: this.couleurM },
                 'a7': { backgroundColor: this.couleurP },
             };
@@ -280,7 +267,7 @@ class Notation5 extends React.Component {
     genererPieceAleatoire = () => {
         let { chess } = this.state;
         chess.clear();
-        
+
         //choix couleur
         if (Math.random() < 0.5) {
             this.orientation = 'black';
@@ -290,12 +277,13 @@ class Notation5 extends React.Component {
             this.orientation = 'white';
             this.couleur = "blanc";
         }
-        
+
         // choix piece
         const coupsPossible = ['Roque', 'Grand-Roque', 'Prise-en-passant', 'Echec', 'Echec-et-Mat', 'Promotion-dame', 'Promotion-cheval'];
+        this.nombreCoupsPossible = coupsPossible.length;
         this.coupChoisis = coupsPossible[this.indexCoup];
 
-        
+
         let coloredSquares = {};
         // pour chaque piece
         if (this.coupChoisis === 'Roque') {
@@ -333,9 +321,6 @@ class Notation5 extends React.Component {
             this.pieceConcernee = 'faisant un echec et mat';
             [chess, coloredSquares] = this.genererPromotionCheval(chess);
         }
-
-        // si this.index est inferieur ou égale a la taille de coupsPossible alors index augmente de un sinon un revient a 0
-        this.indexCoup >= coupsPossible.length - 1 ? this.indexCoup = 0 : this.indexCoup++;
 
         this.setState({ chess: chess, coloredSquares: coloredSquares, orientation: this.orientation === 'white' ? 'white' : 'black' });
     };
@@ -406,6 +391,16 @@ class Notation5 extends React.Component {
         }, 1000);
     }
 
+    handleClickNouveau = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
+        this.indexCoup === 0 ? this.indexCoup = this.nombreCoupsPossible - 1 : this.indexCoup--;
+
+        this.genererPieceAleatoire();
+    };
+
+
     handleLanguageChange = (event) => {
         Howler.volume(0.3);
         this.soundUp.play();
@@ -428,10 +423,18 @@ class Notation5 extends React.Component {
         Howler.volume(0.5);
         this.soundUp.play();
         const { inputValue, chess } = this.state;
-        if (inputValue === this.languageCoup) {
+        const PlanguageCoup = this.listePiecesLangue[this.state.selectedLanguage][0] + this.languageCoup;
+        if ((inputValue === this.languageCoup) ||
+            (this.indexCoup === 2 && inputValue === PlanguageCoup) ||
+            (this.indexCoup === 5 && inputValue === PlanguageCoup) ||
+            (this.indexCoup === 6 && inputValue === PlanguageCoup)) {
             Howler.volume(0.3);
             this.soundWin.play();
-            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            if (this.state.showIncorrect)
+                this.points = 0;
+            else
+                this.points = this.pointsGagnes;
+            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.points} points.`;
             this.points = this.pointsGagnes;
             chess.move(this.realCoup);
             this.setState({
@@ -439,8 +442,19 @@ class Notation5 extends React.Component {
                 chess: chess,
                 inputValue: '',
                 showCorrect: true,
-                showIncorrect: false
+                showIncorrect: false,
             });
+
+            setTimeout(() => {
+                // si this.index est inferieur ou égale a la taille de coupsPossible alors index augmente de un sinon un revient a 0
+                this.indexCoup >= this.nombreCoupsPossible - 1 ? this.indexCoup = 0 : this.indexCoup++;
+                this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
+
+                if (this.points !== 0)
+                    this.handleUpdate();
+
+                this.genererPieceAleatoire();
+            }, 3000); // Efface le message après 3 secondes
         }
         else {
             Howler.volume(0.3);
@@ -453,15 +467,11 @@ class Notation5 extends React.Component {
                 showCorrect: false,
                 showIncorrect: true
             });
-        }
-        setTimeout(() => {
-            this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
 
-            if (this.points !== 0)
+            setTimeout(() => {
                 this.handleUpdate();
-            else
-                this.genererPieceAleatoire();
-        }, 3000); // Efface le message après 3 secondes
+            }, 1000);
+        }
     }
 
     handleUpdate = () => {
@@ -490,15 +500,9 @@ class Notation5 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 })
                 .catch((error) => {
                     console.log(error);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 });
         } catch (error) {
             console.error(error);
@@ -712,6 +716,15 @@ class Notation5 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D texte-replay">
                                     Rejouer
+                                </span>
+                            </button>}
+                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
+                                title="Refaire"
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickNouveau}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D texte-replay">
+                                    Nouveau ↺
                                 </span>
                             </button>}
                         </Stack>

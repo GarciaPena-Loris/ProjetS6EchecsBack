@@ -110,7 +110,6 @@ class Notation3 extends React.Component {
 
     genererDame = (couleur, colonneP, ligneP, colonneM, ligneM, colonneA, ligneA) => {
         if (0.5 < Math.random()) { // lignes
-            console.log("ligne");
             if (couleur === 'b') {
                 // position piece qui mange
                 colonneP = Math.floor(Math.random() * 6) + 1;
@@ -139,7 +138,6 @@ class Notation3 extends React.Component {
             }
         }
         else { // colonnes
-            console.log("colonne");
             if (couleur === 'b') {
                 // position pièce qui mange
                 colonneP = Math.floor(Math.random() * 7) + 1;
@@ -552,21 +550,30 @@ class Notation3 extends React.Component {
         }
     }
 
+    handleClickNouveau = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+        this.genererPieceAleatoire();
+    };
+
     handleLanguageChange = (event) => {
         Howler.volume(0.3);
         this.soundUp.play();
 
         const listePiecesLangue = {
-            fr: ['P', 'T', 'C', 'D'],
             en: ['P', 'R', 'N', 'Q'],
+            fr: ['P', 'T', 'C', 'D'],
             es: ['P', 'T', 'A', 'D'],
             de: ['B', 'T', 'L', 'D'],
             it: ['P', 'T', 'A', 'R'],
             ru: ['П', 'Л', 'К', 'Ф'],
-            zh: ['卒', '車', '馬', '后'],
+            cn: ['卒', '車', '馬', '后'],
         }
         this.coups.forEach((coup, index) => {
-            this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+            if (coup.charAt(0) === coup.charAt(0).toUpperCase()) {
+                this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+            }
         })
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
     }
@@ -578,7 +585,11 @@ class Notation3 extends React.Component {
         if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
             Howler.volume(0.2);
             this.soundWin.play();
-            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
+            if (this.state.showIncorrect)
+                this.points = 0;
+            else
+                this.points = this.pointsGagnes;
+            const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.points} points.`;
             this.points = this.pointsGagnes;
             this.state.chess.move(this.realCoup);
             this.setState({
@@ -588,6 +599,14 @@ class Notation3 extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
+            setTimeout(() => {
+                this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+
+                if (this.points !== 0)
+                    this.handleUpdate();
+
+                this.genererPieceAleatoire();
+            }, 3000); // Efface le message après 3 secondes
         }
         else {
             Howler.volume(0.3);
@@ -600,15 +619,10 @@ class Notation3 extends React.Component {
                 showCorrect: false,
                 showIncorrect: true
             });
-        }
-        setTimeout(() => {
-            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
-
-            if (this.points !== 0)
+            setTimeout(() => {
                 this.handleUpdate();
-            else
-                this.genererPieceAleatoire();
-        }, 3000); // Efface le message après 3 secondes
+            }, 1000);
+        }
     }
 
     handleUpdate = () => {
@@ -637,15 +651,9 @@ class Notation3 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 })
                 .catch((error) => {
                     console.log(error);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 });
         } catch (error) {
             console.error(error);
@@ -778,7 +786,7 @@ class Notation3 extends React.Component {
                             />}
                             label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
                             onChange={this.handleOrientation}
-                            
+
                         />
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
@@ -890,17 +898,27 @@ class Notation3 extends React.Component {
                             </button>
                         </Stack>
 
-                        <button className="bouton-3D"
-                            key="valider"
-                            title="Valider"
-                            {...(this.state.inputValue.length < 3 && { disabled: true })}
-                            onMouseEnter={() => this.handlePieceHover()}
-                            onMouseUp={this.handleClick}
-                            onMouseDown={() => this.handlePieceDown()}>
-                            <span className="texte-3D">
-                                Valider
-                            </span>
-                        </button>
+                        <Stack className="stack" spacing={2} direction="row" alignItems="center">
+                            <button className="bouton-3D"
+                                title="Valider"
+                                {...(this.state.inputValue.length < 3 && { disabled: true })}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClick}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D">
+                                    Valider
+                                </span>
+                            </button>
+                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
+                                title="Refaire"
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickNouveau}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D texte-replay">
+                                    Nouveau ↺
+                                </span>
+                            </button>}
+                        </Stack>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}

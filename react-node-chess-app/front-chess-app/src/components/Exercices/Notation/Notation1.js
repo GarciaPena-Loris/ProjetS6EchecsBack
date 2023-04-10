@@ -134,6 +134,14 @@ class Notation extends React.Component {
     this.soundDown.play();
   };
 
+  handleClickNouveau = () => {
+    Howler.volume(0.3);
+    this.soundUp.play();
+    this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+    this.genererPieceAleatoire();
+  };
+
+
   handleOrientation = (event) => {
     Howler.volume(0.3);
     if (event.target.checked) {
@@ -180,16 +188,27 @@ class Notation extends React.Component {
     this.soundUp.play();
     const { inputValue } = this.state;
     if (inputValue === this.coup) {
-      Howler.volume(0.5);
+      Howler.volume(0.2);
       this.soundWin.play();
-      const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.pointsGagnes} points.`;
-      this.points = this.pointsGagnes;
+      if (this.state.showIncorrect)
+        this.points = 0;
+      else
+        this.points = this.pointsGagnes;
+      const text = `Bonne réponse ! La pièce est en ${inputValue}, vous gagné ${this.points} points.`;
       this.setState({
         message: text,
         inputValue: '',
         showCorrect: true,
         showIncorrect: false
       });
+      setTimeout(() => {
+        this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+
+        if (this.points !== 0)
+          this.handleUpdate();
+
+        this.genererPieceAleatoire();
+      }, 3000); // Efface le message après 3 secondes
     }
     else {
       Howler.volume(0.3);
@@ -202,15 +221,11 @@ class Notation extends React.Component {
         showCorrect: false,
         showIncorrect: true
       });
-    }
-    setTimeout(() => {
-      this.setState({ showCorrect: false, showIncorrect: false, message: '' });
 
-      if (this.points !== 0)
+      setTimeout(() => {
         this.handleUpdate();
-      else
-        this.genererPieceAleatoire();
-    }, 3000); // Efface le message après 3 secondes
+      }, 1000);
+    }
   }
 
   handleUpdate = () => {
@@ -239,16 +254,10 @@ class Notation extends React.Component {
           // maj de l'elo
           this.props.setExerciceElo(response.data.newEloExercise);
           this.props.updateGlobalElo(response.data.newEloUser);
-          
-          // affichage nouvelle piece
-          this.genererPieceAleatoire();
         })
         .catch((error) => {
-          console.log("🚀 ~ file: Notation1.js:239 ~ Notation ~ .then ~ response:", error.response.data)
-          //console.log(error);
+          console.log(error);
 
-          // affichage nouvelle piece
-          this.genererPieceAleatoire();
         });
     } catch (error) {
       console.error(error);
@@ -372,7 +381,7 @@ class Notation extends React.Component {
         </div>
         <div className="elements-droite">
           <i className="consigne">
-            Ecrivez la position de la pièce
+            Ecrivez la pièce et sa position
           </i>
           <div className="option">
             <FormControlLabel
@@ -492,16 +501,27 @@ class Notation extends React.Component {
               </button>
             </Stack>
 
-            <button className="bouton-3D"
-              title="Valider"
-              {...(this.state.inputValue.length < 3 && { disabled: true })}
-              onMouseEnter={() => this.handlePieceHover()}
-              onMouseUp={this.handleClick}
-              onMouseDown={() => this.handlePieceDown()}>
-              <span className="texte-3D">
-                Valider
-              </span>
-            </button>
+            <Stack className="stack" spacing={2} direction="row" alignItems="center">
+              <button className="bouton-3D"
+                title="Valider"
+                {...(this.state.inputValue.length < 3 && { disabled: true })}
+                onMouseEnter={() => this.handlePieceHover()}
+                onMouseUp={this.handleClick}
+                onMouseDown={() => this.handlePieceDown()}>
+                <span className="texte-3D">
+                  Valider
+                </span>
+              </button>
+              {this.state.showIncorrect && <button className="bouton-3D button-replay"
+                title="Refaire"
+                onMouseEnter={() => this.handlePieceHover()}
+                onMouseUp={this.handleClickNouveau}
+                onMouseDown={() => this.handlePieceDown()}>
+                <span className="texte-3D texte-replay">
+                  Nouveau ↺
+                </span>
+              </button>}
+            </Stack>
           </div>
           <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
             {this.state.message}

@@ -20,20 +20,6 @@
                 "action": "allow"
             },
             {
-                "resource": "users/signin",
-                "methods": [
-                    "PUT"
-                ],
-                "action": "allow"
-            },
-            {
-                "resource": "users/signup",
-                "methods": [
-                    "POST"
-                ],
-                "action": "allow"
-            },
-            {
                 "resource": "users/globalElo/*",
                 "methods": [
                     "GET"
