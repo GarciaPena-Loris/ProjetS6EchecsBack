@@ -89,12 +89,10 @@ class Notation7 extends React.Component {
         let coup = '';
         for (let i = 0; i < nbCoups; i++) {
             const coups = newChess.moves();
-            do {
-                coup = coups[Math.floor(Math.random() * coups.length)];
-            }
-            while (coup.includes('x'));
+            coup = coups[Math.floor(Math.random() * coups.length)];
             newChess.move(coup);
         }
+
         if (nbCoups % 2 === 0) {
             this.couleur = 'w';
             this.setState({ orientation: "white" });
@@ -117,9 +115,14 @@ class Notation7 extends React.Component {
 
         const coups = newChess.moves();
         const verboseCoups = newChess.moves({ verbose: true });
-        const selectedCoup = Math.floor(Math.random() * coups.length);
-        coup = coups[selectedCoup];
-        let verboseCoup = verboseCoups[selectedCoup];
+        let selectedCoup;
+        let verboseCoup;
+        do {
+            selectedCoup = Math.floor(Math.random() * coups.length);
+            coup = coups[selectedCoup];
+            verboseCoup = verboseCoups[selectedCoup];
+        }
+        while (coup.includes('x'));
 
         this.caseOrigine = verboseCoup.from;
         this.caseDestination = verboseCoup.to;
@@ -240,7 +243,7 @@ class Notation7 extends React.Component {
         if (coupJoue === coupAEffectue) {
             Howler.volume(1);
             chess.move(this.realCoup);
-            this.setState({chess: chess});
+            this.setState({ chess: chess });
             this.pieceDrop.play();
 
             setTimeout(() => {
