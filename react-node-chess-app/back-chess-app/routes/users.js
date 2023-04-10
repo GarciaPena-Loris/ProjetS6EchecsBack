@@ -6,6 +6,9 @@ const saltRounds = 10;
 
 var router = express.Router();
 var User = require('../models/userModel');
+var Levels = require('../models/levelsModel');
+var UnlockLevel = require('../models/unlockLevelModel');
+
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -54,7 +57,15 @@ router.post('/signup', (req, res) => {
     user.password = hash;
 
     // Save the user to the database
-    User.createUser(user).then(result => {
+    User.createUser(user).then(async result => {
+      // get level unlockable
+      const unlockableLevels = await Levels.getAllUnlockableLevels(0);
+
+      // Vérifier si l'utilisateur peut débloquer de nouveaux niveaux
+      unlockableLevels.forEach(async level => {
+        await UnlockLevel.addUnlockLevel(level.id, user.name);
+      });
+
       res.json({ succes: "User created successfully" });
     }).catch(error => {
       if (error.code === 'ER_DUP_ENTRY') {
@@ -93,7 +104,7 @@ router.post('/signin', (req, res) => {
 
       try {
         // If the name and password are correct, return a JWT to the client
-        const token = jwt.sign({ name: user.name, role: user.role, imageProfil : user.imageProfil }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        const token = jwt.sign({ name: user.name, role: user.role, imageProfil: user.imageProfil }, process.env.JWT_SECRET, { expiresIn: '24h' });
         console.log(token);
         res.json({ token });
       }
@@ -119,7 +130,7 @@ router.put('/updateName/:name', async (req, res) => {
     }
     else {
       res.status(403).json({ error: "Action not allowed." });
-      }
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -128,7 +139,7 @@ router.put('/updateName/:name', async (req, res) => {
 router.put('/updateAvatar/:name', async (req, res) => {
   try {
     const name = req.params.name;
-    const {imageProfil} = req.body;
+    const { imageProfil } = req.body;
     const decoded = req.decoded;
     if (decoded.name == name) {
       const updatedUser = await User.updateAvatarUser(name, imageProfil);
@@ -136,7 +147,7 @@ router.put('/updateAvatar/:name', async (req, res) => {
     }
     else {
       res.status(403).json({ error: "Action not allowed." });
-      }
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

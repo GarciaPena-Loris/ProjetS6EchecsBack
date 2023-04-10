@@ -1,16 +1,21 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./Inscription.css"
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Howl, Howler } from 'howler';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faEye as OpenedEye,
+    faEyeSlash as ClosedEye,
+} from '@fortawesome/free-regular-svg-icons'
 
 export default function Inscription() {
     const navigate = useNavigate();
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [reponseServeur, setReponseServeur] = useState("");
     const passwordIsValid = /^(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/.test(password);
 
@@ -32,6 +37,14 @@ export default function Inscription() {
         Howler.volume(0.3);
         soundDown.play();
     };
+
+    function toggleShowPassword() {
+        setShowPassword(!showPassword);
+    }
+
+    function toggleShowConfirmPassword() {
+        setShowConfirmPassword(!showConfirmPassword);
+    }
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -65,8 +78,6 @@ export default function Inscription() {
         console.log(formData);
         axios(config)
             .then(function (response) {
-                console.log(response.data);
-                setReponseServeur(response.data);
                 navigate("/connexion")
             })
             .catch(function (error) {
@@ -94,32 +105,50 @@ export default function Inscription() {
                 <i className="info">
                     (3 caractères minimum)
                 </i>
-                <input
-                    className="input-inscription"
-                    type="password"
-                    placeholder="Mot de passe"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    required
-                />
+                <div className="password-container">
+                    <input
+                        className="input-inscription"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Mot de passe"
+                        value={password}
+                        onChange={handlePasswordChange}
+                        required
+                    />
+                    <button
+                        className="show-password"
+                        type="button"
+                        onMouseDown={toggleShowPassword}
+                        onMouseUp={toggleShowPassword}>
+                        {showPassword ? <FontAwesomeIcon icon={OpenedEye} size="sm" /> : <FontAwesomeIcon icon={ClosedEye} size="sm" />}
+                    </button>
+                </div>
                 <i className="info">
                     (8 caractères minimum, 1 chiffre et 1 caractère spécial)
                 </i>
-                <input
-                    className="input-inscription"
-                    type="password"
-                    placeholder="Confirmation du mot de passe"
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    required
-                />
+                <div className="password-container">
+                    <input
+                        className="input-inscription"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Confirmation du mot de passe"
+                        value={confirmPassword}
+                        onChange={handleConfirmPasswordChange}
+                        required
+                    />
+                    <button
+                        className="show-password"
+                        type="button"
+                        onMouseDown={toggleShowConfirmPassword}
+                        onMouseUp={toggleShowConfirmPassword}>
+                        {showConfirmPassword ? <FontAwesomeIcon icon={OpenedEye} size="sm" /> : <FontAwesomeIcon icon={ClosedEye} size="sm" />}
+                    </button>
+                </div>
                 {username !== "" &&
                     username.length >= 3 &&
                     passwordIsValid &&
                     password === confirmPassword ?
                     (
                         <button
-                            className="bouton-3D"
+                            className="bouton-3D val-bouton"
                             onMouseEnter={handlePieceHover}
                             onMouseDown={handlePieceDown}
                             type="submit">
@@ -130,7 +159,7 @@ export default function Inscription() {
                     ) :
                     (
                         <button
-                            className="bouton-3D"
+                            className="bouton-3D val-bouton"
                             type="submit"
                             disabled={true}>
                             <span className="texte-3D">
