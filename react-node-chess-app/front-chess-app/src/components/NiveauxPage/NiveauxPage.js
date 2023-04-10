@@ -32,6 +32,7 @@ export default function NiveauxPage() {
     const [dataUnlock, setDataUnlock] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
+    
     const exercice = location.state.exercice;
     //const niveau = location.state.niveau;
     const index = location.state.index;
