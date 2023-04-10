@@ -6,6 +6,28 @@
     height: 100vh;
 }
 
+.password-container {
+    display: flex;
+    width: 92%;
+}
+
+.show-password {
+    width: 10%;
+    height: 50%;
+    margin-top: 6%;
+    margin-left: 2%;
+    border-radius: 50%;
+    background-color: transparent;
+    color: #ffffff;
+    cursor: pointer;
+
+}
+
+.show-password:hover {
+    color: var(--couleur-theme);
+    border-color: var(--couleur-theme);
+}
+
 .form-inscription {
     font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: #262421;
@@ -41,7 +63,7 @@
     margin-top: 5px;
 }
 
-.bouton-custom-form {
+.val-bouton {
     margin-top: 7%;
 }
 

@@ -62,7 +62,18 @@ class Levels {
     // custom
     static async getUnlockableLevels(id_exercise, newElo) {
         return new Promise((resolve, reject) => {
-            connection.query("SELECT * FROM levels WHERE id_exercise = ? AND required_elo < ?", [id_exercise, newElo], (error, results) => {
+            connection.query("SELECT * FROM levels WHERE id_exercise = ? AND required_elo <= ?", [id_exercise, newElo], (error, results) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    }
+
+    static async getAllUnlockableLevels(newElo) {
+        return new Promise((resolve, reject) => {
+            connection.query("SELECT * FROM levels WHERE required_elo <= ?", [newElo], (error, results) => {
                 if (error) {
                     return reject(error);
                 }

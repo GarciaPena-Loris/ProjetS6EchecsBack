@@ -10,6 +10,7 @@ import { Howl, Howler } from 'howler';
 import "./NiveauxPage.css"
 
 // imporation des composants de chaque niveau
+// Notation
 import Notation1 from '../Exercices/Notation/Notation1';
 import Notation2 from '../Exercices/Notation/Notation2';
 import Notation3 from '../Exercices/Notation/Notation3';
@@ -19,6 +20,13 @@ import Notation6 from '../Exercices/Notation/Notation6';
 import Notation7 from '../Exercices/Notation/Notation7';
 import Notation8 from '../Exercices/Notation/Notation8';
 import Notation9 from '../Exercices/Notation/Notation9';
+
+// Puzzle Cache
+import PuzzleCache1 from '../Exercices/PuzzleCache/PuzzleCache1';
+import PuzzleCache2 from '../Exercices/PuzzleCache/PuzzleCache2';
+import PuzzleCache3 from '../Exercices/PuzzleCache/PuzzleCache3';
+import PuzzleCache4 from '../Exercices/PuzzleCache/PuzzleCache4';
+import PuzzleCache5 from '../Exercices/PuzzleCache/PuzzleCache5';
 
 export default function NiveauxPage() {
     const [dataUnlock, setDataUnlock] = useState([]);
@@ -110,7 +118,7 @@ export default function NiveauxPage() {
 
     // Créez une structure de données pour stocker les composants de chaque niveau
     const niveaux = {
-        1: {
+        1: { // Notation
             1: <Notation1
                 {...sharedProps}
                 pointsGagnes="5"
@@ -158,7 +166,33 @@ export default function NiveauxPage() {
             />,
             // etc...
         },
-        // etc...
+        2: { // Puzzle Cache
+            1: <PuzzleCache1
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
+            2: <PuzzleCache1
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
+            3: <PuzzleCache1
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
+            4: <PuzzleCache1
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
+            5: <PuzzleCache1
+                {...sharedProps}
+                pointsGagnes="6"
+                pointsPerdus="20"
+            />,
+        }  // etc...
     };
 
     const handlePieceHover = () => {
@@ -174,7 +208,7 @@ export default function NiveauxPage() {
     const handleLevelClick = (index) => {
         Howler.volume(0.3);
         soundUp.play();
-        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: dataLevels} });
+        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: dataLevels } });
     };
 
     // Récupérez le composant à afficher en fonction des id
@@ -186,7 +220,7 @@ export default function NiveauxPage() {
         return dataUnlock.includes(id);
     }
 
-    
+
     return (
         <div className="level-container">
             <div className="level-header">
@@ -194,7 +228,7 @@ export default function NiveauxPage() {
                     onClick={() => {
                         Howler.volume(0.3);
                         soundUp.play();
-                        navigate('/exercices', { state: {exercice: exercice} });
+                        navigate('/exercices', { state: { exercice: exercice } });
                     }}
                     onMouseEnter={() => handlePieceHover()}
                     onMouseDown={() => handlePieceDown()}>
@@ -204,7 +238,7 @@ export default function NiveauxPage() {
                 </button>
                 <div className="level-label"><i>{exercice.name}</i> : <i>niveau {index}</i></div>
                 <span className="level-elo">{exerciceElo !== null && exerciceElo} points d'élo pour cet <b>exercice</b></span>
-                {(index !== Object.keys(niveaux[exercice.id]).length ) &&
+                {(index !== Object.keys(niveaux[exercice.id]).length) &&
                     <button className="bouton-3D"
                         onClick={() => handleLevelClick((index + 1))}
                         onMouseEnter={() => handlePieceHover()}

@@ -1,17 +1,22 @@
 import React, { useState, useContext } from "react";
+import "./Connexion.css"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
 import { decodeToken } from "react-jwt";
 import { Howl, Howler } from 'howler';
-import "./Connexion.css"
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faEye as OpenedEye,
+    faEyeSlash as ClosedEye,
+} from '@fortawesome/free-regular-svg-icons'
 
 export default function Connexion() {
     const navigate = useNavigate();
 
     const [nomCompte, setNomCompte] = useState("");
     const [motDePasse, setMotDePasse] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [reponseServeur, setReponseServeur] = useState("");
     const { updateGlobalElo, updateGlobalAvatar } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
 
@@ -26,6 +31,10 @@ export default function Connexion() {
         Howler.volume(0.3);
         soundDown.play();
     };
+
+    function toggleShowPassword() {
+        setShowPassword(!showPassword);
+    }
 
     const handleConnexion = async (event) => {
         Howler.volume(0.3);
@@ -95,12 +104,21 @@ export default function Connexion() {
                     placeholder="Nom de compte"
                     value={nomCompte}
                     onChange={(event) => setNomCompte(event.target.value)} />
-                <input
-                    className="input-connexion"
-                    type="password"
-                    placeholder="Mot de passe"
-                    value={motDePasse}
-                    onChange={(event) => setMotDePasse(event.target.value)} />
+                <div className="password-container">
+                    <input
+                        className="input-connexion"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Mot de passe"
+                        value={motDePasse}
+                        onChange={(event) => setMotDePasse(event.target.value)} />
+                    <button
+                        className="show-password-connexion"
+                        type="button"
+                        onMouseDown={toggleShowPassword}
+                        onMouseUp={toggleShowPassword}>
+                        {showPassword ? <FontAwesomeIcon icon={OpenedEye} size="sm" /> : <FontAwesomeIcon icon={ClosedEye} size="sm" />}
+                    </button>
+                </div>
                 {nomCompte !== "" && motDePasse.length >= 5 ? (
                     <button
                         className="bouton-3D"
