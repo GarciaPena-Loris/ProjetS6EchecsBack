@@ -77,7 +77,7 @@ router.post('/signup', (req, res) => {
 });
 
 // User signin
-router.post('/signin', (req, res) => {
+router.put('/signin', (req, res) => {
   const { name, password } = req.body;
 
   // Check if all required fields are present

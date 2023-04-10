@@ -13,9 +13,16 @@
         "group": "user",
         "permissions": [
             {
+                "resource": "users/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
                 "resource": "users/signin",
                 "methods": [
-                    "POST"
+                    "PUT"
                 ],
                 "action": "allow"
             },
@@ -34,9 +41,9 @@
                 "action": "allow"
             },
             {
-                "resource": "users/*",
+                "resource": "unlockLevel/save/*",
                 "methods": [
-                    "GET"
+                    "PUT"
                 ],
                 "action": "allow"
             },
@@ -79,13 +86,6 @@
                 "resource": "unlockLevel/*",
                 "methods": [
                     "GET"
-                ],
-                "action": "allow"
-            },
-            {
-                "resource": "unlockLevel/save/*",
-                "methods": [
-                    "PUT"
                 ],
                 "action": "allow"
             }

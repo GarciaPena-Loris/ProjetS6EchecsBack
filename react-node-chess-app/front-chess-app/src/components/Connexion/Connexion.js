@@ -45,7 +45,7 @@ export default function Connexion() {
             'password': motDePasse
         };
         var config = {
-            method: 'post',
+            method: 'put',
             maxBodyLength: Infinity,
             url: 'http://localhost:3001/users/signin',
             headers: {
@@ -84,7 +84,12 @@ export default function Connexion() {
             .catch(function (error) {
                 if (error.response) {
                     console.log(error.response.data);
-                    setReponseServeur(error.response.data.error);
+                    if (error.response.data.error) {
+                        setReponseServeur(error.response.data.error);
+                    }
+                    else if (error.response.data.message) {
+                        setReponseServeur(error.response.data.message);
+                    }
                 }
                 else {
                     setReponseServeur(error.message);

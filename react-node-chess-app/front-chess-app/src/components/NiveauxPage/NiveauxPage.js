@@ -172,22 +172,22 @@ export default function NiveauxPage() {
                 pointsGagnes="6"
                 pointsPerdus="20"
             />,
-            2: <PuzzleCache1
+            2: <PuzzleCache2
                 {...sharedProps}
                 pointsGagnes="6"
                 pointsPerdus="20"
             />,
-            3: <PuzzleCache1
+            3: <PuzzleCache3
                 {...sharedProps}
                 pointsGagnes="6"
                 pointsPerdus="20"
             />,
-            4: <PuzzleCache1
+            4: <PuzzleCache4
                 {...sharedProps}
                 pointsGagnes="6"
                 pointsPerdus="20"
             />,
-            5: <PuzzleCache1
+            5: <PuzzleCache5
                 {...sharedProps}
                 pointsGagnes="6"
                 pointsPerdus="20"

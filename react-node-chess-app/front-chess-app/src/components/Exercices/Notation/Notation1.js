@@ -239,12 +239,13 @@ class Notation extends React.Component {
           // maj de l'elo
           this.props.setExerciceElo(response.data.newEloExercise);
           this.props.updateGlobalElo(response.data.newEloUser);
-
+          
           // affichage nouvelle piece
           this.genererPieceAleatoire();
         })
         .catch((error) => {
-          console.log(error);
+          console.log("🚀 ~ file: Notation1.js:239 ~ Notation ~ .then ~ response:", error.response.data)
+          //console.log(error);
 
           // affichage nouvelle piece
           this.genererPieceAleatoire();
