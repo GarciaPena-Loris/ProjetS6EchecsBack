@@ -126,7 +126,7 @@ export default function Connexion() {
                 </div>
                 <button
                     className="bouton-3D"
-                    {...((nomCompte === "" || motDePasse.length < 8) && { disabled: true })}
+                    {...((nomCompte === "" || motDePasse.length < 0) && { disabled: true })}
                     onMouseDown={handlePieceDown}>
                     <span className="texte-3D">
                         Se connecter

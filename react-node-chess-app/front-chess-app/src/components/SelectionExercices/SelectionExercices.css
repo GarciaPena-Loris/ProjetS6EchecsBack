@@ -1,4 +1,3 @@
-
 nav {
     display: flex;
     justify-content: space-between;
@@ -22,39 +21,41 @@ li:not(:last-child) {
     flex-wrap: wrap;
     justify-content: center;
     margin: 2rem 0;
-    }
-    
-    .img-wrapper {
+}
+
+.img-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 1rem;
-    }
-    
-    .imgExo {
+}
+
+.imgExo {
     width: 12em;
     height: 12em;
     cursor: pointer;
     border: none;
-    transition: all 0.2s ease-in-out;  /* Ajout de la transition */
-    }
-    
-    .imgExo:hover {
+    transition: all 0.2s ease-in-out;
+    /* Ajout de la transition */
+}
+
+.imgExo:hover {
     width: 12.3em;
     height: 12.3em;
     border: 1px solid #fff;
     border-color: #fff;
-    }
-    
-    .exo-name {
+}
+
+.exo-name {
     margin-top: 0.5rem;
     text-align: center;
     font-size: large;
     font-weight: bold;
-    }
-    
-    @media (min-width: 768px) {
+    color: #fff;
+}
+
+@media (min-width: 768px) {
     .imgExo {
-    max-width: 300px;
+        max-width: 300px;
     }
-    }
+}

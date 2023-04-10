@@ -53,6 +53,12 @@ export default function Compte() {
         navigate('/');
     };
 
+    const handleExerciceClick = (exercice) => {
+        Howler.volume(0.3);
+        soundUp.play();
+        navigate('/exercices', { state: { exercice: exercice } });
+    };
+
     const imageList = [
         "https://i.imgur.com/JII9pSp.jpg",
         "https://i.imgur.com/3sWnXjG.jpg",
@@ -234,6 +240,8 @@ export default function Compte() {
                             className="imgExo-compte"
                             src={`${exercice.image}`}
                             alt={`Exercice ${exercice.id}`}
+                            onClick={() => handleExerciceClick(exercice)}
+                            onMouseEnter={() => handlePieceHover()}
                         />
                         <div className="nomxp-div">
                             <div className="barxp-div">

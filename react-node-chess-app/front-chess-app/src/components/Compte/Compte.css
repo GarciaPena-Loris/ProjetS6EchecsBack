@@ -62,8 +62,17 @@
   width: 80px;
   height: auto;
   margin-bottom: 10px;
+  border: none;
+  transition: all 0.2s ease-in-out;  /* Ajout de la transition */
+  border-radius: 5px;
 }
 
+.imgExo-compte:hover {
+  width: 85px;
+  height: auto;
+  border: 1px solid #fff;
+  border-color: #fff;
+  }
 .exo-name-compte {
   flex: 1;
   font-size: 25px;
