@@ -249,7 +249,7 @@ export default function Compte() {
                                     key={exercice.id}
                                     className="barxp"
                                     completed={eloUndefined(dataEloJoueur[exercice.id - 1])}
-                                    customLabel={eloUndefined(dataEloJoueur[exercice.id - 1]) + " points"}
+                                    customLabel={eloUndefined(dataEloJoueur[exercice.id - 1])+""}
                                     maxCompleted={dataElo[exercice.id - 1]}
                                     bgColor='#7e9d4e'
                                 />
