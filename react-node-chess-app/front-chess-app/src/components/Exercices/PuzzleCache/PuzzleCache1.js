@@ -69,11 +69,11 @@ class PuzzleCache1 extends React.Component {
                 console.log("w");
                 console.log(possibleMoves[randomIndex].slice(-2));
                 this.state.chess.undo();
-                if (possibleMoves[randomIndex].slice(-1) == '+') {
-                    this.state.pos = possibleMoves[randomIndex].slice(-3, -1);
+                if (possibleMoves[randomIndex].slice(-1) === '+') {
+                    this.setState({ pos : possibleMoves[randomIndex].slice(-3, -1)});
                 }
-                else { this.state.pos = possibleMoves[randomIndex].slice(-2); }
-                this.state.text = 'Ecrivez le coup pour prendre la pièce en ';
+                else { this.setState({ pos : possibleMoves[randomIndex].slice(-2) });}
+                this.setState({text : 'Ecrivez le coup pour prendre la pièce en '});
                 this.coup = possibleMoves[randomIndex];
                 console.log(this.coup);
             }
@@ -82,11 +82,11 @@ class PuzzleCache1 extends React.Component {
                 console.log("b");
                 console.log(possibleMoves[randomIndex].slice(-2));
                 this.state.chess.undo();
-                if (possibleMoves[randomIndex].slice(-1) == '+') {
-                    this.state.pos = possibleMoves[randomIndex].slice(-3, -1);
+                if (possibleMoves[randomIndex].slice(-1) === '+') {
+                    this.setState({ pos : possibleMoves[randomIndex].slice(-3, -1)});
                 }
                 else { this.state.pos = possibleMoves[randomIndex].slice(-2); }
-                this.state.text = 'Quelle pièce (p,n,b,r,q,k) va être mangé en  ';
+                this.setState({text : 'Quelle pièce (p,n,b,r,q,k) va être mangé en  '});
                 this.coup = this.state.chess.get(this.state.pos).type;
                 console.log(this.coup);
                 console.log(this.coup);
@@ -94,53 +94,7 @@ class PuzzleCache1 extends React.Component {
         }, 800);
     };
 
-    //#region Afficher coup
-    safeGameMutate = (modify) => {
-        this.setState((g) => {
-            const update = { ...g };
-            modify(update);
-            return update;
-        })
-    }
-
-    makeRandomMove = () => {
-        const possibleMoves = this.state.chess.moves();
-
-        // exit if the this.state.chess is over
-        if (this.state.chess.game_over() || this.state.chess.in_draw() || possibleMoves.length === 0) return;
-
-        const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-        this.safeGameMutate((game) => {
-            game.move(possibleMoves[randomIndex]);
-        });
-    }
-
-    onDrop = (sourceSquare, targetSquare) => {
-        const chessCopy = this.state.chess;
-        try {
-            const move = chessCopy.move({
-                from: sourceSquare,
-                to: targetSquare,
-                promotion: "q", // always promote to a queen for example simplicity
-            });
-            this.setState({ chess: chessCopy })
-        }
-        catch { // illegal move
-            const text = `Le mouvement ${targetSquare} n'est pas possible !`;
-            this.setState({
-                incorrectMessage: text,
-                showIncorrect: true
-            });
-            setTimeout(() => {
-                this.setState({ showCorrect: false, showIncorrect: false });
-            }, 3000); // Efface le message après 3 secondes
-            return false;
-        }
-
-        return true;
-    }
-
-    //#endregion
+    //#region Rejouer coup  
     rejouer = (event) => {
         let currentIndex = 0;
         this.setState({ chess: new Chess() });
@@ -156,6 +110,7 @@ class PuzzleCache1 extends React.Component {
 
         }, 800);
     };
+    //#endregion
 
     //#region calcule du meilleur coup
 
@@ -208,6 +163,9 @@ class PuzzleCache1 extends React.Component {
                 break;
             case 'k':
                 compareValue = 'roi';
+                break;
+            default: 
+                compareValue='';
                 break;
         }
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup) || inputValue === compareValue) {
