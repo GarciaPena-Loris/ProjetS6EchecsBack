@@ -11,6 +11,8 @@ import NomenclatureQuatre from "./components/Exercices/Nomenclature/Nomenclature
 import Bombe from "./components/Exercices/Bombe/Bombe";
 import BombeEX2 from "./components/Exercices/Bombe/BombeEX2";
 import BombeEX3 from "./components/Exercices/Bombe/BombeEX3";
+import BombeEX4 from "./components/Exercices/Bombe/BombeEX4";
+
 
 
 function App() {
@@ -27,6 +29,7 @@ function App() {
           <Route path="/Exercices/Bombe" element={<Bombe/>}/>
           <Route path="/Exercices/BombeEX2" element={<BombeEX2/>}/>
           <Route path="/Exercices/BombeEX3" element={<BombeEX3/>}/>
+          <Route path="/Exercices/BombeEX4" element={<BombeEX4/>}/>
       </Routes>
     </div>
   );
