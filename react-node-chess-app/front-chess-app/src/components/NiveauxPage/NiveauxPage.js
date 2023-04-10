@@ -32,8 +32,9 @@ export default function NiveauxPage() {
     const [dataUnlock, setDataUnlock] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const exercice = location.state.exercice;
+    const exerciceIndex = location.state.exerciceIndex;
     //const niveau = location.state.niveau;
     const index = location.state.index;
     const nxtLevel = location.state.nxtLevel;
@@ -166,7 +167,9 @@ export default function NiveauxPage() {
             />,
             // etc...
         },
-        2: { // Puzzle Cache
+        2: { // Bombes
+        },
+        3: { // Puzzle Cache
             1: <PuzzleCache1
                 {...sharedProps}
                 pointsGagnes="6"
@@ -212,7 +215,8 @@ export default function NiveauxPage() {
     };
 
     // Récupérez le composant à afficher en fonction des id
-    let NiveauComponent = niveaux[exercice.id][index];
+    console.log(exerciceIndex)
+    let NiveauComponent = niveaux[exerciceIndex][index];
 
     function verifUnlock(id) {
         //console.log(id);
@@ -244,7 +248,7 @@ export default function NiveauxPage() {
                         onClick={() => handleLevelClick((index + 1))}
                         onMouseEnter={() => handlePieceHover()}
                         onMouseDown={() => handlePieceDown()}
-                        title={"Niveau " + (index+1) + " : " + nxtLevel.rules}
+                        title={"Niveau " + (index + 1) + " : " + nxtLevel.rules}
                         disabled={!verifUnlock(nxtLevel.id)}>
                         <span className="texte-3D"> {/* Retourne à la page précédente */}
                             Suivant →

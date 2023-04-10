@@ -10,10 +10,10 @@ export default function SelectionExercices() {
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
 
-    const handleExerciceClick = (exercice) => {
+    const handleExerciceClick = (exercice, index) => {
         Howler.volume(0.3);
         soundUp.play();
-        navigate('/exercices', { state: { exercice: exercice } });
+        navigate('/exercices', { state: { exercice: exercice, index: index } });
     };
 
     // son boutons
@@ -52,13 +52,13 @@ export default function SelectionExercices() {
         <div>
             <h1> Selectionnez un exercice :</h1>
             <div className="image-container">
-                {dataExo.map((exercice) => (
+                {dataExo.map((exercice, index) => (
                     <div className="img-wrapper" key={exercice.id}>
                         <img
                             className="imgExo"
                             src={`${exercice.image}`}
                             alt={`Exercice ${exercice.id}`}
-                            onClick={() => handleExerciceClick(exercice)}
+                            onClick={() => handleExerciceClick(exercice, (index+1))}
                             onMouseEnter={() => handlePieceHover()}
                         />
                         <p className="exo-name">{exercice.name}</p>
