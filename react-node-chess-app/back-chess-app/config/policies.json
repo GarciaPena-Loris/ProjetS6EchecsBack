@@ -13,6 +13,13 @@
         "group": "user",
         "permissions": [
             {
+                "resource": "users/updateAvatar/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            },
+            {
                 "resource": "users/*",
                 "methods": [
                     "GET"
@@ -28,13 +35,6 @@
             },
             {
                 "resource": "unlockLevel/save/*",
-                "methods": [
-                    "PUT"
-                ],
-                "action": "allow"
-            },
-            {
-                "resource": "users/updateAvatar/*",
                 "methods": [
                     "PUT"
                 ],
