@@ -87,6 +87,7 @@ class Notation6 extends React.Component {
 
     genererPieceAleatoire() {
         const newChess = new Chess();
+        this.coups = [];
 
         // reset les variables
         this.languageCoup = '';
@@ -216,7 +217,7 @@ class Notation6 extends React.Component {
             Howler.volume(1);
             const { chess } = this.state;
             chess.move(this.realCoup);
-            
+
             this.setState({ chess: chess });
             this.pieceDrop.play();
         }, 1000);
@@ -308,6 +309,13 @@ class Notation6 extends React.Component {
         }
     }
 
+    handleClickNouveau = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+        this.genererPieceAleatoire();
+    };
+
     handleClick = () => {
         Howler.volume(0.3);
         this.soundUp.play();
@@ -319,6 +327,8 @@ class Notation6 extends React.Component {
             if (this.showedCoordonnees) {
                 this.points -= 10;
             }
+            if (this.state.showIncorrect)
+                this.points = 0;
             const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.points} points.`;
             this.setState({
                 message: text,
@@ -327,11 +337,19 @@ class Notation6 extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
+            setTimeout(() => {
+                this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+
+                if (this.points !== 0)
+                    this.handleUpdate();
+
+                this.genererPieceAleatoire();
+            }, 3000); // Efface le message après 3 secondes
         }
         else {
             Howler.volume(0.3);
             this.soundWrong.play();
-            let text = `Mauvaise réponse ! Le coup était ${this.coups[0]}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
+            let text = `Mauvaise réponse ! Le coup était ${this.languageCoup}, vous perdez ${Math.min(this.props.exerciceElo, this.pointsPerdus)} points.`;
             this.points = -(Math.min(this.props.exerciceElo, this.pointsPerdus));
             this.setState({
                 message: text,
@@ -339,16 +357,10 @@ class Notation6 extends React.Component {
                 showCorrect: false,
                 showIncorrect: true
             });
-        }
-        setTimeout(() => {
-            this.coups = [];
-            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
-
-            if (this.points !== 0)
+            setTimeout(() => {
                 this.handleUpdate();
-            else
-                this.genererPieceAleatoire();
-        }, 3000); // Efface le message après 3 secondes
+            }, 1000);
+        }
     }
 
 
@@ -378,15 +390,9 @@ class Notation6 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 })
                 .catch((error) => {
                     console.log(error);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 });
         } catch (error) {
             console.error(error);
@@ -672,6 +678,15 @@ class Notation6 extends React.Component {
                                     Rejouer
                                 </span>
                             </button>
+                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
+                                title="Refaire"
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickNouveau}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D texte-replay">
+                                    Nouveau ↺
+                                </span>
+                            </button>}
                         </Stack>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>

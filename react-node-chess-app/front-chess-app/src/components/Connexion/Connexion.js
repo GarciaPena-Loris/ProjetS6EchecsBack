@@ -124,22 +124,14 @@ export default function Connexion() {
                         {showPassword ? <FontAwesomeIcon icon={OpenedEye} size="sm" /> : <FontAwesomeIcon icon={ClosedEye} size="sm" />}
                     </button>
                 </div>
-                {nomCompte !== "" && motDePasse.length >= 5 ? (
-                    <button
-                        className="bouton-3D"
-                        onMouseDown={handlePieceDown}>
-                        <span className="texte-3D">
-                            Se connecter
-                        </span>
-                    </button>) : (
-                    <button
-                        className="bouton-3D"
-                        disabled>
-                        <span className="texte-3D">
-                            Se connecter
-                        </span>
-                    </button>
-                )}
+                <button
+                    className="bouton-3D"
+                    {...((nomCompte === "" || motDePasse.length < 8) && { disabled: true })}
+                    onMouseDown={handlePieceDown}>
+                    <span className="texte-3D">
+                        Se connecter
+                    </span>
+                </button>
             </form>
             <div>
                 {reponseServeur && (

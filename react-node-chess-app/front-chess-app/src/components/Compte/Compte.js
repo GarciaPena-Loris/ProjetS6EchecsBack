@@ -8,6 +8,7 @@ import Avatar from 'react-avatar';
 import AvatarCompte from "./AvatarCompte";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
 import ProgressBar from "@ramonak/react-progress-bar";
+import { Howl, Howler } from 'howler';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faChessPawn as whitePawn
@@ -25,6 +26,32 @@ export default function Compte() {
     const name = decoded.name;
     const [nbExo, setNbExo] = useState();
 
+    // son boutons
+    const soundDown = new Howl({
+        src: ['/sons/clicdown.wav']
+    });
+    const soundUp = new Howl({
+        src: ['/sons/clicup.wav']
+    });
+    const soundHover = new Howl({
+        src: ['/sons/hover.mp3']
+    });
+    const handlePieceHover = () => {
+        Howler.volume(0.1);
+        soundHover.play();
+    };
+    const handlePieceDown = () => {
+        Howler.volume(0.3);
+        soundDown.play();
+    };
+
+    const handleLogout = () => {
+        Howler.volume(0.3);
+        soundUp.play();
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('globalElo');
+        navigate('/');
+    };
 
     const imageList = [
         "https://i.imgur.com/JII9pSp.jpg",
@@ -182,8 +209,8 @@ export default function Compte() {
                 setShowPopup={setShowPopup}
             />
             <h1>
-            {eloUndefined(dataCompte.global_elo)+" "}  
-            <FontAwesomeIcon icon={whitePawn} size="lg" />
+                {eloUndefined(dataCompte.global_elo) + " "}
+                <FontAwesomeIcon icon={whitePawn} size="lg" />
             </h1>
             {showPopup && (
                 <div className="avatar-popup" onClick={handleClosePopup}>
@@ -214,7 +241,7 @@ export default function Compte() {
                                     key={exercice.id}
                                     className="barxp"
                                     completed={eloUndefined(dataEloJoueur[exercice.id - 1])}
-                                    customLabel={eloUndefined(dataEloJoueur[exercice.id - 1])+" points"}
+                                    customLabel={eloUndefined(dataEloJoueur[exercice.id - 1]) + " points"}
                                     maxCompleted={dataElo[exercice.id - 1]}
                                     bgColor='#7e9d4e'
                                 />
@@ -223,7 +250,15 @@ export default function Compte() {
                     </div>
                 ))}
             </div>
+            <button className="bouton-3D deconnexion"
+                title="Deconnexion"
+                onMouseEnter={handlePieceHover}
+                onMouseUp={handleLogout}
+                onMouseDown={handlePieceDown}>
+                <span className="texte-3D deconnexion">
+                    Déconnexion
+                </span>
+            </button>
         </div>
-
     );
 }

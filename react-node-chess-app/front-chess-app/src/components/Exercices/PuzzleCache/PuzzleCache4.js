@@ -29,11 +29,11 @@ class PuzzleCache extends React.Component {
             showCorrect: false,
             showIncorrect: false,
             chess: new Chess(),
-            pos : '',
-            text : '',
+            pos: '',
+            text: '',
         };
         this.currentIndex = 0
-        
+
         // validation réponse
         this.pointsGagne = props.pointsGagnes;
         this.pointsPerdu = props.pointsPerdus;
@@ -50,50 +50,50 @@ class PuzzleCache extends React.Component {
 
         this.genererMouvement();
     }
-      
+
     genererMouvement = () => {
         let intervalId;
         intervalId = setInterval(() => {
-          let possibleMoves = this.state.chess.moves();
-          let possibleXMoves = possibleMoves.filter(element => element.includes("x"));
-          if (possibleXMoves.length>=1){
-            possibleMoves=possibleXMoves;
-          }
-          const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-          this.state.chess.move(possibleMoves[randomIndex]);
-          this.historicMove.push(possibleMoves[randomIndex]);
-          this.setState({ chess: this.state.chess });
-          const boardValue = this.RevaluateBoard(this.state.chess);
-          if (boardValue > 0) {
-            clearInterval(intervalId);
-            console.log("w");
-            console.log(possibleMoves[randomIndex].slice(-2));
-            this.state.chess.undo();
-            if (possibleMoves[randomIndex].slice(-1)=='+'){
-                this.state.pos=possibleMoves[randomIndex].slice(-3,-1);
+            let possibleMoves = this.state.chess.moves();
+            let possibleXMoves = possibleMoves.filter(element => element.includes("x"));
+            if (possibleXMoves.length >= 1) {
+                possibleMoves = possibleXMoves;
             }
-            else{this.state.pos=possibleMoves[randomIndex].slice(-2);}
-            this.state.text='Ecrivez le coup pour prendre la pièce en ';
-            this.coup=possibleMoves[randomIndex];
-            console.log(this.coup);
-          }
-          if (boardValue < 0) {
-            clearInterval(intervalId);
-            console.log("b");
-            console.log(possibleMoves[randomIndex].slice(-2));
-            this.state.chess.undo();
-            if (possibleMoves[randomIndex].slice(-1)=='+'){
-                this.state.pos=possibleMoves[randomIndex].slice(-3,-1);
+            const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+            this.state.chess.move(possibleMoves[randomIndex]);
+            this.historicMove.push(possibleMoves[randomIndex]);
+            this.setState({ chess: this.state.chess });
+            const boardValue = this.RevaluateBoard(this.state.chess);
+            if (boardValue > 0) {
+                clearInterval(intervalId);
+                console.log("w");
+                console.log(possibleMoves[randomIndex].slice(-2));
+                this.state.chess.undo();
+                if (possibleMoves[randomIndex].slice(-1) == '+') {
+                    this.state.pos = possibleMoves[randomIndex].slice(-3, -1);
+                }
+                else { this.state.pos = possibleMoves[randomIndex].slice(-2); }
+                this.state.text = 'Ecrivez le coup pour prendre la pièce en ';
+                this.coup = possibleMoves[randomIndex];
+                console.log(this.coup);
             }
-            else{this.state.pos=possibleMoves[randomIndex].slice(-2);}
-            this.state.text='Quelle pièce (p,n,b,r,q,k) peut être mangé en  ';
-            this.coup=this.state.chess.get(this.state.pos).type;
-            console.log(this.coup);
-            console.log(this.coup);
-          }
+            if (boardValue < 0) {
+                clearInterval(intervalId);
+                console.log("b");
+                console.log(possibleMoves[randomIndex].slice(-2));
+                this.state.chess.undo();
+                if (possibleMoves[randomIndex].slice(-1) == '+') {
+                    this.state.pos = possibleMoves[randomIndex].slice(-3, -1);
+                }
+                else { this.state.pos = possibleMoves[randomIndex].slice(-2); }
+                this.state.text = 'Quelle pièce (p,n,b,r,q,k) peut être mangé en  ';
+                this.coup = this.state.chess.get(this.state.pos).type;
+                console.log(this.coup);
+                console.log(this.coup);
+            }
         }, 800);
-      };
-      
+    };
+
     //#region Afficher coup
     safeGameMutate = (modify) => {
         this.setState((g) => {
@@ -139,45 +139,46 @@ class PuzzleCache extends React.Component {
 
         return true;
     }
-    
+
     //#endregion
     rejouer = (event) => {
         let currentIndex = 0;
         this.setState({ chess: new Chess() });
 
         let intervalId = setInterval(() => {
-            if (currentIndex < this.historicMove.length-1) {
+            if (currentIndex < this.historicMove.length - 1) {
                 this.state.chess.move(this.historicMove[currentIndex]);
                 this.setState({ chess: this.state.chess });
                 currentIndex++;
             } else {
                 clearInterval(intervalId);
             }
-            
+
         }, 800);
     };
 
     //#region calcule du meilleur coup
-    
+
     RevaluateBoard(chess) {
         const pieceValues = {
-          'p': 1,
-          'n': 3,
-          'b': 3,
-          'r': 5,
-          'q': 9,
-          'k': 0
+            'p': 1,
+            'n': 3,
+            'b': 3,
+            'r': 5,
+            'q': 9,
+            'k': 0
         };
         let value = 0;
         SQUARES.forEach(Element => {
-              if(this.state.chess.get(Element)){value += this.state.chess.get(Element).color === 'w' ? pieceValues[this.state.chess.get(Element).type] : -pieceValues[this.state.chess.get(Element).type];
-          }
+            if (this.state.chess.get(Element)) {
+                value += this.state.chess.get(Element).color === 'w' ? pieceValues[this.state.chess.get(Element).type] : -pieceValues[this.state.chess.get(Element).type];
+            }
         });
         console.log(value);
         return value;
     }
 
-    
+
     //#endregion 
 
 
@@ -188,25 +189,25 @@ class PuzzleCache extends React.Component {
 
     handleClick = () => {
         const { inputValue, chess } = this.state;
-        let compareValue='';
-        switch(this.coup){
+        let compareValue = '';
+        switch (this.coup) {
             case 'p':
-                compareValue='pion';
+                compareValue = 'pion';
                 break;
             case 'n':
-                compareValue='cavalier';
+                compareValue = 'cavalier';
                 break;
             case 'b':
-                compareValue='fou';
+                compareValue = 'fou';
                 break;
             case 'r':
-                compareValue='tour';
+                compareValue = 'tour';
                 break;
             case 'q':
-                compareValue='dame';
+                compareValue = 'dame';
                 break;
             case 'k':
-                compareValue='roi';
+                compareValue = 'roi';
                 break;
         }
         if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup) || inputValue === compareValue) {
@@ -220,8 +221,8 @@ class PuzzleCache extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
-            if (inputValue.length>=3){
-            chess.move(inputValue);
+            if (inputValue.length >= 3) {
+                chess.move(inputValue);
             }
         }
         else {
@@ -294,18 +295,18 @@ class PuzzleCache extends React.Component {
     }
 
     customPieces = () => {
-        const piecesBlanche = ["wN", "wB", "wR", "wQ","wP", "wK"];
+        const piecesBlanche = ["wN", "wB", "wR", "wQ", "wP", "wK"];
         const piecesNoire = ["bN", "bB", "bR", "bQ", "bP", "bK"];
         const returnPieces = {};
         piecesBlanche.map((p) => {
             returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://images.vexels.com/media/users/3/189293/isolated/lists/dccc31fcb7e0ed37bcbabd61bf8b0ffc-pear-icon-stroke.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
+                <img src="https://i.imgur.com/Br9K7hP.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
             );
             return null;
         });
         piecesNoire.map((p) => {
             returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://leadgenapp.io/wp-content/uploads/2022/03/28f3b36507394f083b344ea49bbf8bb5.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
+                <img src="https://i.imgur.com/Br9K7hP.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
             );
             return null;
         });
@@ -317,7 +318,7 @@ class PuzzleCache extends React.Component {
             <div className="container-general">
                 <div className="jeu">
                     <div className="plateau-gauche">
-                    <h2 id="txt"> {this.state.text} {this.state.pos}.</h2>
+                        <h2 id="txt"> {this.state.text} {this.state.pos}.</h2>
                         <Chessboard
                             position={this.state.chess.fen()}
                             onPieceDrop={this.onDrop}

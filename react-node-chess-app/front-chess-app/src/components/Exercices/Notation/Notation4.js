@@ -553,6 +553,13 @@ class Notation4 extends React.Component {
         }
     }
 
+    handleClickNouveau = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+        this.genererPieceAleatoire();
+    };
+
     handleLanguageChange = (event) => {
         Howler.volume(0.3);
         this.soundUp.play();
@@ -583,6 +590,8 @@ class Notation4 extends React.Component {
             if (this.showedOrientation) {
                 this.points = this.points - 5;
             }
+            if (this.state.showIncorrect)
+                this.points = 0;
             const text = `Bonne réponse ! Le coup est bien ${inputValue}, vous gagné ${this.points} points.`;
             this.state.chess.move(this.realCoup);
             this.setState({
@@ -592,6 +601,14 @@ class Notation4 extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
+            setTimeout(() => {
+                this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+
+                if (this.points !== 0)
+                    this.handleUpdate();
+
+                this.genererPieceAleatoire();
+            }, 3000); // Efface le message après 3 secondes
         }
         else {
             Howler.volume(0.3);
@@ -604,17 +621,10 @@ class Notation4 extends React.Component {
                 showCorrect: false,
                 showIncorrect: true
             });
-        }
-        setTimeout(() => {
-            this.showedOrientation = false;
-            this.orientation = false;
-            this.setState({ showCorrect: false, showIncorrect: false, message: '' });
-
-            if (this.points !== 0)
+            setTimeout(() => {
                 this.handleUpdate();
-            else
-                this.genererPieceAleatoire();
-        }, 3000); // Efface le message après 3 secondes
+            }, 1000);
+        }
     }
 
     handleUpdate = () => {
@@ -643,15 +653,9 @@ class Notation4 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 })
                 .catch((error) => {
                     console.log(error);
-
-                    // affichage nouvelle piece
-                    this.genererPieceAleatoire();
                 });
         } catch (error) {
             console.error(error);
@@ -898,17 +902,27 @@ class Notation4 extends React.Component {
                             </button>
                         </Stack>
 
-                        <button className="bouton-3D"
-                            key="valider"
-                            title="Valider"
-                            {...(this.state.inputValue.length < 3 && { disabled: true })}
-                            onMouseEnter={() => this.handlePieceHover()}
-                            onMouseUp={this.handleClick}
-                            onMouseDown={() => this.handlePieceDown()}>
-                            <span className="texte-3D">
-                                Valider
-                            </span>
-                        </button>
+                        <Stack className="stack" spacing={2} direction="row" alignItems="center">
+                            <button className="bouton-3D"
+                                title="Valider"
+                                {...(this.state.inputValue.length < 3 && { disabled: true })}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClick}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D">
+                                    Valider
+                                </span>
+                            </button>
+                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
+                                title="Refaire"
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickNouveau}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D texte-replay">
+                                    Nouveau ↺
+                                </span>
+                            </button>}
+                        </Stack>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}

@@ -161,39 +161,39 @@ export default function ExercicePage() {
                 />
             </div>
             <div className="levels-container">
-    <div className="level-header">
-        <div className="level-title"> Niveaux </div>
-        <div className="level-title">Description</div>
-        <div className="level-title">Élo requis</div>
-    </div>
-    {dataLevels.map((level, index) => (
-        <React.Fragment key={level.id}>
-            <div className="level-row">
-                <div className="level-name-container">
-                    <div className="level-name">{level.name}</div>
-                    <button className="bouton-3D"
-                        onClick={() => handleLevelClick((index + 1))}
-                        onMouseEnter={() => handlePieceHover()}
-                        onMouseDown={() => handlePieceDown()}
-                        disabled={!eloRequired(level.id)}>
-                        <span className="texte-3D"> {/* Retourne à la page précédente */}
-                            Niveau {index + 1}
-                        </span>
-                    </button>
+                <div className="level-header">
+                    <div className="level-title"> Niveaux </div>
+                    <div className="level-title">Description</div>
+                    <div className="level-title">Élo requis</div>
                 </div>
-                <div className="level-name-container">
-                    <div className="level-description">{level.rules}</div>
-                </div>
-                <div className="level-name-container">
-                    <div className="level-description">{level.required_elo}</div>
-                </div>
+                {dataLevels.map((level, index) => (
+                    <React.Fragment key={level.id}>
+                        <div className="level-row">
+                            <div className="level-name-container">
+                                <div className="level-name">{level.name}</div>
+                                <button className="bouton-3D"
+                                    onClick={() => handleLevelClick((index + 1))}
+                                    onMouseEnter={() => handlePieceHover()}
+                                    onMouseDown={() => handlePieceDown()}
+                                    disabled={!eloRequired(level.id)}>
+                                    <span className="texte-3D"> {/* Retourne à la page précédente */}
+                                        Niveau {index + 1}
+                                    </span>
+                                </button>
+                            </div>
+                            <div className="level-name-container">
+                                <div className="level-description">{level.rules}</div>
+                            </div>
+                            <div className="level-name-container">
+                                <div className="level-description">{level.required_elo}</div>
+                            </div>
+                        </div>
+                        {index !== dataLevels.length - 1 && (
+                            <hr className="solid" />
+                        )}
+                    </React.Fragment>
+                ))}
             </div>
-            {index !== dataLevels.length - 1 && (
-                <hr className="solid" />
-            )}
-        </React.Fragment>
-    ))}
-</div>
 
         </div>
     );

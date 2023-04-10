@@ -142,31 +142,18 @@ export default function Inscription() {
                         {showConfirmPassword ? <FontAwesomeIcon icon={OpenedEye} size="sm" /> : <FontAwesomeIcon icon={ClosedEye} size="sm" />}
                     </button>
                 </div>
-                {username !== "" &&
-                    username.length >= 3 &&
-                    passwordIsValid &&
-                    password === confirmPassword ?
-                    (
-                        <button
-                            className="bouton-3D val-bouton"
-                            onMouseEnter={handlePieceHover}
-                            onMouseDown={handlePieceDown}
-                            type="submit">
-                            <span className="texte-3D">
-                                S'inscrire
-                            </span>
-                        </button>
-                    ) :
-                    (
-                        <button
-                            className="bouton-3D val-bouton"
-                            type="submit"
-                            disabled={true}>
-                            <span className="texte-3D">
-                                S'inscrire
-                            </span>
-                        </button>
-                    )}
+                <button
+                    className="bouton-3D val-bouton"
+                    {...((username.length < 3 ||
+                        !passwordIsValid ||
+                        password !== confirmPassword) && { disabled: true })}
+                    onMouseEnter={handlePieceHover}
+                    onMouseDown={handlePieceDown}
+                    type="submit">
+                    <span className="texte-3D">
+                        S'inscrire
+                    </span>
+                </button>
             </form>
             <div>
                 {reponseServeur && (

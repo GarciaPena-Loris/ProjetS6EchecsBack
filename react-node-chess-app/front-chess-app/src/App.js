@@ -27,8 +27,8 @@ function App() {
           <Route path="/connexion" element={<UnRequireAuth component={Connexion}/>} />
           <Route path="/inscription" element={<UnRequireAuth component={Inscription} />} />
           <Route path="/selectionExercices" element={<RequireAuth component={SelectionExercices} />} />
-          <Route path="/exercices" element={<RequireAuth component={Exercices} />} />
-          <Route path="/niveaux" element={<RequireAuth component={Niveaux} />} />
+          <Route path="/exercices" element={<UnRequireAuth component={Exercices} />} />
+          <Route path="/niveaux" element={<UnRequireAuth component={Niveaux} />} />
           <Route path="/compte" element={<RequireAuth component={Compte} />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
