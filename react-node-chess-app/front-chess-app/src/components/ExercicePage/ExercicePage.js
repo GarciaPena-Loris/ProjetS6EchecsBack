@@ -18,6 +18,7 @@ export default function ExercicePage() {
     const location = useLocation();
     const exercice = location.state.exercice;
     const exerciceId = exercice.id;
+    const exerciceIndex = location.state.index;
     const decoded = decodeToken(sessionStorage.token);
     const name = decoded.name;
     const soundHover = new Howl({
@@ -35,7 +36,7 @@ export default function ExercicePage() {
         Howler.volume(0.3);
         soundUp.play();
         listLevels = dataLevels
-        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: listLevels } });
+        navigate('/niveaux', { state: { exercice: exercice, exerciceIndex: exerciceIndex, index: index, nxtLevel: dataLevels[index], dataLevels: listLevels } });
     };
 
     const handlePieceHover = () => {

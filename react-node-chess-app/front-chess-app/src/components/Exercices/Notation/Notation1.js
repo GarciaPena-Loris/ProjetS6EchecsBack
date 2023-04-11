@@ -513,7 +513,7 @@ class Notation extends React.Component {
                 </span>
               </button>
               {this.state.showIncorrect && <button className="bouton-3D button-replay"
-                title="Refaire"
+                title="Nouveau ↺"
                 onMouseEnter={() => this.handlePieceHover()}
                 onMouseUp={this.handleClickNouveau}
                 onMouseDown={() => this.handlePieceDown()}>
