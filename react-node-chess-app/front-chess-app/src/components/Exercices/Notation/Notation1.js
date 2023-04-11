@@ -417,6 +417,7 @@ class Notation extends React.Component {
           </div>
           <div className="boutons">
             <div className="groupe-butons" >
+              <h3 className="titre-boutons">Pièce</h3>
               {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -433,6 +434,7 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons">
+            <h3 className="titre-boutons">Colonnes</h3>
               {colonnes.map((line, index) => { // a b c d e f g h
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -449,6 +451,7 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons" >
+            <h3 className="titre-boutons">Lignes</h3>
               {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
@@ -465,6 +468,7 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons" >
+            <h3 className="titre-boutons">Autres</h3>
               {custom.map((line, index) => { // x O-O O-O-O = e.p. +
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}

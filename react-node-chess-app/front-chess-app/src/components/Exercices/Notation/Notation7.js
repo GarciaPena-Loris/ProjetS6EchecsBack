@@ -85,7 +85,7 @@ class Notation7 extends React.Component {
         this.caseDestination = '';
 
         // effectuer un nombre aléatoire de coups aléatoires
-        const nbCoups = Math.floor(Math.random() * 15) + 5;
+        const nbCoups = Math.floor(Math.random() * 15) + 6;
         let coup = '';
         for (let i = 0; i < nbCoups; i++) {
             const coups = newChess.moves();
@@ -373,6 +373,10 @@ class Notation7 extends React.Component {
                         Faite le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
                     </i>
                     <div className="option">
+                        {this.state.orientation === 'white' ?
+                            <h2 className="titre-boutons"><i>Vous jouez les Blancs </i>⚪</h2> :
+                            <h2 className="titre-boutons"><i>Vous jouez les Noirs </i>⚫</h2>
+                        }
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
                                 control={<this.Android12Switch

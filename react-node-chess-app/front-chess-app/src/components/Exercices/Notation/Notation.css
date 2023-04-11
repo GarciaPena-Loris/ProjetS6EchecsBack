@@ -109,6 +109,10 @@
 
 /* --- */
 
+.titre-boutons {
+  color: white;
+}
+
 .input {
   display: flex;
   flex-direction: column;

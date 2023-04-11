@@ -105,7 +105,7 @@ class Notation9 extends React.Component {
         let verboseCoups = '';
         let index = 0;
         if (x === 0) { // coup avec sans x
-            nbCoups = Math.floor(Math.random() * 15) + 5;
+            nbCoups = Math.floor(Math.random() * 15) + 6;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
                 let coup = '';
@@ -417,6 +417,10 @@ class Notation9 extends React.Component {
                         Faite le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
                     </i>
                     <div className="option">
+                        {this.state.orientation === 'white' ?
+                            <h2 className="titre-boutons"><i>Vous jouez les Blancs </i>⚪</h2> :
+                            <h2 className="titre-boutons"><i>Vous jouez les Noirs </i>⚫</h2>
+                        }
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
                                 control={<this.Android12Switch
