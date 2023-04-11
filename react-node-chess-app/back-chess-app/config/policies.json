@@ -1,0 +1,80 @@
+[
+    {
+        "group": "admin",
+        "permissions": [
+            {
+                "resource": "*",
+                "methods": "*",
+                "action": "allow"
+            }
+        ]
+    },
+    {
+        "group": "user",
+        "permissions": [
+            {
+                "resource": "users/updateAvatar/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/globalElo/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "unlockLevel/save/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "users/updateName/*",
+                "methods": [
+                    "PUT"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "exercises/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "eloExercise/elo/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "levels/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            },
+            {
+                "resource": "unlockLevel/*",
+                "methods": [
+                    "GET"
+                ],
+                "action": "allow"
+            }
+        ]
+    }
+]

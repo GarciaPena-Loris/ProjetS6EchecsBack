@@ -1,36 +1,39 @@
-import React from "react";
+import { React } from "react";
 import "./App.css";
-import {Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+import { GlobalProvider } from './components/GlobalContext/GlobalContext';
+import RequireAuth from "./components/RequireAuth/RequireAuth";
+import UnRequireAuth from "./components/RequireAuth/UnRequireAuth";
+import ErrorBoundary from "./components/RequireAuth/ErrorBoundary";
+import Navbar from "./components/Navbar/Navbar";
 import Accueil from "./components/Accueil/Accueil";
+import NoPage from "./components/NoPage/NoPage";
 import Connexion from "./components/Connexion/Connexion";
 import Inscription from "./components/Inscription/Inscription";
-import Nomenclature from "./components/Exercices/Nomenclature/Nomenclature";
-import NomenclatureTROIS from "./components/Exercices/Nomenclature/NomenclatureTROIS";
-import NomenclatureDEUX from "./components/Exercices/Nomenclature/NomenclatureDEUX";
-import NomenclatureQuatre from "./components/Exercices/Nomenclature/NomenclatureQUATRE";
-import Bombe from "./components/Exercices/Bombe/Bombe";
-import BombeEX2 from "./components/Exercices/Bombe/BombeEX2";
-import BombeEX3 from "./components/Exercices/Bombe/BombeEX3";
-import BombeEX4 from "./components/Exercices/Bombe/BombeEX4";
-
+import SelectionExercices from "./components/SelectionExercices/SelectionExercices.js";
+import Exercices from "./components/ExercicePage/ExercicePage";
+import Niveaux from "./components/NiveauxPage/NiveauxPage";
+import Compte from "./components/Compte/Compte.js";
 
 
 function App() {
   return (
     <div className="App">
-      <Routes>
-          <Route path="/" element={<Accueil/>} />
-          <Route path="/connexion" element={<Connexion/>} />
-          <Route path="/inscription" element={<Inscription/>} />
-          <Route path="/Exercices/Nomenclature" element={<Nomenclature/>}/>
-          <Route path="/Exercices/NomenclatureDEUX" element={<NomenclatureDEUX/>}/>
-          <Route path="/Exercices/NomenclatureTROIS" element={<NomenclatureTROIS/>}/>
-          <Route path="/Exercices/NomenclatureQuatre" element={<NomenclatureQuatre/>}/>
-          <Route path="/Exercices/Bombe" element={<Bombe/>}/>
-          <Route path="/Exercices/BombeEX2" element={<BombeEX2/>}/>
-          <Route path="/Exercices/BombeEX3" element={<BombeEX3/>}/>
-          <Route path="/Exercices/BombeEX4" element={<BombeEX4/>}/>
-      </Routes>
+      <ErrorBoundary>
+        <GlobalProvider>
+        <Navbar />
+        <Routes >
+          <Route path="/" element={<Accueil />} />
+          <Route path="/connexion" element={<UnRequireAuth component={Connexion}/>} />
+          <Route path="/inscription" element={<UnRequireAuth component={Inscription} />} />
+          <Route path="/selectionExercices" element={<RequireAuth component={SelectionExercices} />} />
+          <Route path="/exercices" element={<RequireAuth component={Exercices} />} />
+          <Route path="/niveaux" element={<RequireAuth component={Niveaux} />} />
+          <Route path="/compte" element={<RequireAuth component={Compte} />} />
+          <Route path="*" element={<NoPage />} />
+        </Routes>
+        </GlobalProvider>
+      </ErrorBoundary>
     </div>
   );
 }
