@@ -3,19 +3,35 @@ import './Bombe.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
+import { Stack } from '@mui/material';
+import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { Howl, Howler } from 'howler';
 
-class BombeEX4 extends React.Component {
-    constructor() {
-        super();
+class Bombe4 extends React.Component {
+    constructor(props) {
+        super(props);
         this.state = {
             inputValue: '',
             correctMessage: '',
             incorrectMessage: '',
+            showCorrect: false,
+            showIncorrect: false,
+            orientation: "white",
+            coordonnees: true,
+            selectedLanguage: 'fr',
+            piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
+            coloredSquares: {},
 
             chess: new Chess(),
             chessBis: new Chess()
         };
+        this.pointsGagnes = props.pointsGagnes;
+        this.pointsPerdus = props.pointsPerdus;
+        this.points = 0;
+        this.idExercice = props.idExercice;
+
         this.nomPiece = ''
         this.pos = ''
         this.positionActuelle = '';
@@ -29,6 +45,29 @@ class BombeEX4 extends React.Component {
             src: ['/sons/win.wav']
         });
 
+        this.monInputRef = React.createRef();
+
+        this.soundHover = new Howl({
+            src: ['/sons/hover.mp3']
+        });
+        this.soundDown = new Howl({
+            src: ['/sons/clicdown.wav']
+        });
+        this.soundUp = new Howl({
+            src: ['/sons/clicup.wav']
+        });
+        this.soundWin = new Howl({
+            src: ['/sons/win.wav']
+        });
+        this.soundWrong = new Howl({
+            src: ['/sons/wrong.wav']
+        });
+        this.switchOn = new Howl({
+            src: ['/sons/switchOn.mp3']
+        });
+        this.switchOff = new Howl({
+            src: ['/sons/switchOff.mp3']
+        });
 
     }
     genererPlateau = () => {
@@ -283,6 +322,70 @@ class BombeEX4 extends React.Component {
         this.setState({ inputValue: event.target.value });
     };
 
+    handleKeyPress = (event) => {
+        if (this.state.inputValue.length >= 3) {
+            if (event.key === "Enter") {
+                // Appeler la fonction de vérification
+                this.handleClick();
+            }
+        }
+    }
+
+    handleClearButtonClick = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ inputValue: '' });
+    };
+
+    handlePieceHover = () => {
+        Howler.volume(0.1);
+        this.soundHover.play();
+    };
+
+    handlePieceUp = (event) => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ inputValue: this.state.inputValue + event });
+        this.monInputRef.current.focus();
+    };
+
+    handlePieceDown = () => {
+        Howler.volume(0.3);
+        this.soundDown.play();
+    };
+
+    handleClickNouveau = () => {
+        Howler.volume(0.3);
+        this.soundUp.play();
+        this.setState({ showCorrect: false, showIncorrect: false, message: '' });
+        this.genererPieceAleatoire();
+    };
+
+
+    handleOrientation = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ orientation: 'white' });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ orientation: 'black' });
+        }
+    }
+
+    handleCoordonnees = (event) => {
+        Howler.volume(0.3);
+        if (event.target.checked) {
+            this.switchOff.play();
+            this.setState({ coordonnees: true });
+        }
+        else {
+            this.switchOn.play();
+            this.setState({ coordonnees: false });
+        }
+    }
+
     faireMouvementChess = (newPosition) => {
         const { chess } = this.state;
         if (chess.moves().some(item => item.replace(/[#+]$/, '') === newPosition ||
@@ -403,7 +506,7 @@ class BombeEX4 extends React.Component {
                             // transforme en Q et affiche le message
                             chess.remove(bombeEntre);
                             chess.put({ type: 'q', color: 'b' }, bombeEntre)
-                            let text = "EXPLOOSIIOOONN !";
+                            let text = "KABOOM !";
                             Howler.volume(1);
                             this.soundExplosion.play();
                             this.setState({ chess: chess, chessBis: chessBis, incorrectMessage: text });
@@ -419,44 +522,46 @@ class BombeEX4 extends React.Component {
                 });
             }
         }
-        else {for (let i = 0; i < this.tabBomb.length; i++) { // verifie chaque bombe 
-            if (inputValue === `${this.piece}`.toUpperCase() + 'x' + this.tabBomb[i] || //case avec bombe 
-                inputValue === `${this.piece}`.toUpperCase() + this.tabBomb[i]) {
-                this.movetab.push(`${this.piece}`.toUpperCase() + 'x' + this.tabBomb[i]);
-                await new Promise((resolve) => {
-                    let intervalId = setInterval(() => { //faire deplacement
-                        if (currentIndex < this.movetab.length) {
-                            if (this.faireMouvementChess(this.movetab[currentIndex])) {
-                                currentIndex++;
+        else {
+            for (let i = 0; i < this.tabBomb.length; i++) { // verifie chaque bombe 
+                if (inputValue === `${this.piece}`.toUpperCase() + 'x' + this.tabBomb[i] || //case avec bombe 
+                    inputValue === `${this.piece}`.toUpperCase() + this.tabBomb[i]) {
+                    this.movetab.push(`${this.piece}`.toUpperCase() + 'x' + this.tabBomb[i]);
+                    await new Promise((resolve) => {
+                        let intervalId = setInterval(() => { //faire deplacement
+                            if (currentIndex < this.movetab.length) {
+                                if (this.faireMouvementChess(this.movetab[currentIndex])) {
+                                    currentIndex++;
+                                }
+                                else {
+                                    console.log("error dans explosion");
+                                    clearInterval(intervalId);
+                                    resolve(false);
+                                }
                             }
                             else {
-                                console.log("error dans explosion");
                                 clearInterval(intervalId);
-                                resolve(false);
-                            }
-                        }
-                        else {
-                            clearInterval(intervalId);
-                            this.explosion = true;
-                            // transforme en Q et affiche le message
-                            chess.remove(this.tabBomb[i]);
-                            chess.put({ type: 'q', color: 'b' }, this.tabBomb[i])
-                            let text = "EXPLOOSIIOOONN !";
-                            Howler.volume(1);
-                            this.soundExplosion.play();
-                            this.setState({ chess: chess, incorrectMessage: text });
+                                this.explosion = true;
+                                // transforme en Q et affiche le message
+                                chess.remove(this.tabBomb[i]);
+                                chess.put({ type: 'q', color: 'b' }, this.tabBomb[i])
+                                let text = "KABOOM !";
+                                Howler.volume(1);
+                                this.soundExplosion.play();
+                                this.setState({ chess: chess, incorrectMessage: text });
 
-                            setTimeout(() => { // regere plateau apres 3 sec
-                                this.setState({ correctMessage: '', incorrectMessage: '', inputValue: '' });
-                                this.genererPlateau();
-                                this.movetab = []
-                            }, 3000);
-                            return;
-                        }
-                    }, 800);
-                });
+                                setTimeout(() => { // regere plateau apres 3 sec
+                                    this.setState({ correctMessage: '', incorrectMessage: '', inputValue: '' });
+                                    this.genererPlateau();
+                                    this.movetab = []
+                                }, 3000);
+                                return;
+                            }
+                        }, 800);
+                    });
+                }
             }
-        }}
+        }
         if (inputValue === `${this.piece}`.toUpperCase() + 'x' + `${this.alpha[this.colonneA - 1]}${this.ligneA}` ||
             inputValue === `${this.piece}`.toUpperCase() + `${this.alpha[this.colonneA - 1]}${this.ligneA}`) {
             if (!this.faireMouvementChessBis(`${this.piece}`.toUpperCase() + 'x' + `${this.alpha[this.colonneA - 1]}${this.ligneA}`)) {
@@ -499,34 +604,268 @@ class BombeEX4 extends React.Component {
                 this.PlacerBombesB();
             }
             else {
-                this.setState({ inputValue: '', incorrectMessage: "et non pas le droit petit malin" });
+                this.setState({ inputValue: '', incorrectMessage: "Ce coup est interdit !" });
             }
         }
     };
 
 
+    MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
+        width: 62,
+        height: 34,
+        padding: 7,
+        cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
+        '& .MuiSwitch-switchBase': {
+            margin: 1,
+            padding: 0,
+            transform: 'translateX(6px)',
+            '&.Mui-checked': {
+                color: '#fff',
+                transform: 'translateX(22px)',
+                '& .MuiSwitch-thumb:before': {
+                    backgroundColor: "white",
+                    borderRadius: '50%',
+                },
+                '& + .MuiSwitch-track': {
+                    opacity: 1,
+                    backgroundColor: disabled ? 'rgba(255, 255, 255, 0.5)' : '#cccccc',
+                },
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            backgroundColor: '#001e3c',
+            width: 32,
+            height: 32,
+            '&:before': {
+                content: "''",
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                left: 0,
+                top: 0,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundColor: disabled ? '#c7c7c7' : 'black',
+                borderRadius: '50%',
+            },
+        },
+        '& .Mui-disabled': {
+            opacity: 0.5,
+        },
+    }));
+
+    Android12Switch = styled(Switch)(({ theme }) => ({
+        padding: 8,
+        '& .MuiSwitch-track': {
+            borderRadius: 22 / 2,
+            '&:before, &:after': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: 16,
+                height: 16,
+            },
+            '&:before': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                    theme.palette.getContrastText(theme.palette.primary.main),
+                )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+                left: 12,
+            },
+            '&:after': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                    theme.palette.getContrastText(theme.palette.primary.main),
+                )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+                right: 12,
+            },
+        },
+        '& .MuiSwitch-thumb': {
+            boxShadow: 'none',
+            width: 16,
+            height: 16,
+            margin: 2,
+        },
+    }));
+    theme = createTheme({
+        palette: {
+            secondary: {
+                main: '#af80dc',
+            },
+        },
+    });
+
+
     render() {
+        const piecesBlanchesNom = [
+            "Pion", "Tour", "Fou", "Cavalier", "Dame", "Roi"
+        ]
+        let lignes = this.state.orientation === 'white'
+            ? ["8", "7", "6", "5", "4", "3", "2", "1"]
+            : ["1", "2", "3", "4", "5", "6", "7", "8"];
+        let colonnes = this.state.orientation === 'white'
+            ? ["a", "b", "c", "d", "e", "f", "g", "h"]
+            : ["h", "g", "f", "e", "d", "c", "b", "a"];
+        const custom = [
+            "x", "O-O", "O-O-O", "=", "+", "#"
+            // "x" pour la prise, "O-O" pour le petit roque, "O-O-O" pour le grand roque, 
+            //"=" pour la promotion, "+" pour echec, "#" pour le mat
+        ]
+        const customCoup = [
+            "prise", "petit roque", "grand roque", "promotion", "echec", "mat"
+        ]
         return (
-            <div className="container">
-                <div className="chesscenter">
-                    <h2 id="txt">Ecrivez le coup pour que {this.nomPiece} mange le drapeau en {this.pos} sans toucher les bombes</h2>
+            <div className="container-general">
+                <div className="plateau-gauche">
                     <Chessboard
+                        key="board"
                         position={this.state.chess.fen()}
                         arePiecesDraggable={false}
-                        animationDuration={600}
                         customPieces={this.customPieces()}
+                        customSquareStyles={this.state.coloredSquares}
+                        boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
                     />
                 </div>
-                <div className="elementsDroite">
-                    <input id="saisieposition" type="text" placeholder="Entrez le mouvement..." value={this.state.inputValue} onChange={this.handleInputChange}></input>
-                    <button id="checkposition" onClick={this.handleClick}>Valider</button>
-                    <div id="correctMessage">{this.state.correctMessage} </div>
-                    <div id="incorrectMessage">{this.state.incorrectMessage} </div>
+                <div className="elements-droite">
+                    <i className="consigne">
+                        Ecrivez le coup pour que {this.nomPiece} mange le drapeau en {this.pos} sans toucher les bombes
+                    </i>
+                    <div className="option">
+                        <FormControlLabel
+                            control={<this.MaterialUISwitch
+                                checked={this.state.orientation === 'white'}
+                                color="secondary"
+                            />}
+                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            onChange={this.handleOrientation}
+                        />
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnée'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                            <option value="fr">Français 🇫🇷</option>
+                            <option value="en">English 🇬🇧</option>
+                            <option value="es">Español 🇪🇸</option>
+                            <option value="de">Deutsch 🇩🇪</option>
+                            <option value="it">Italiano 🇮🇹</option>
+                            <option value="ru">Русский 🇷🇺</option>
+                            <option value="cn">中文 🇨🇳</option>
+                        </select>
+                    </div>
+                    <div className="boutons">
+                        <div className="groupe-butons" >
+                            {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={piecesBlanchesNom[index]}
+                                        title={piecesBlanchesNom[index]}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons">
+                            {colonnes.map((line, index) => { // a b c d e f g h
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={line}
+                                        title={line}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons" >
+                            {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
+                                        key={line}
+                                        title={line}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="groupe-butons" >
+                            {custom.map((line, index) => { // x O-O O-O-O = e.p. +
+                                return (
+                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                        key={line}
+                                        title={customCoup[index]}
+                                        onMouseEnter={() => this.handlePieceHover()}
+                                        onMouseUp={() => this.handlePieceUp(line)}
+                                        onMouseDown={() => this.handlePieceDown()}>
+                                        <span className={`front custom ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                            {line}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="input">
+                        <Stack spacing={2} direction="row" alignItems="center">
+                            <input className="reponse-input"
+                                type="text"
+                                placeholder="Entrez la position..."
+                                value={this.state.inputValue}
+                                onChange={this.handleInputChange}
+                                onKeyDown={this.handleKeyPress}
+                                ref={this.monInputRef} />
+                            <button className="bouton-3D button-clean"
+                                title="supprimer"
+                                onMouseDown={() => this.handlePieceDown()}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onClick={this.handleClearButtonClick} >
+                                <span className="texte-3D texte-clean">
+                                    ✘
+                                </span>
+                            </button>
+                        </Stack>
+
+                        <button className="bouton-3D"
+                            title="Valider"
+                            {...(this.state.inputValue.length < 3 && { disabled: true })}
+                            onMouseEnter={() => this.handlePieceHover()}
+                            onMouseUp={this.handleClick}
+                            onMouseDown={() => this.handlePieceDown()}>
+                            <span className="texte-3D">
+                                Valider
+                            </span>
+                        </button>
+                    </div>
+                    <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
+                        {this.state.message}
+                    </div>
                 </div>
             </div>
         );
     }
 }
 
-
-export default BombeEX4;
+export default Bombe4;

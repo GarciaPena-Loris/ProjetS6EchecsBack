@@ -21,6 +21,12 @@ import Notation7 from '../Exercices/Notation/Notation7';
 import Notation8 from '../Exercices/Notation/Notation8';
 import Notation9 from '../Exercices/Notation/Notation9';
 
+// Bombes
+import Bombe1 from '../Exercices/Bombe/Bombe1';
+import Bombe2 from '../Exercices/Bombe/Bombe2';
+import Bombe3 from '../Exercices/Bombe/Bombe3';
+import Bombe4 from '../Exercices/Bombe/Bombe4';
+
 // Puzzle Cache
 import PuzzleCache1 from '../Exercices/PuzzleCache/PuzzleCache1';
 import PuzzleCache2 from '../Exercices/PuzzleCache/PuzzleCache2';
@@ -168,32 +174,52 @@ export default function NiveauxPage() {
             // etc...
         },
         2: { // Bombes
+            1: <Bombe1
+                {...sharedProps}
+                pointsGagnes="5"
+                pointsPerdus="2"
+            />,
+            2: <Bombe2
+                {...sharedProps}
+                pointsGagnes="10"
+                pointsPerdus="5"
+            />,
+            3: <Bombe3
+                {...sharedProps}
+                pointsGagnes="15"
+                pointsPerdus="10"
+            />,
+            4: <Bombe4
+                {...sharedProps}
+                pointsGagnes="20"
+                pointsPerdus="30"
+            />,
         },
         3: { // Puzzle Cache
             1: <PuzzleCache1
                 {...sharedProps}
                 pointsGagnes="6"
-                pointsPerdus="20"
+                pointsPerdus="5"
             />,
             2: <PuzzleCache2
                 {...sharedProps}
-                pointsGagnes="6"
-                pointsPerdus="20"
+                pointsGagnes="10"
+                pointsPerdus="15"
             />,
             3: <PuzzleCache3
                 {...sharedProps}
-                pointsGagnes="6"
+                pointsGagnes="15"
                 pointsPerdus="20"
             />,
             4: <PuzzleCache4
                 {...sharedProps}
-                pointsGagnes="6"
-                pointsPerdus="20"
+                pointsGagnes="15"
+                pointsPerdus="25"
             />,
             5: <PuzzleCache5
                 {...sharedProps}
-                pointsGagnes="6"
-                pointsPerdus="20"
+                pointsGagnes="20"
+                pointsPerdus="30"
             />,
         }  // etc...
     };
