@@ -28,6 +28,10 @@ function Navbar() {
         Howler.volume(0.3);
         soundDown.play();
     };
+    const handleClickCound = () => {
+        Howler.volume(0.3);
+        soundUp.play();
+    };
 
     const handleLogout = () => {
         Howler.volume(0.3);
@@ -40,17 +44,17 @@ function Navbar() {
     return (
         <nav className='nav-bar'>
             <ul>
-                <li><Link to="/">Accueil</Link></li>
+                <li><Link to="/" onMouseEnter={handlePieceHover} onClick={handleClickCound}>Accueil</Link></li>
                 <li>|</li>
                 {token ? (
                     <>
-                        <li><Link to="/selectionExercices">Exercices</Link></li>
+                        <li><Link to="/selectionExercices" onMouseEnter={handlePieceHover} onClick={handleClickCound}>Exercices</Link></li>
                     </>
                 ) : (
                     <>
-                        <li><Link to="/connexion" replace>Connexion</Link></li>
+                        <li><Link to="/connexion" replace onMouseEnter={handlePieceHover} onClick={handleClickCound}>Connexion</Link></li>
                         <li>|</li>
-                        <li><Link to="/inscription">Inscription</Link></li>
+                        <li><Link to="/inscription" onMouseEnter={handlePieceHover}>Inscription</Link></li>
                     </>
                 )}
                 {token && (
@@ -76,7 +80,7 @@ function Navbar() {
                 )}
                 {token && (
                     <>
-                        <Link to="/compte"><Avatar className='avatar-navbar' size='40' round={true} src={globalAvatar} /></Link>
+                        <Link to="/compte" onMouseEnter={handlePieceHover} onClick={handleClickCound}><Avatar className='avatar-navbar' size='40' round={true} src={globalAvatar}/></Link>
                     </>
                 )}
             </div>

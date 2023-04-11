@@ -44,6 +44,10 @@ export default function Compte() {
         Howler.volume(0.3);
         soundDown.play();
     };
+    const handleClickCound = () => {
+        Howler.volume(0.3);
+        soundUp.play();
+    };
 
     const handleLogout = () => {
         Howler.volume(0.3);
@@ -72,6 +76,8 @@ export default function Compte() {
     const [selectedImageUrl, setSelectedImageUrl] = useState(dataCompte.imageProfil);
 
     const handleImageChange = (newImageUrl) => {
+        Howler.volume(0.3);
+        soundUp.play();
         // Mettre à jour l'URL de l'image dans le state local
         var data = JSON.stringify({
             "imageProfil": newImageUrl
@@ -101,6 +107,8 @@ export default function Compte() {
 
 
     const handleAfficherAvatar = (newImageUrl) => {
+        Howler.volume(0.1);
+        soundHover.play();
         setShowPopup(true);
     };
     const handleClosePopup = () => {
@@ -200,7 +208,7 @@ export default function Compte() {
     /*fonction qui gere si l'elo dans une exercice n'est pas renseigné:
         (retourne 0 si oui sinon la valeur)*/
     function eloUndefined(elo) {
-        if (elo == undefined) {
+        if (elo === undefined) {
             return 0;
         } else { return elo }
     };
@@ -229,6 +237,7 @@ export default function Compte() {
                             size="100"
                             round={true}
                             onClick={() => handleImageChange(url)}
+                            onMouseEnter={handlePieceHover}
                         />
                     ))}
                 </div>)}
