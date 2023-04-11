@@ -211,11 +211,10 @@ export default function NiveauxPage() {
     const handleLevelClick = (index) => {
         Howler.volume(0.3);
         soundUp.play();
-        navigate('/niveaux', { state: { exercice: exercice, index: index, nxtLevel: dataLevels[index], dataLevels: dataLevels } });
+        navigate('/niveaux', { state: { exercice: exercice, exerciceIndex: exerciceIndex, index: index, nxtLevel: dataLevels[index], dataLevels: dataLevels } });
     };
 
     // Récupérez le composant à afficher en fonction des id
-    console.log(exerciceIndex)
     let NiveauComponent = niveaux[exerciceIndex][index];
 
     function verifUnlock(id) {
@@ -232,7 +231,7 @@ export default function NiveauxPage() {
                     onClick={() => {
                         Howler.volume(0.3);
                         soundUp.play();
-                        navigate('/exercices', { state: { exercice: exercice } });
+                        navigate('/exercices', { state: { exercice: exercice, index: exerciceIndex } });
                     }}
                     title={"Choix des niveaux de " + exercice.name}
                     onMouseEnter={() => handlePieceHover()}
