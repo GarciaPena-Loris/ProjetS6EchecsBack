@@ -366,7 +366,7 @@ class BombeEX4 extends React.Component {
                 this.enleverBombes();
                 // this.ligneP = inputValue.slice(-1);
                 // this.colonneP = inputValue.slice(-2, -1);
-                this.PlacerBombesB();
+                // this.PlacerBombesB();
             }
             else {
                 this.setState({ inputValue: '', incorrectMessage: "T'ES VRAIMENT UNE GROSSE MERDE ! VA TE PENDRE ENCULÉ" });

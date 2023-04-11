@@ -92,8 +92,8 @@ class BombeEX3 extends React.Component {
                 colonneB = Math.floor(Math.random() * 6) + 2;
                 ligneB = Math.floor(Math.random() * 6) + 2;
                 if (!chess.get(`${alpha[colonneB - 1]}${ligneB}`) && // pas deja une bombe
-                    (ligneB !== ligneP && colonneB !== colonneP) && // pas sur la case de départ
-                    (colonneB !== colonneA && ligneB !== ligneA)) // pas sur la case d'arrivé 
+                    (ligneB !== ligneP || colonneB !== colonneP) && // pas sur la case de départ
+                    (colonneB !== colonneA || ligneB !== ligneA)) // pas sur la case d'arrivé 
                 {
                     chess.put({ type: 'p', color: 'b' }, `${alpha[colonneB - 1]}${ligneB}`);
                     chessBis.put({ type: 'p', color: 'b' }, `${alpha[colonneB - 1]}${ligneB}`);
@@ -102,7 +102,7 @@ class BombeEX3 extends React.Component {
                 }
             }
         }
-        
+
 
         chess.put({ type: 'n', color: 'b' }, `${alpha[colonneA - 1]}${ligneA}`) // A
         chessBis.put({ type: 'n', color: 'b' }, `${alpha[colonneA - 1]}${ligneA}`) // A
@@ -204,52 +204,99 @@ class BombeEX3 extends React.Component {
             return false;
         }
     }
+    moise = () => {
+        const { inputValue, chessBis } = this.state;
+        if (inputValue.slice(-1) === this.positionActuelleBis.slice(-1)) { // meme ligne, donc analyser les colonnes
+            let colonneActuelle = this.alpha.indexOf((this.positionActuelleBis.slice(-2, -1))) + 1;
+            let colonneFuture = this.alpha.indexOf((inputValue.slice(-2, -1))) + 1;
+            console.log(colonneActuelle)
+            console.log(colonneFuture)
 
+            if (colonneActuelle - colonneFuture < 0) { // si actuel est a gauche de futur
+                for (let i = colonneActuelle; i < colonneFuture; i++) {
+                    console.log(this.alpha[i] + this.positionActuelleBis.slice(-1));
+                    console.log("alpha", this.alpha[i]);
+                    if (this.tabBomb.includes(this.alpha[i] + this.positionActuelleBis.slice(-1))) {
+                        return this.alpha[i] + this.positionActuelleBis.slice(-1);
+                    }
+                }
+            }
+            else {
+                for (let i = colonneActuelle - 1; i > colonneFuture; i--) { // si actuel est a droite de futur*
+                    console.log(this.alpha[i] + this.positionActuelleBis.slice(-1));
+                    if (this.tabBomb.includes(this.alpha[i] + this.positionActuelleBis.slice(-1))) {
+                        return this.alpha[i] + this.positionActuelleBis.slice(-1);
+                    }
+                }
+            }
+        }
+        else if (inputValue.slice(-2, -1) === this.positionActuelleBis.slice(-2, -1)) { // meme colonne, donc analyser les lignes
+            let ligneActuelle = (this.positionActuelleBis.slice(-1));
+            let ligneFuture = (inputValue.slice(-1));
+
+            if (ligneActuelle - ligneFuture < 0) { // si actuel est en dessous de futur
+                for (let i = ligneActuelle; i <= ligneFuture; i++) {
+                    if (this.tabBomb.includes(this.positionActuelleBis.slice(-2, -1) + i)) {
+                        return this.positionActuelleBis.slice(-2, -1) + i;
+                    }
+                }
+            }
+            else {
+                for (let i = ligneActuelle; i > ligneFuture; i--) { // si actuel au dessus de futur
+                    if (this.tabBomb.includes(this.positionActuelleBis.slice(-2, -1) + i)) {
+                        return this.positionActuelleBis.slice(-2, -1) + i;
+                    }
+                }
+            }
+        }
+        return false;
+    }
     handleClick = async () => {
         const { inputValue, chess, chessBis } = this.state;
         let currentIndex = 0;
+        let bombeEntre = this.moise();
+        console.log(bombeEntre);
 
-        for (let i = 0; i < this.tabBomb.length; i++) { // verifie chaque bombe 
-            if (inputValue === `${this.piece}`.toUpperCase() + 'x' + this.tabBomb[i] || //case avec bombe 
-                inputValue === `${this.piece}`.toUpperCase() + this.tabBomb[i]) {
-                this.movetab.push(`${this.piece}`.toUpperCase() + 'x' + this.tabBomb[i]);
-                await new Promise((resolve) => {
-                    let intervalId = setInterval(() => { //faire deplacement
-                        if (currentIndex < this.movetab.length) {
-                            if (this.faireMouvementChess(this.movetab[currentIndex])) {
-                                currentIndex++;
-                            }
-                            else {
-                                console.log("error dans explosion");
-                                clearInterval(intervalId);
-                                resolve(false);
-                            }
+        if (bombeEntre) { // verifie chaque bombe 
+
+            this.movetab.push(`${this.piece}`.toUpperCase() + 'x' + bombeEntre);
+            await new Promise((resolve) => {
+                let intervalId = setInterval(() => { //faire deplacement
+                    if (currentIndex < this.movetab.length) {
+                        if (this.faireMouvementChess(this.movetab[currentIndex])) {
+                            currentIndex++;
                         }
                         else {
+                            console.log("error dans explosion");
                             clearInterval(intervalId);
-                            this.explosion = true;
-                            // transforme en Q et affiche le message
-                            chess.remove(this.tabBomb[i]);
-                            chess.put({ type: 'q', color: 'b' }, this.tabBomb[i])
-                            let text = "EXPLOOSIIOOONN !";
-                            Howler.volume(1);
-                            this.soundExplosion.play();
-                            this.setState({ chess: chess, incorrectMessage: text });
-
-                            setTimeout(() => { // regere plateau apres 3 sec
-                                this.setState({ correctMessage: '', incorrectMessage: '', inputValue: '' });
-                                this.genererPlateau();
-                                this.movetab = []
-                            }, 3000);
-                            return;
+                            resolve(false);
                         }
-                    }, 800);
-                });
-            }
+                    }
+                    else {
+                        clearInterval(intervalId);
+                        this.explosion = true;
+                        // transforme en Q et affiche le message
+                        chess.remove(bombeEntre);
+                        chess.put({ type: 'q', color: 'b' }, bombeEntre)
+                        let text = "EXPLOOSIIOOONN !";
+                        Howler.volume(1);
+                        this.soundExplosion.play();
+                        this.setState({ chess: chess, chessBis: chessBis, incorrectMessage: text });
+
+                        setTimeout(() => { // regere plateau apres 3 sec
+                            this.setState({ correctMessage: '', incorrectMessage: '', inputValue: '' });
+                            this.genererPlateau();
+                            this.movetab = []
+                        }, 3000);
+                        return;
+                    }
+                }, 800);
+            });
+
         }
         if (inputValue === `${this.piece}`.toUpperCase() + 'x' + `${this.alpha[this.colonneA - 1]}${this.ligneA}` ||
-        inputValue === `${this.piece}`.toUpperCase() + `${this.alpha[this.colonneA - 1]}${this.ligneA}`) {
-            if(!this.faireMouvementChessBis(`${this.piece}`.toUpperCase() + 'x' + `${this.alpha[this.colonneA - 1]}${this.ligneA}`)){
+            inputValue === `${this.piece}`.toUpperCase() + `${this.alpha[this.colonneA - 1]}${this.ligneA}`) {
+            if (!this.faireMouvementChessBis(`${this.piece}`.toUpperCase() + 'x' + `${this.alpha[this.colonneA - 1]}${this.ligneA}`)) {
                 return;
             };
             var text = "Bravo c'était ça !";
@@ -286,7 +333,7 @@ class BombeEX3 extends React.Component {
                 this.setState({ inputValue: '', chessBis: chessBis });
             }
             else {
-                this.setState({ inputValue: '', incorrectMessage: "T'ES VRAIMENT UNE GROSSE MERDE ! VA TE PENDRE ENCULÉ" });
+                this.setState({ inputValue: '', incorrectMessage: "Et non !" });
             }
         }
     };
