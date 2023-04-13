@@ -135,7 +135,10 @@ export default function ExercicePage() {
 
     return (
         <div className="exercice-page">
-            <button className="bouton-3D bouton-retour"
+            <h1 className="exercice-title">
+                {exercice.name}
+            </h1>
+            <button className="bouton-3D"
                 onClick={() => {
                     Howler.volume(0.3);
                     soundUp.play();
@@ -147,9 +150,6 @@ export default function ExercicePage() {
                     ← Retour
                 </span>
             </button>
-            <h1 className="exercice-title">
-                {exercice.name}
-            </h1>
             <p className="exercice-description">{exercice.description}</p>
             <div className="barxp-div-exo">
                 <p className="progression-xp">Progression:</p>
@@ -162,7 +162,7 @@ export default function ExercicePage() {
                 />
             </div>
             <div className="levels-container">
-                <div className="level-header">
+                <div className="level-title-header">
                     <div className="level-title"> Niveaux </div>
                     <div className="level-title">Description</div>
                     <div className="level-title">Élo requis</div>
@@ -171,7 +171,6 @@ export default function ExercicePage() {
                     <React.Fragment key={level.id}>
                         <div className="level-row">
                             <div className="level-name-container">
-                                <div className="level-name">{level.name}</div>
                                 <button className="bouton-3D"
                                     onClick={() => handleLevelClick((index + 1))}
                                     onMouseEnter={() => handlePieceHover()}
@@ -181,12 +180,13 @@ export default function ExercicePage() {
                                         Niveau {index + 1}
                                     </span>
                                 </button>
+                                <div className="level-name"><strong> {level.name}</strong></div>
                             </div>
                             <div className="level-name-container">
                                 <div className="level-description">{level.rules}</div>
                             </div>
                             <div className="level-name-container">
-                                <div className="level-description">{level.required_elo}</div>
+                                <div className="level-description"><i>{level.required_elo} points requis</i></div>
                             </div>
                         </div>
                         {index !== dataLevels.length - 1 && (
