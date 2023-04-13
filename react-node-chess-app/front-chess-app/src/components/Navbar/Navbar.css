@@ -12,6 +12,7 @@
     font-size: 16px;
     font-weight: 500;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    z-index: 9999;
 }
 
 .nav-menu-icon {
@@ -32,6 +33,13 @@
     margin-right: 50px;
 }
 
+.span-deconnexion {
+    font-size: 1rem !important;
+}
+
+.bouton-deconnexion {
+    margin-top: 12px !important;
+}
 
 @media screen and (max-width: 768px) {
     .nav-menu-icon {

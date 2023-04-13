@@ -42,7 +42,7 @@ export default function Accueil() {
   return (
     <div className="accueil">
       <div>
-        <h1 className="bienvenue">Bienvenue sur MentalChess !</h1>
+        <h1 className="bienvenue">Bienvenue sur MentalChess</h1>
         <img className="img" src="https://i.imgur.com/0EKRDDl.png" alt="imgAcceuil"></img>
       </div>
       <div>
