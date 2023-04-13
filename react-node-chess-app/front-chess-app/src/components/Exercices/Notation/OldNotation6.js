@@ -807,7 +807,7 @@ class Notation6 extends React.Component {
                                     disabled={true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
                                 }}

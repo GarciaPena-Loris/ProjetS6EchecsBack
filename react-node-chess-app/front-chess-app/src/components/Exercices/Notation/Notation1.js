@@ -22,7 +22,7 @@ class Notation extends React.Component {
       orientation: "white",
       coordonnees: true,
       selectedLanguage: 'fr',
-      piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
+      piecesLanguage: ['T', 'F', 'C', 'D', 'R'],
       coloredSquares: {},
       chess: new Chess(),
     };
@@ -75,7 +75,7 @@ class Notation extends React.Component {
   genererPieceAleatoire = () => {
     const { chess } = this.state;
     const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-    const pieces = ['P', 'R', 'B', 'N', 'Q', 'K'];
+    const pieces = ['R', 'B', 'N', 'Q', 'K'];
     chess.clear(); // Vide le plateau
     let colonneP = Math.floor(Math.random() * 8) + 1;
     let ligneP = Math.floor(Math.random() * 8) + 1;
@@ -171,13 +171,13 @@ class Notation extends React.Component {
     this.soundUp.play();
 
     const listePiecesLangue = {
-      en: ['P', 'R', 'B', 'N', 'Q', 'K'],
-      fr: ['P', 'T', 'F', 'C', 'D', 'R'],
-      es: ['P', 'T', 'A', 'C', 'D', 'R'],
-      de: ['B', 'S', 'L', 'T', 'D', 'K'],
-      it: ['P', 'T', 'A', 'C', 'D', 'R'],
-      ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
-      cn: ['卒', '马', '象', '车', '后', '帅'],
+      en: ['R', 'B', 'N', 'Q', 'K'],
+      fr: ['T', 'F', 'C', 'D', 'R'],
+      es: ['T', 'A', 'C', 'D', 'R'],
+      de: ['S', 'L', 'T', 'D', 'K'],
+      it: ['T', 'A', 'C', 'D', 'R'],
+      ru: ['К', 'С', 'Л', 'Ф', 'Кр'],
+      cn: ['马', '象', '车', '后', '帅'],
     }
     this.coup = listePiecesLangue[event.target.value][this.indexPiece] + this.position;
     this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
@@ -351,7 +351,7 @@ class Notation extends React.Component {
 
   render() {
     const piecesBlanchesNom = [
-      "Pion", "Tour", "Fou", "Cavalier", "Dame", "Roi"
+      "Tour", "Fou", "Cavalier", "Dame", "Roi"
     ]
     let lignes = this.state.orientation === 'white'
       ? ["8", "7", "6", "5", "4", "3", "2", "1"]
@@ -381,7 +381,7 @@ class Notation extends React.Component {
         </div>
         <div className="elements-droite">
           <i className="consigne">
-            Ecrivez la pièce et sa position
+            Ecrivez la position de la pièce
           </i>
           <div className="option">
             <FormControlLabel
@@ -398,7 +398,7 @@ class Notation extends React.Component {
                   checked={this.state.coordonnees === true}
                   color="secondary"
                 />}
-                label={'Coordonnée'}
+                label={'Coordonnées'}
                 onChange={this.handleCoordonnees}
                 style={{
                   textDecoration: this.state.coordonnees === false && 'line-through'

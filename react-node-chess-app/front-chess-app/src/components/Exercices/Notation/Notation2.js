@@ -40,6 +40,7 @@ class Notation2 extends React.Component {
         this.nomPiece = '';
         this.pos = '';
         this.coup = '';
+        this.coupAlternatif = '';
         this.realCoup = '';
         this.indexPiece = 0;
 
@@ -321,7 +322,7 @@ class Notation2 extends React.Component {
 
         // nom coup a faire
         if (piece !== 'P') {
-            coup += this.state.piecesLanguage[this.indexPiece];
+            coup += this.state.piecesLanguage[pieces.indexOf(this.piece)];
         }
         else {
             coup += alpha[colonneP - 1];
@@ -330,10 +331,18 @@ class Notation2 extends React.Component {
         coup += alpha[colonneM - 1] + ligneM; // position de la piece mangé
         this.coup = coup;
         if (coup.charAt(0) === coup.charAt(0).toUpperCase()) {
-            this.realCoup = pieces[this.indexPiece] + this.coup.slice(1);
+            this.realCoup = pieces[pieces.indexOf(this.piece)] + this.coup.slice(1);
         }
         else {
             this.realCoup = this.coup;
+        }
+
+        // coup alternatif
+        if (piece !== 'P') {
+            this.coupAlternatif = this.state.piecesLanguage[pieces.indexOf(this.piece)] + "x" + this.state.piecesLanguage[pieces.indexOf('Q')];
+        }
+        else {
+            this.coupAlternatif = alpha[colonneP - 1] + "x" + this.state.piecesLanguage[pieces.indexOf('Q')];
         }
 
         this.setState({
@@ -429,7 +438,14 @@ class Notation2 extends React.Component {
             cn: ['卒', '马', '象', '车', '后', '帅'],
         }
         if (this.coup.charAt(0) === this.coup.charAt(0).toUpperCase()) {
-            this.coup = listePiecesLangue[event.target.value][this.indexPiece] + this.coup.slice(1);
+            this.coup = listePiecesLangue[event.target.value][listePiecesLangue['en'].indexOf(this.piece)] + this.coup.slice(1);
+        }
+        // coup alternatif
+        if (this.piece !== 'P') {
+            this.coupAlternatif = listePiecesLangue[event.target.value][listePiecesLangue['en'].indexOf(this.piece)] + "x" + listePiecesLangue[event.target.value][listePiecesLangue['en'].indexOf('Q')];
+        }
+        else {
+            this.coupAlternatif = this.coup.charAt(0) + "x" + listePiecesLangue[event.target.value][listePiecesLangue['en'].indexOf('Q')];
         }
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
     }
@@ -439,7 +455,7 @@ class Notation2 extends React.Component {
         Howler.volume(0.5);
         this.soundUp.play();
         const { inputValue } = this.state;
-        if (inputValue === this.coup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
+        if (inputValue === this.coup || inputValue === this.coupAlternatif) {
             Howler.volume(0.3);
             this.soundWin.play();
             if (this.state.showIncorrect)
@@ -633,7 +649,7 @@ class Notation2 extends React.Component {
                 <div className="elements-droite">
                     <i className="consigne">
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> mange <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
+                        </span> prenne <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
                     </i>
                     <div className="option">
                         <FormControlLabel
@@ -650,7 +666,7 @@ class Notation2 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
@@ -670,18 +686,20 @@ class Notation2 extends React.Component {
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={piecesBlanchesNom[index]}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">

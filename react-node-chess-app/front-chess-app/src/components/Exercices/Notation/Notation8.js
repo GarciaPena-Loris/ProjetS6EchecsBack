@@ -384,12 +384,12 @@ class Notation8 extends React.Component {
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
-                        Faite le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
+                        Faites le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
                     </i>
                     <div className="option">
                         {this.state.orientation === 'white' ?
-                            <h2 className="titre-boutons"><i>Vous jouez les Blancs </i>⚪</h2> :
-                            <h2 className="titre-boutons"><i>Vous jouez les Noirs </i>⚫</h2>
+                            <h2 className="titre-boutons"><i>Trait aux Blancs </i>⚪</h2> :
+                            <h2 className="titre-boutons"><i>Trait aux Noirs </i>⚫</h2>
                         }
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
@@ -397,7 +397,7 @@ class Notation8 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'

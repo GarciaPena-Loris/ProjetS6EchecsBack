@@ -40,7 +40,7 @@ class Notation5 extends React.Component {
         this.couleurP = '#ff555f';
         this.couleurM = '#af80dc';
         this.coupChoisis = '';
-        this.indexCoup = 2;
+        this.indexCoup = 0;
         this.nombreCoupsPossible = 0;
         this.couleur = '';
         this.pieceConcernee = '';
@@ -279,7 +279,7 @@ class Notation5 extends React.Component {
         }
 
         // choix piece
-        const coupsPossible = ['Roque', 'Grand-Roque', 'Prise-en-passant', 'Echec', 'Echec-et-Mat', 'Promotion-dame', 'Promotion-cheval'];
+        const coupsPossible = ['Roque', 'Grand-Roque', 'Prise-en-passant', 'Echec', 'Echec-et-Mat', 'Promotion-dame', 'Promotion-cavalier'];
         this.nombreCoupsPossible = coupsPossible.length;
         this.coupChoisis = coupsPossible[this.indexCoup];
 
@@ -312,12 +312,12 @@ class Notation5 extends React.Component {
             [chess, coloredSquares] = this.genererEchecMat(chess);
         }
         else if (this.coupChoisis === 'Promotion-dame') {
-            this.consigne = "une promotion d'un pion en dame";
+            this.consigne = "une promotion en dame";
             this.pieceConcernee = 'faisant un echec';
             [chess, coloredSquares] = this.genererPromotionDame(chess);
         }
-        else if (this.coupChoisis === 'Promotion-cheval') {
-            this.consigne = "une promotion d'un pion en cheval";
+        else if (this.coupChoisis === 'Promotion-cavalier') {
+            this.consigne = "une promotion en cavalier";
             this.pieceConcernee = 'faisant un echec et mat';
             [chess, coloredSquares] = this.genererPromotionCheval(chess);
         }
@@ -395,7 +395,6 @@ class Notation5 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
         this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
-        this.indexCoup === 0 ? this.indexCoup = this.nombreCoupsPossible - 1 : this.indexCoup--;
 
         this.genererPieceAleatoire();
     };
@@ -409,7 +408,7 @@ class Notation5 extends React.Component {
             // Recupere la traduction de la piece a partir de la notation de la piece actuelle
             this.languageCoup = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0))] + this.realCoup.slice(1);
         }
-        else if (this.coupChoisis === 'Promotion-cheval' || this.coupChoisis === 'Promotion-dame') {
+        else if (this.coupChoisis === 'Promotion-cavalier' || this.coupChoisis === 'Promotion-dame') {
             // Recupere la traduction de la piece a partir de la notation de la piece actuelle
             const actualPiece = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(3))];
             const futurePiece = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(actualPiece)];
@@ -594,7 +593,7 @@ class Notation5 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
@@ -614,18 +613,20 @@ class Notation5 extends React.Component {
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={line}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">

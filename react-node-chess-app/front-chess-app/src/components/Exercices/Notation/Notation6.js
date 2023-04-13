@@ -112,17 +112,17 @@ class Notation6 extends React.Component {
             b: 'fou',
             n: 'cavalier',
             r: 'tour',
-            q: 'queen',
-            k: 'king',
+            q: 'dame',
+            k: 'roi',
         }
 
         // Choisi entre coup avec x et coup sans x
         let nbCoups = 0;
-        let x = Math.floor(Math.random() * 3);
+        let proba = Math.random();
         let coups = '';
         let verboseCoups = '';
         let index = 0;
-        if (x === 0) { // coup avec sans x
+        if (proba < 0.2) { // coup avec sans x
             nbCoups = Math.floor(Math.random() * 15) + 4;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
@@ -138,7 +138,7 @@ class Notation6 extends React.Component {
             verboseCoups = newChess.moves({ verbose: true });
             index = Math.floor(Math.random() * coups.length);
         }
-        else if (x === 1) { // coup avec x
+        else if (proba >= 0.2 && proba < 0.6) { // coup avec x
             nbCoups = Math.floor(Math.random() * 10) + 4;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
@@ -157,7 +157,7 @@ class Notation6 extends React.Component {
             const coupAvecX = coups.find(coup => coup.includes('x'));
             index = coups.indexOf(coupAvecX);
         }
-        else {
+        else { // echec ou mat
             nbCoups = Math.floor(Math.random() * 10) + 4;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
@@ -551,7 +551,7 @@ class Notation6 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
@@ -574,18 +574,20 @@ class Notation6 extends React.Component {
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={line}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">

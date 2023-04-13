@@ -531,7 +531,7 @@ class Bombe1 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'

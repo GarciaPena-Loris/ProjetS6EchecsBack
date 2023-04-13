@@ -40,6 +40,7 @@ class Notation4 extends React.Component {
         this.nomPiece = '';
         this.pos = '';
         this.coups = [];
+        this.coupAlternatif = [];
         this.realCoup = '';
         this.indexPiece = 0;
         this.idExercice = props.idExercice;
@@ -481,6 +482,12 @@ class Notation4 extends React.Component {
                 this.realCoup = this.coups[0];
         }
 
+        // coup alternatif
+        this.coups.forEach((coup) => {
+            const coupAlternatif = coup.slice(0, -2) + this.state.piecesLanguage[pieces.indexOf('Q')];
+            this.coupAlternatif.push(coupAlternatif);
+        });
+
         this.setState({
             chess: chess, coloredSquares: {
                 [this.positionPieceP]: { backgroundColor: this.couleurP },
@@ -565,16 +572,20 @@ class Notation4 extends React.Component {
         this.soundUp.play();
 
         const listePiecesLangue = {
-            fr: ['P', 'T', 'C', 'D'],
             en: ['P', 'R', 'N', 'Q'],
+            fr: ['P', 'T', 'C', 'D'],
             es: ['P', 'T', 'A', 'D'],
             de: ['B', 'T', 'L', 'D'],
             it: ['P', 'T', 'A', 'R'],
             ru: ['П', 'Л', 'К', 'Ф'],
-            zh: ['卒', '車', '馬', '后'],
+            cn: ['卒', '車', '馬', '后'],
         }
         this.coups.forEach((coup, index) => {
-            this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+            if (coup.charAt(0) === coup.charAt(0).toUpperCase()) {
+                this.coups[index] = listePiecesLangue[event.target.value][this.indexPiece] + coup.slice(1);
+            }
+            // coup alternatif
+            this.coupAlternatif[index] = this.coups[index].slice(0, -2) + listePiecesLangue[event.target.value][listePiecesLangue['en'].indexOf('Q')];
         })
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
     }
@@ -583,8 +594,8 @@ class Notation4 extends React.Component {
         Howler.volume(0.2);
         this.soundUp.play();
         const { inputValue } = this.state;
-        if (this.coups.includes(inputValue) || (this.piece === 'P' && this.coups.includes(inputValue.slice(1)))) {
-            Howler.volume(0.2);
+        if (this.coups.includes(inputValue) || this.coupAlternatif.includes(inputValue)) {
+            Howler.volume(0.3);
             this.soundWin.play();
             this.points = this.pointsGagnes;
             if (this.showedOrientation) {
@@ -780,7 +791,7 @@ class Notation4 extends React.Component {
                 <div className="elements-droite">
                     <i className="consigne">
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> mange <span style={{ color: `${this.couleurM}` }}> la reine </span>
+                        </span> prenne <span style={{ color: `${this.couleurM}` }}> la dame </span>
                     </i>
                     <div className="option">
                         <FormControlLabel
@@ -798,7 +809,7 @@ class Notation4 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
@@ -818,18 +829,20 @@ class Notation4 extends React.Component {
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={line}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={line}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">
