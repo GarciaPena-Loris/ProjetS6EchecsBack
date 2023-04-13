@@ -1,6 +1,7 @@
 import React from "react";
 import './Notation.css';
 import '../../Components.css';
+import '../Exercices.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
