@@ -49,7 +49,7 @@ export default function SelectionExercices() {
     }, [token]);
 
     return (
-        <div>
+        <div className="selection-exercice-container">
             <h1> Selectionnez un exercice :</h1>
             <div className="image-container">
                 {dataExo.map((exercice, index) => (

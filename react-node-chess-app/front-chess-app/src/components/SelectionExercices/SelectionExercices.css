@@ -1,25 +1,15 @@
+.selection-exercice-container {
+    padding: 5rem;
+}
+
 .image-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh;
-}
-
-.imgExo {
-    cursor: pointer;
-    border: 2px solid #000;
-    border-radius: 5px;
-    max-width: 80%;
-    max-height: 80%;
-    margin: auto 15px;
-}
-
-
-.image-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    margin: 2rem 0;
+    max-width: 100%; /* Largeur maximale sur tous les écrans */
+    overflow-x: auto; /* Ajoute une barre de défilement horizontale si nécessaire */
 }
 
 .img-wrapper {
@@ -30,31 +20,43 @@
 }
 
 .imgExo {
-    width: 12em;
-    height: 12em;
     cursor: pointer;
+    border-radius: 5px;
+    margin: auto 15px;
+    width: 12rem;
+    height: 12rem;
     border: none;
     transition: all 0.2s ease-in-out;
-    /* Ajout de la transition */
 }
 
 .imgExo:hover {
     width: 12.3em;
     height: 12.3em;
     border: 1px solid #fff;
-    border-color: #fff;
 }
 
 .exo-name {
-    margin-top: 0.5rem;
+    margin-top: 0.8rem;
     text-align: center;
     font-size: large;
     font-weight: bold;
     color: #fff;
 }
 
-@media (min-width: 768px) {
-    .imgExo {
-        max-width: 300px;
+@media screen and (max-width: 768px) {
+    .selection-exercice-container {
+        padding: 0.5rem;
     }
+
+    .imgExo {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    .imgExo:hover {
+        width: 5.1em;
+        height: 5.1em;
+        border: 1px solid #fff;
+    }
+
 }
