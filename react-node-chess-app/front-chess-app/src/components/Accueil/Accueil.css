@@ -1,8 +1,41 @@
+.accueil {
+  margin-top: 5%;
+}
+
+.boutons-connexion {
+  display: flex;
+  margin: auto;
+  margin-top: 3%;
+  justify-content: center;
+}
+
+.space {
+  width: 2%;
+}
+
 .img {
   width: 20% !important;
+  margin-top: 2%;
   border-radius: 50%;
 }
 
-.titre {
+.bienvenue {
+  font-size: 4rem;
   color: var(--couleur-theme);
+}
+
+
+@media screen and (max-width: 768px) {
+  .bienvenue {
+    font-size: 3rem;
+  }
+
+  .img {
+    width: 50% !important;
+  }
+
+  .accueil {
+    margin-top: 20%;
+  }
+
 }
