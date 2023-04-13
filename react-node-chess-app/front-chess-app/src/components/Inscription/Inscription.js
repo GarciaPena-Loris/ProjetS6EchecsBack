@@ -115,7 +115,7 @@ export default function Inscription() {
                         required
                     />
                     <button
-                        className="show-password"
+                        className="show-password-connexion"
                         type="button"
                         onMouseDown={toggleShowPassword}
                         onMouseUp={toggleShowPassword}>
@@ -135,7 +135,7 @@ export default function Inscription() {
                         required
                     />
                     <button
-                        className="show-password"
+                        className="show-password-connexion"
                         type="button"
                         onMouseDown={toggleShowConfirmPassword}
                         onMouseUp={toggleShowConfirmPassword}>

@@ -22,12 +22,12 @@ function App() {
   const isDesktop = useMediaQuery('(min-width:768px)');
 
   return (
-    <div className="App">
+    <div className="App" id="outer-container">
       <ErrorBoundary>
         <GlobalProvider>
-          {!isDesktop && <Sidebar />}
           <Navbar />
-          <div className="main">
+          {!isDesktop && <Sidebar pageWrapId={'page-wrap'} outerContainerId={'outer-container'}/>}
+          <div className="main" id="page-wrap">
             <Routes>
               <Route path="/" element={<Accueil />} />
               <Route path="/connexion" element={<UnRequireAuth component={Connexion} />} />

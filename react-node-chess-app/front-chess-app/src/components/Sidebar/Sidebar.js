@@ -52,12 +52,11 @@ function Slidebar() {
 
     return (
         <Menu
-            className={"menu-burger"}
             isOpen={menuOpenState}
             onStateChange={(state) => handleStateChange(state)}
-            customCrossIcon={<img alt="crois" src={cross} />}
+            customCrossIcon={<img alt="croix" src={cross} />}
         >
-            <ul class="nav-menu">
+            <ul>
                 <li><Link to="/" onMouseEnter={handlePieceHover} onClick={handleClickCound}>Accueil</Link></li>
                 <hr className="hr-buger"></hr>
                 {token ? (
