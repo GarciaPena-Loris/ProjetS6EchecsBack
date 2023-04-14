@@ -186,7 +186,7 @@ export default function ExercicePage() {
                                 <div className="level-description">{level.rules}</div>
                             </div>
                             <div className="level-name-container">
-                                <div className="level-description"><i>{level.required_elo} points requis</i></div>
+                                <div className="level-description"><i><b>{level.required_elo}</b> points requis</i></div>
                             </div>
                         </div>
                         {index !== dataLevels.length - 1 && (

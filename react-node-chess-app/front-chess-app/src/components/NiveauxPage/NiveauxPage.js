@@ -266,8 +266,8 @@ export default function NiveauxPage() {
                         ← Retour
                     </span>
                 </button>
-                <div className="level-label"><i>{exercice.name}</i> : <i>niveau {index}</i></div>
-                <span className="level-elo">{exerciceElo !== null && exerciceElo} points d'élo pour cet <b>exercice</b></span>
+                <div className="level-label">{exercice.name} · <i>niveau {index}</i></div>
+                <span className="level-elo"><b>{exerciceElo} points</b> pour cet exercice</span>
                 {(index !== Object.keys(niveaux[exercice.id]).length) &&
                     <button className="bouton-3D"
                         onClick={() => handleLevelClick((index + 1))}
@@ -282,7 +282,7 @@ export default function NiveauxPage() {
             </div>
             {/* Affichez le composant récupéré */}
             <div className="level-jeux">
-                {exerciceElo !== null && NiveauComponent}
+                {NiveauComponent}
             </div>
         </div>
     );

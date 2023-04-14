@@ -11,6 +11,8 @@ function Slidebar() {
     const [menuOpenState, setMenuOpenState] = useState(false);
 
     function handleStateChange(state) {
+        Howler.volume(0.1);
+        soundHover.play();
         setMenuOpenState(state.isOpen);
     }
 
@@ -45,6 +47,7 @@ function Slidebar() {
     const handleLogout = () => {
         Howler.volume(0.3);
         soundUp.play();
+        closeMenu();
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('globalElo');
         navigate('/');

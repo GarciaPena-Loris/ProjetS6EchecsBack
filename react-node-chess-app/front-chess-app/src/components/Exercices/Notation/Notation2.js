@@ -637,27 +637,13 @@ class Notation2 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
-                    <Chessboard
-                        key="board"
-                        position={this.state.chess.fen()}
-                        arePiecesDraggable={false}
-                        customSquareStyles={this.state.coloredSquares}
-                        boardOrientation={this.state.orientation}
-                        showBoardNotation={this.state.coordonnees}
-                        animationDuration={800}
-                    />
-                </div>
-                <div className="elements-droite">
-                    <i className="consigne">
-                        Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> prenne <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
-                    </i>
+
                     <div className="option">
                         <FormControlLabel
                             control={<this.MaterialUISwitch
                                 checked={this.state.orientation === 'white'}
                             />}
-                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            label={this.state.orientation === 'white' ? 'Trait aux Blancs' : 'Trait aux Noirs'}
                             onChange={this.handleOrientation}
 
                         />
@@ -674,16 +660,23 @@ class Notation2 extends React.Component {
                                 }}
                             />
                         </ThemeProvider>
-                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
                     </div>
+                    <Chessboard
+                        key="board"
+                        position={this.state.chess.fen()}
+                        arePiecesDraggable={false}
+                        customSquareStyles={this.state.coloredSquares}
+                        boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
+                        animationDuration={800}
+                    />
+                </div>
+                <div className="elements-droite">
+                    <i className="consigne">
+                        Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                        </span> prenne <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
+                    </i>
+
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
@@ -754,9 +747,18 @@ class Notation2 extends React.Component {
                     </div>
                     <div className="input">
                         <Stack key="stack" spacing={2} direction="row" alignItems="center">
+                            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="es">🇪🇸</option>
+                                <option value="de">🇩🇪</option>
+                                <option value="it">🇮🇹</option>
+                                <option value="ru">🇷🇺</option>
+                                <option value="cn">🇨🇳</option>
+                            </select>
                             <input className="reponse-input"
                                 type="text"
-                                placeholder="Entrez la position..."
+                                placeholder="Réponse..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange}
                                 onKeyDown={this.handleKeyPress}
@@ -771,6 +773,7 @@ class Notation2 extends React.Component {
                                     ✘
                                 </span>
                             </button>
+
                         </Stack>
 
                         <Stack className="stack" spacing={2} direction="row" alignItems="center">

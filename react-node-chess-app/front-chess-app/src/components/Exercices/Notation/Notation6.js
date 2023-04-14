@@ -644,7 +644,7 @@ class Notation6 extends React.Component {
                         <Stack spacing={2} direction="row" alignItems="center">
                             <input className="reponse-input"
                                 type="text"
-                                placeholder="Entrez la position..."
+                                placeholder="Réponse..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange}
                                 onKeyDown={this.handleKeyPress}
