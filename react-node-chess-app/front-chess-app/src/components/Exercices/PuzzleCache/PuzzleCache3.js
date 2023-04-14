@@ -105,6 +105,11 @@ class PuzzleCache3 extends React.Component {
         this.genererMouvement();
     }
 
+    componentWillUnmount() {
+        clearInterval(this.interval);
+        clearInterval(this.intervalRefaire);
+    }
+
     faireCoups = (newChess) => {
         this.interval = setInterval(() => {
             let possibleMoves = newChess.moves();
