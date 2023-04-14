@@ -637,7 +637,6 @@ class Notation2 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
-
                     <div className="option">
                         <FormControlLabel
                             control={<this.MaterialUISwitch
@@ -645,7 +644,6 @@ class Notation2 extends React.Component {
                             />}
                             label={this.state.orientation === 'white' ? 'Trait aux Blancs' : 'Trait aux Noirs'}
                             onChange={this.handleOrientation}
-
                         />
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
@@ -676,7 +674,6 @@ class Notation2 extends React.Component {
                         Ecrivez le coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
                         </span> prenne <span style={{ color: `${this.couleurM}` }}> la dame en {this.positionPieceM} </span>
                     </i>
-
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
@@ -693,6 +690,9 @@ class Notation2 extends React.Component {
                                             </span>
                                         </button>
                                     )
+                                }
+                                else {
+                                    return null;
                                 }
                             })}
                         </div>
@@ -773,7 +773,6 @@ class Notation2 extends React.Component {
                                     ✘
                                 </span>
                             </button>
-
                         </Stack>
 
                         <Stack className="stack" spacing={2} direction="row" alignItems="center">

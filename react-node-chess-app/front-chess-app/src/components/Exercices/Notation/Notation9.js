@@ -402,25 +402,10 @@ class Notation9 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
-                    <Chessboard
-                        key="board"
-                        position={this.state.chess.fen()}
-                        boardOrientation={this.state.orientation}
-                        showBoardNotation={this.state.coordonnees}
-                        animationDuration={800}
-                        onSquareRightClick={this.onSquareRightClick}
-                        customSquareStyles={this.state.rightClickedSquares}
-                        onPieceDrop={this.onDrop}
-                    />
-                </div>
-                <div className="elements-droite">
-                    <i className="consigne">
-                        Faites le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
-                    </i>
                     <div className="option">
                         {this.state.orientation === 'white' ?
-                            <h2 className="titre-boutons"><i>Trait aux Blancs </i>⚪</h2> :
-                            <h2 className="titre-boutons"><i>Trait aux Noirs </i>⚫</h2>
+                            <h3><i>Trait aux <b>Blancs</b> </i></h3> :
+                            <h3><i>Trait aux <b>Noirs</b> </i></h3>
                         }
                         <ThemeProvider theme={this.theme}>
                             <FormControlLabel
@@ -435,16 +420,31 @@ class Notation9 extends React.Component {
                                 }}
                             />
                         </ThemeProvider>
-                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
                     </div>
+                    <Chessboard
+                        key="board"
+                        position={this.state.chess.fen()}
+                        boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
+                        animationDuration={800}
+                        onSquareRightClick={this.onSquareRightClick}
+                        customSquareStyles={this.state.rightClickedSquares}
+                        onPieceDrop={this.onDrop}
+                    />
+                </div>
+                <div className="elements-droite">
+                    <i className="consigne">
+                        Faites le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
+                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                            <option value="fr">🇫🇷</option>
+                            <option value="en">🇬🇧</option>
+                            <option value="es">🇪🇸</option>
+                            <option value="de">🇩🇪</option>
+                            <option value="it">🇮🇹</option>
+                            <option value="ru">🇷🇺</option>
+                            <option value="cn">🇨🇳</option>
+                        </select>
+                    </i>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}
                     </div>

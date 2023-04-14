@@ -570,6 +570,21 @@ class Notation5 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
+                    <div className="option">
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnées'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                    </div>
                     <Chessboard
                         key="board"
                         position={this.state.chess.fen()}
@@ -587,30 +602,6 @@ class Notation5 extends React.Component {
                         </span> <span style={{ color: `${this.couleurM}` }}> {this.pieceConcernee}
                         </span>
                     </i>
-                    <div className="option">
-                        <ThemeProvider theme={this.theme}>
-                            <FormControlLabel
-                                control={<this.Android12Switch
-                                    checked={this.state.coordonnees === true}
-                                    color="secondary"
-                                />}
-                                label={'Coordonnées'}
-                                onChange={this.handleCoordonnees}
-                                style={{
-                                    textDecoration: this.state.coordonnees === false && 'line-through'
-                                }}
-                            />
-                        </ThemeProvider>
-                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
-                    </div>
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
@@ -681,6 +672,15 @@ class Notation5 extends React.Component {
                     </div>
                     <div className="input">
                         <Stack key="stack" spacing={2} direction="row" alignItems="center">
+                            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="es">🇪🇸</option>
+                                <option value="de">🇩🇪</option>
+                                <option value="it">🇮🇹</option>
+                                <option value="ru">🇷🇺</option>
+                                <option value="cn">🇨🇳</option>
+                            </select>
                             <input className="reponse-input"
                                 type="text"
                                 placeholder="Réponse..."

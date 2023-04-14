@@ -371,26 +371,12 @@ class Notation extends React.Component {
     return (
       <div className="container-general">
         <div className="plateau-gauche">
-          <Chessboard
-            key="board"
-            position={this.state.chess.fen()}
-            arePiecesDraggable={false}
-            customSquareStyles={this.state.coloredSquares}
-            boardOrientation={this.state.orientation}
-            showBoardNotation={this.state.coordonnees}
-          />
-        </div>
-        <div className="elements-droite">
-          <i className="consigne">
-            Ecrivez la position de la pièce
-          </i>
           <div className="option">
             <FormControlLabel
               control={<this.MaterialUISwitch
                 checked={this.state.orientation === 'white'}
-                color="secondary"
               />}
-              label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+              label={this.state.orientation === 'white' ? 'Trait aux Blancs' : 'Trait aux Noirs'}
               onChange={this.handleOrientation}
             />
             <ThemeProvider theme={this.theme}>
@@ -406,19 +392,22 @@ class Notation extends React.Component {
                 }}
               />
             </ThemeProvider>
-            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-              <option value="fr">Français 🇫🇷</option>
-              <option value="en">English 🇬🇧</option>
-              <option value="es">Español 🇪🇸</option>
-              <option value="de">Deutsch 🇩🇪</option>
-              <option value="it">Italiano 🇮🇹</option>
-              <option value="ru">Русский 🇷🇺</option>
-              <option value="cn">中文 🇨🇳</option>
-            </select>
           </div>
+          <Chessboard
+            key="board"
+            position={this.state.chess.fen()}
+            arePiecesDraggable={false}
+            customSquareStyles={this.state.coloredSquares}
+            boardOrientation={this.state.orientation}
+            showBoardNotation={this.state.coordonnees}
+          />
+        </div>
+        <div className="elements-droite">
+          <i className="consigne">
+            Ecrivez la position de la pièce
+          </i>
           <div className="boutons">
             <div className="groupe-butons" >
-              <h3 className="titre-boutons">Pièce</h3>
               {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -435,7 +424,6 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons">
-            <h3 className="titre-boutons">Colonnes</h3>
               {colonnes.map((line, index) => { // a b c d e f g h
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -452,7 +440,6 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons" >
-            <h3 className="titre-boutons">Lignes</h3>
               {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
@@ -469,7 +456,6 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons" >
-            <h3 className="titre-boutons">Autres</h3>
               {custom.map((line, index) => { // x O-O O-O-O = e.p. +
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -488,6 +474,15 @@ class Notation extends React.Component {
           </div>
           <div className="input">
             <Stack spacing={2} direction="row" alignItems="center">
+              <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                <option value="fr">🇫🇷</option>
+                <option value="en">🇬🇧</option>
+                <option value="es">🇪🇸</option>
+                <option value="de">🇩🇪</option>
+                <option value="it">🇮🇹</option>
+                <option value="ru">🇷🇺</option>
+                <option value="cn">🇨🇳</option>
+              </select>
               <input className="reponse-input"
                 type="text"
                 placeholder="Réponse..."
