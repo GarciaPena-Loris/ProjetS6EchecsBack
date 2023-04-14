@@ -924,13 +924,13 @@ class Notation3 extends React.Component {
                                     Valider
                                 </span>
                             </button>
-                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
-                                title="Nouveau ↺"
+                            {this.state.showIncorrect && <button className="bouton-3D"
+                                title="Nouveau"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D texte-replay">
-                                    Nouveau ↺
+                                <span className="texte-3D">
+                                    ↺
                                 </span>
                             </button>}
                         </Stack>

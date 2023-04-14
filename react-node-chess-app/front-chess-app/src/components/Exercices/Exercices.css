@@ -175,7 +175,7 @@
   display: flex;
   align-items: center;
   font-family: var(--police-ecriture);
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: white;
   padding: 5px 15px;
   opacity: 0;
@@ -189,7 +189,7 @@
 }
 
 .incorrect {
-  background-color: var(--couleur-erreur);
+  background-color: var(--couleur-erreur-fonce);
 }
 
 .language-selector {
