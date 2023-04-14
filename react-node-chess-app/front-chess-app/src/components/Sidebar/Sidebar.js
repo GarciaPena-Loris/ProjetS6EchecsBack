@@ -77,12 +77,12 @@ function Slidebar() {
                     <>
                         <hr className="hr-buger"></hr>
                         <li>
-                            <button className="bouton-3D bouton-deconnexion"
+                            <button className="bouton-3D-red bouton-deconnexion"
                                 title="Deconnexion"
                                 onMouseEnter={handlePieceHover}
                                 onMouseUp={handleLogout}
                                 onMouseDown={handlePieceDown}>
-                                <span className="texte-3D span-deconnexion">
+                                <span className="texte-3D-red span-deconnexion">
                                     Déconnexion
                                 </span>
                             </button>

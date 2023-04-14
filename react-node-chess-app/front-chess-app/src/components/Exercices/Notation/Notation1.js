@@ -490,12 +490,12 @@ class Notation extends React.Component {
                 onChange={this.handleInputChange}
                 onKeyDown={this.handleKeyPress}
                 ref={this.monInputRef} />
-              <button className="bouton-3D button-clean"
+              <button className="bouton-3D-red"
                 title="supprimer"
                 onMouseDown={() => this.handlePieceDown()}
                 onMouseEnter={() => this.handlePieceHover()}
                 onClick={this.handleClearButtonClick} >
-                <span className="texte-3D texte-clean">
+                <span className="texte-3D-red">
                   ✘
                 </span>
               </button>

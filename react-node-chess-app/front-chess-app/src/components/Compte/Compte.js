@@ -237,6 +237,18 @@ export default function Compte() {
                         />
                     ))}
                 </div>)}
+            <button className="bouton-3D-red"
+                onClick={() => {
+                    Howler.volume(0.3);
+                    soundUp.play();
+                    navigate('/selectionExercices');
+                }}
+                onMouseEnter={() => handlePieceHover()}
+                onMouseDown={() => handlePieceDown()}>
+                <span className="texte-3D-red"> {/* Retourne à la page précédente */}
+                    ← Retour
+                </span>
+            </button>
             <div className="image-container-compte">
                 <h1 className="titre">Progression :</h1>
                 {dataExos.map((exercice) => (
@@ -263,12 +275,12 @@ export default function Compte() {
                     </div>
                 ))}
             </div>
-            <button className="bouton-3D deconnexion"
+            <button className="bouton-3D-red deconnexion"
                 title="Deconnexion"
                 onMouseEnter={handlePieceHover}
                 onMouseUp={handleLogout}
                 onMouseDown={handlePieceDown}>
-                <span className="texte-3D deconnexion">
+                <span className="texte-3D-red deconnexion">
                     Déconnexion
                 </span>
             </button>

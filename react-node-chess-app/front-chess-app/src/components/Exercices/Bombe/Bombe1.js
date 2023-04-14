@@ -636,7 +636,7 @@ class Bombe1 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick} >
-                                <span className="texte-3D texte-clean">
+                                <span className="texte-3D-red">
                                     ✘
                                 </span>
                             </button>

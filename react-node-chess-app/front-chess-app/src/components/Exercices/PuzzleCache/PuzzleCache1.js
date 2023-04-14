@@ -147,7 +147,7 @@ class PuzzleCache1 extends React.Component {
                 else {
                     this.pos = possibleMoves[randomIndex].slice(-2);
                 }
-                this.text = 'Ecrivez la piece qui va être mangé en  ';
+                this.text = 'Ecrivez la piece qui va être prise en  ';
                 const piece = newChess.get(this.pos).type;
                 const indexPiece = listePiecesLangue['en'].indexOf(piece.toUpperCase());
                 this.languageCoup = listePiecesLangue[this.state.selectedLanguage][indexPiece];
@@ -664,7 +664,7 @@ class PuzzleCache1 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick} >
-                                <span className="texte-3D texte-clean">
+                                <span className="texte-3D-red">
                                     ✘
                                 </span>
                             </button>

@@ -253,7 +253,7 @@ export default function NiveauxPage() {
     return (
         <div className="level-container">
             <div className="level-header">
-                <button className="bouton-3D"
+                <button className="bouton-3D-red"
                     onClick={() => {
                         Howler.volume(0.3);
                         soundUp.play();
@@ -262,7 +262,7 @@ export default function NiveauxPage() {
                     title={"Choix des niveaux de " + exercice.name}
                     onMouseEnter={() => handlePieceHover()}
                     onMouseDown={() => handlePieceDown()}>
-                    <span className="texte-3D"> {/* Retourne à la page précédente */}
+                    <span className="texte-3D-red"> {/* Retourne à la page précédente */}
                         ← Retour
                     </span>
                 </button>

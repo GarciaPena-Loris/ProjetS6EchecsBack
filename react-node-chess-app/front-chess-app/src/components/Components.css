@@ -82,10 +82,69 @@ nav a {
 
 /* --- */
 
+.bouton-3D-red {
+    border: none;
+    border-radius: 12px;
+    background: var(--couleur-erreur);
+    padding: 0;
+    margin: 2% 0;
+    cursor: pointer;
+}
+
+.texte-3D-red {
+    display: block;
+    padding: 0.3rem 1rem;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    background: var(--couleur-erreur-fonce);
+    color: rgb(255, 255, 255);
+    transform: translateY(-4px);
+}
+
+.bouton-3D-red[disabled] {
+    background: gray;
+    cursor: not-allowed;
+}
+
+.bouton-3D-red[disabled] .texte-3D-red {
+    transform: none;
+    background: darkgray;
+}
+
+.bouton-3D-red[disabled]:hover .texte-3D-red {
+    transform: none;
+}
+
+.bouton-3D-red:active .texte-3D-red {
+    transform: translateY(-2px);
+}
+
+.bouton-3D-red:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.texte-3D-red {
+    transition:
+        transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.bouton-3D-red:hover .texte-3D-red {
+    transform: translateY(-6px);
+    transition:
+        transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.bouton-3D-red:active .texte-3D-red {
+    transform: translateY(-2px);
+    transition: transform 34ms;
+}
+
+/* --- */
 
 :root {
     --couleur-theme: #7e9d4e;
     --couleur-theme-fonce: #5c742f;
-    --couleur-erreur: #c63935;
+    --couleur-erreur: #992a26;
+    --couleur-erreur-fonce: #c63935;
     --police-ecriture: 'Helvetica Neue', sans-serif;
 }

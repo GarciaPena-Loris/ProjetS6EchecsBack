@@ -138,7 +138,7 @@ export default function ExercicePage() {
             <h1 className="exercice-title">
                 {exercice.name}
             </h1>
-            <button className="bouton-3D"
+            <button className="bouton-3D-red"
                 onClick={() => {
                     Howler.volume(0.3);
                     soundUp.play();
@@ -146,7 +146,7 @@ export default function ExercicePage() {
                 }}
                 onMouseEnter={() => handlePieceHover()}
                 onMouseDown={() => handlePieceDown()}>
-                <span className="texte-3D"> {/* Retourne à la page précédente */}
+                <span className="texte-3D-red"> {/* Retourne à la page précédente */}
                     ← Retour
                 </span>
             </button>
