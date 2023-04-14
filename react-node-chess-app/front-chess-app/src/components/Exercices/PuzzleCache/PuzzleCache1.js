@@ -105,11 +105,10 @@ class PuzzleCache1 extends React.Component {
         this.genererMouvement();
     }
 
-    faireCoup = (newChess) => {
+    faireCoups = (newChess) => {
         this.interval = setInterval(() => {
             let possibleMoves = newChess.moves();
-            let possibleXMoves;
-            possibleXMoves = possibleMoves.filter(element => element.includes("x") && !element.includes("+") && !element.includes("#"));
+            let possibleXMoves = possibleMoves.filter(element => element.includes("x") && !element.includes("+") && !element.includes("#"));
             if (possibleXMoves.length >= 1) {
                 possibleMoves = possibleXMoves;
             }
@@ -119,10 +118,9 @@ class PuzzleCache1 extends React.Component {
             this.historicMove.push(possibleMoves[randomIndex]);
             this.setState({ chess: newChess });
             this.nbCoupEffecutes++;
-            if (this.nbCoupEffecutes >= this.nbCoupAFaire && possibleMoves.some(move => move.includes("x"))) {
+            if (this.nbCoupEffecutes >= this.nbCoupAFaire && (possibleMoves.some(coup => coup.includes("x")) && possibleMoves.filter(coup => coup.includes("x")).every(coup => !coup.includes("+") && !coup.includes("#")))) {
                 clearInterval(this.interval);
                 const coupUndo = newChess.undo();
-                console.log("🚀 ~ file: PuzzleCache1.js:127 ~ PuzzleCache1 ~ this.interval=setInterval ~ coupUndo:", coupUndo)
                 this.setState({ chess: newChess });
                 this.definirCoup(coupUndo);
                 return;
@@ -135,14 +133,13 @@ class PuzzleCache1 extends React.Component {
         const newChess = new Chess();
         this.setState({ chess: newChess });
 
-        this.faireCoup(newChess);
+        this.faireCoups(newChess);
     };
 
     definirCoup = (coupUndo) => {
-        console.log(coupUndo);
         // Apres les coups
         if (coupUndo.color === "w") {
-            this.text = 'Ecrivez la pièce qui prend en ';
+            this.text = 'Ecrivez la pièce  en ';
             this.option = " 'x' la pièce prise en ";
             this.coup = coupUndo.san;
             this.piece1 = coupUndo.from;
@@ -158,7 +155,6 @@ class PuzzleCache1 extends React.Component {
             this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf(coupUndo.piece.toUpperCase())]
                 + "x" +
                 this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf(coupUndo.captured.toUpperCase())];
-            console.log("🚀 ~ file: PuzzleCache1.js:158 ~ PuzzleCache1 ~ this.languageCoup:", this.languageCoup)
 
         }
         else {
@@ -189,7 +185,7 @@ class PuzzleCache1 extends React.Component {
 
     refaireCoup = () => {
         this.intervalRefaire = setInterval(() => {
-            if (this.currentIndexRejouer < this.nbCoupAFaire) {
+            if (this.currentIndexRejouer < this.historicMove.length - 1) {
                 this.state.chess.move(this.historicMove[this.currentIndexRejouer]);
                 this.setState({ chess: this.state.chess });
                 this.currentIndexRejouer++;
@@ -220,7 +216,7 @@ class PuzzleCache1 extends React.Component {
         this.setState({ timerInterval: newValue }, async () => {
             if (this.nbCoupEffecutes < this.nbCoupAFaire) {
                 clearInterval(this.interval);
-                this.faireCoup(this.state.chess);
+                this.faireCoups(this.state.chess);
             }
             else if (this.currentIndexRejouer < this.nbCoupAFaire) {
                 clearInterval(this.intervalRefaire);
@@ -297,7 +293,6 @@ class PuzzleCache1 extends React.Component {
                 + "x" +
                 this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(2))];
         }
-        console.log("🚀 ~ file: PuzzleCache1.js:297 ~ PuzzleCache1 ~ this.languageCoup:", this.languageCoup)
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: this.listePiecesLangue[event.target.value] });
     }
 

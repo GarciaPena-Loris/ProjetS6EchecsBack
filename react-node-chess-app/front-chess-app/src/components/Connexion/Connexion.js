@@ -76,14 +76,12 @@ export default function Connexion() {
                         navigate('/selectionExercices');
                     })
                     .catch(function (error) {
-                        console.log(error.response);
                         console.log(error);
 
                     });
             })
             .catch(function (error) {
                 if (error.response) {
-                    console.log(error.response.data);
                     if (error.response.data.error) {
                         setReponseServeur(error.response.data.error);
                     }

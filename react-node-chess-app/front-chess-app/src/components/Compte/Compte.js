@@ -91,7 +91,6 @@ export default function Compte() {
 
         axios(config)
             .then(function (response) {
-                console.log(response.data);
                 setSelectedImageUrl(newImageUrl);
                 updateGlobalAvatar(newImageUrl);
             })
@@ -125,7 +124,6 @@ export default function Compte() {
         axios(config)
             .then(function (response) {
                 setDataCompte(response.data);
-                //console.log(response.data);
                 setSelectedImageUrl(response.data.imageProfil);
             })
             .catch(function (error) {
@@ -149,7 +147,6 @@ export default function Compte() {
             .then(response => {
                 setDataExos(response.data);
                 setNbExo(response.data.length);
-                //console.log(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -193,8 +190,6 @@ export default function Compte() {
 
             const EloJoueurProvisoire = EloJoueurRep.map(response => response.data.exerciceElo);
             setDataEloJoueur(EloJoueurProvisoire);
-            console.log(EloJoueurProvisoire);
-
         };
 
         fetchElo();

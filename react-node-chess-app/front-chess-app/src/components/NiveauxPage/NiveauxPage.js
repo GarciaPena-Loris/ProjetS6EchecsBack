@@ -32,7 +32,6 @@ import PuzzleCache1 from '../Exercices/PuzzleCache/PuzzleCache1';
 import PuzzleCache2 from '../Exercices/PuzzleCache/PuzzleCache2';
 import PuzzleCache3 from '../Exercices/PuzzleCache/PuzzleCache3';
 import PuzzleCache4 from '../Exercices/PuzzleCache/PuzzleCache4';
-import PuzzleCache5 from '../Exercices/PuzzleCache/PuzzleCache5';
 
 export default function NiveauxPage() {
     const [dataUnlock, setDataUnlock] = useState([]);
@@ -60,10 +59,6 @@ export default function NiveauxPage() {
         src: ['/sons/clicup.wav']
     });
 
-    //console.log(exercice);
-    //console.log(index);
-    //console.log(nxtLevel);
-
     useEffect(() => {
         async function setActualExerciceElo() {
             try {
@@ -84,7 +79,7 @@ export default function NiveauxPage() {
                         setExerciceElo(response.data.exerciceElo);
                     })
                     .catch(function (error) {
-                        console.log(error.response);
+                        console.log(error);
                     });
             }
             catch (error) {
@@ -108,7 +103,6 @@ export default function NiveauxPage() {
 
         axios.request(config)
             .then((response) => {
-                //console.log(JSON.stringify(response.data));
                 setDataUnlock(response.data.map(obj => obj.id_level));
             })
             .catch((error) => {
@@ -216,11 +210,6 @@ export default function NiveauxPage() {
                 pointsGagnes="15"
                 pointsPerdus="25"
             />,
-            5: <PuzzleCache5
-                {...sharedProps}
-                pointsGagnes="20"
-                pointsPerdus="30"
-            />,
         }  // etc...
     };
 
@@ -244,8 +233,6 @@ export default function NiveauxPage() {
     let NiveauComponent = niveaux[exerciceIndex][index];
 
     function verifUnlock(id) {
-        //console.log(id);
-        //console.log(dataUnlock);
         return dataUnlock.includes(id);
     }
 

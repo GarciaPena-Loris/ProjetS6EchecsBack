@@ -75,14 +75,12 @@ export default function Inscription() {
             },
             data: formData
         };
-        console.log(formData);
         axios(config)
             .then(function (response) {
                 navigate("/connexion")
             })
             .catch(function (error) {
                 if (error.response) {
-                    console.log(error.response.data);
                     setReponseServeur(error.response.data.error);
                 }
                 else {

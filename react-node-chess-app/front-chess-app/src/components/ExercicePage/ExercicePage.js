@@ -63,7 +63,6 @@ export default function ExercicePage() {
 
         axios(config)
             .then(function (response) {
-                //console.log(JSON.stringify(response.data));
                 setDataLevels(response.data.sort((a, b) => a.id - b.id));
                 setMaxElo(response.data[(response.data.length) - 1].required_elo);
             })
@@ -86,9 +85,7 @@ export default function ExercicePage() {
 
         axios.request(config)
             .then((response) => {
-                //console.log(JSON.stringify(response.data));
                 setDataEloJoueur(response.data.exerciceElo);
-                //console.log(response.data.exerciceElo);
             })
             .catch((error) => {
                 console.log(error);
@@ -108,7 +105,6 @@ export default function ExercicePage() {
 
         axios.request(config)
             .then((response) => {
-                //console.log(JSON.stringify(response.data));
                 setDataUnlock(response.data.map(obj => obj.id_level));
             })
             .catch((error) => {
@@ -119,9 +115,6 @@ export default function ExercicePage() {
 
     //fonction qui vérifie si tu as l'élo requis pour acceder aux niveaux
     function eloRequired(id) {
-        //console.log(id);
-        //console.log(dataUnlock);
-        //console.log(dataUnlock.includes(id))
         return dataUnlock.includes(id);
     }
 
