@@ -32,6 +32,8 @@ class Bombe3 extends React.Component {
         this.points = 0;
         this.idExercice = props.idExercice;
 
+        this.couleurP = '#af80dc';
+        this.couleurM = '#ff555f';
         this.nomPiece = ''
         this.pos = ''
         this.positionActuelle = '';
@@ -706,23 +708,28 @@ class Bombe3 extends React.Component {
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
-                        Ecrivez le coup pour que {this.nomPiece} mange le drapeau en {this.pos} sans toucher les bombes
+                        Ecrivez la suite de coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}  </span> atteigne le <span style={{ color: `${this.couleurM}` }}> drapeau en {this.pos} </span> sans toucher les bombes
                     </i>
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={piecesBlanchesNom[index]}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
+                                else {
+                                    return null;
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">
