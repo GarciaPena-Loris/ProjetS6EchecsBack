@@ -579,6 +579,7 @@ class Bombe2 extends React.Component {
                         customSquareStyles={this.state.coloredSquares}
                         boardOrientation={this.state.orientation}
                         showBoardNotation={this.state.coordonnees}
+                        areArrowsAllowed={false}
                     />
                 </div>
                 <div className="elements-droite">
