@@ -1,29 +1,22 @@
 import React from "react";
 import './PuzzleCache.css';
+import '../Exercices.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
-import { Chess, SQUARES } from 'chess.js'
+import { Chess } from 'chess.js'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { decodeToken } from "react-jwt";
 import { Stack } from '@mui/material';
 import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { Howl, Howler } from 'howler';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 
 // validation réponse
 import axios from "axios";
 
 class PuzzleCache3 extends React.Component {
-    static SQUARES = [
-        'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8',
-        'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7',
-        'a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6',
-        'a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5',
-        'a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4',
-        'a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3',
-        'a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2',
-        'a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'
-    ];
     constructor(props) {
         super(props);
         this.state = {
@@ -37,23 +30,45 @@ class PuzzleCache3 extends React.Component {
             piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
             coloredSquares: {},
             chess: new Chess(),
+            timerInterval: 1,
         };
-        this.currentIndex = 0
 
         // validation réponse
         this.pointsGagne = props.pointsGagnes;
         this.pointsPerdu = props.pointsPerdus;
         this.points = 0;
 
+        this.listePiecesLangue = {
+            en: ['P', 'R', 'B', 'N', 'Q', 'K'],
+            fr: ['P', 'T', 'F', 'C', 'D', 'R'],
+            es: ['P', 'T', 'A', 'C', 'D', 'R'],
+            de: ['B', 'S', 'L', 'T', 'D', 'K'],
+            it: ['P', 'T', 'A', 'C', 'D', 'R'],
+            ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
+            cn: ['卒', '马', '象', '车', '后', '帅'],
+        }
+        this.showPiece = false;
+
         this.coup = '';
         this.languageCoup = '';
-        this.pos = '';
         this.text = 'Deplacement en cours...';
+        this.option = '';
+        this.piece1 = '';
+        this.piece2 = '';
+
         this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
         this.couleurM = '#ff555f';
         this.historicMove = [];
         this.pieceMangee = false;
+        this.nbCoupAFaire = 16;
+        if (Math.random() < 0.5) {
+            this.nbCoupAFaire++;
+        }
+        this.nbCoupEffecutes = 0;
+        this.interval = 0;
+        this.intervalRefaire = 0;
+        this.currentIndexRejouer = this.nbCoupAFaire;
 
         // decode token
         const decoded = decodeToken(sessionStorage.token);
@@ -83,123 +98,109 @@ class PuzzleCache3 extends React.Component {
             src: ['/sons/switchOff.mp3']
         });
 
+        this.handleSliderChange = this.handleSliderChange.bind(this);
     }
 
     componentDidMount() {
         this.genererMouvement();
     }
 
-    genererMouvement = () => {
-        const newChess = new Chess();
-        this.setState({ chess: newChess });
+    componentWillUnmount() {
+        clearInterval(this.interval);
+        clearInterval(this.intervalRefaire);
+    }
 
-        this.pieceMangee = false;
-        this.historicMove = [];
-        const listePiecesLangue = {
-            en: ['P', 'R', 'B', 'N', 'Q', 'K'],
-            fr: ['P', 'T', 'F', 'C', 'D', 'R'],
-            es: ['P', 'T', 'A', 'C', 'D', 'R'],
-            de: ['B', 'S', 'L', 'T', 'D', 'K'],
-            it: ['P', 'T', 'A', 'C', 'D', 'R'],
-            ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
-            cn: ['卒', '马', '象', '车', '后', '帅'],
-        }
-        let intervalId;
-        intervalId = setInterval(() => {
+    faireCoups = (newChess) => {
+        this.interval = setInterval(() => {
             let possibleMoves = newChess.moves();
-            let possibleXMoves = possibleMoves.filter(element => element.includes("x"));
+            let possibleXMoves = possibleMoves.filter(element => element.includes("x") && !element.includes("+") && !element.includes("#"));
             if (possibleXMoves.length >= 1) {
                 possibleMoves = possibleXMoves;
             }
             const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+
             newChess.move(possibleMoves[randomIndex]);
             this.historicMove.push(possibleMoves[randomIndex]);
             this.setState({ chess: newChess });
-            const boardValue = this.RevaluateBoard(newChess);
-            if (boardValue > 0) {
-                clearInterval(intervalId);
-                newChess.undo();
-                if (possibleMoves[randomIndex].slice(-1) === '+') {
-                    this.pos = possibleMoves[randomIndex].slice(-3, -1);
-                }
-                else {
-                    this.pos = possibleMoves[randomIndex].slice(-2);
-                }
-                this.text = 'Ecrivez le coup pour prendre la pièce en ';
-                this.coup = possibleMoves[randomIndex];
-                if (this.coup.charAt(0) === this.coup.charAt(0).toUpperCase()) {
-                    const index = listePiecesLangue['en'].indexOf(this.coup.charAt(0));
-                    const piece = listePiecesLangue[this.state.selectedLanguage][index];
+            this.nbCoupEffecutes++;
+            if (this.nbCoupEffecutes >= this.nbCoupAFaire && (possibleMoves.some(coup => coup.includes("x")) && possibleMoves.filter(coup => coup.includes("x")).every(coup => !coup.includes("+") && !coup.includes("#")))) {
+                clearInterval(this.interval);
+                const coupUndo = newChess.undo();
+                this.setState({ chess: newChess });
+                this.definirCoup(coupUndo);
+                return;
+            }
 
-                    this.languageCoup = piece + this.coup.slice(1);
-                }
-                else {
-                    this.languageCoup = this.coup;
-                }
-            }
-            if (boardValue < 0) {
-                clearInterval(intervalId);
-                newChess.undo();
-                if (possibleMoves[randomIndex].slice(-1) === '+') {
-                    this.pos = possibleMoves[randomIndex].slice(-3, -1);
-                }
-                else {
-                    this.pos = possibleMoves[randomIndex].slice(-2);
-                }
-                this.text = 'Ecrivez la piece qui va être mangé en  ';
-                const piece = newChess.get(this.pos).type;
-                const indexPiece = listePiecesLangue['en'].indexOf(piece.toUpperCase());
-                this.languageCoup = listePiecesLangue[this.state.selectedLanguage][indexPiece];
-                this.pieceMangee = true;
-            }
+        }, this.state.timerInterval * 1000);
+    }
+
+    genererMouvement = async () => {
+        const newChess = new Chess();
+        this.setState({ chess: newChess });
+
+        this.faireCoups(newChess);
+    };
+
+    definirCoup = (coupUndo) => {
+        // Apres les coups
+        if (coupUndo.color === "w") {
+            this.text = 'Ecrivez la pièce  en ';
+            this.option = " 'x' la pièce prise en ";
+            this.coup = coupUndo.san;
+            this.piece1 = coupUndo.from;
+            this.piece2 = coupUndo.to;
+
             this.setState({
-                chess: newChess, coloredSquares: {
-                    [this.pos]: { backgroundColor: this.couleurM },
+                coloredSquares: {
+                    [this.piece1]: { backgroundColor: this.couleurP },
+                    [this.piece2]: { backgroundColor: this.couleurM },
                 },
             });
-        }, 800);
-    };
+
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf(coupUndo.piece.toUpperCase())]
+                + "x" +
+                this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf(coupUndo.captured.toUpperCase())];
+
+        }
+        else {
+            this.text = 'Ecrivez la piece qui va être prise en  ';
+            this.piece1 = coupUndo.to;
+            const piece = coupUndo.captured;
+            this.coup = coupUndo.san;
+
+            const indexPiece = this.listePiecesLangue['en'].indexOf(piece.toUpperCase());
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][indexPiece];
+            this.pieceMangee = true;
+
+            this.setState({
+                coloredSquares: {
+                    [this.piece1]: { backgroundColor: this.couleurM },
+                },
+            });
+        }
+    }
 
     //#region Rejouer coup  
     rejouer = (event) => {
-        let currentIndex = 0;
         this.setState({ chess: new Chess() });
-
-        let intervalId = setInterval(() => {
-            if (currentIndex < this.historicMove.length - 1) {
-                this.state.chess.move(this.historicMove[currentIndex]);
-                this.setState({ chess: this.state.chess });
-                currentIndex++;
-            } else {
-                clearInterval(intervalId);
-            }
-
-        }, 800);
+        this.currentIndexRejouer = 0;
+        clearInterval(this.intervalRefaire);
+        this.refaireCoup();
     };
-    //#endregion
 
-    //#region calcule du meilleur coup
-
-    RevaluateBoard(chess) {
-        const pieceValues = {
-            'p': 1,
-            'n': 3,
-            'b': 3,
-            'r': 5,
-            'q': 9,
-            'k': 0
-        };
-        let value = 0;
-        SQUARES.forEach(Element => {
-            if (chess.get(Element)) {
-                value += chess.get(Element).color === 'w' ? pieceValues[chess.get(Element).type] : -pieceValues[chess.get(Element).type];
+    refaireCoup = () => {
+        this.intervalRefaire = setInterval(() => {
+            if (this.currentIndexRejouer < this.historicMove.length - 1) {
+                this.state.chess.move(this.historicMove[this.currentIndexRejouer]);
+                this.setState({ chess: this.state.chess });
+                this.currentIndexRejouer++;
+            } else {
+                clearInterval(this.intervalRefaire);
             }
-        });
-        return value;
+
+        }, this.state.timerInterval * 1000);
     }
-    //#endregion 
-
-
+    //#endregion
 
     // handles
 
@@ -214,6 +215,19 @@ class PuzzleCache3 extends React.Component {
                 this.handleClick();
             }
         }
+    }
+
+    handleSliderChange = (event, newValue) => {
+        this.setState({ timerInterval: newValue }, async () => {
+            if (this.nbCoupEffecutes < this.nbCoupAFaire) {
+                clearInterval(this.interval);
+                this.faireCoups(this.state.chess);
+            }
+            else if (this.currentIndexRejouer < this.nbCoupAFaire) {
+                clearInterval(this.intervalRefaire);
+                this.refaireCoup();
+            }
+        });
     }
 
     handleClearButtonClick = () => {
@@ -243,7 +257,6 @@ class PuzzleCache3 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
         this.text = 'Deplacement en cours...';
-        this.pos = '';
         this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
         this.genererMouvement();
     };
@@ -277,22 +290,42 @@ class PuzzleCache3 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
 
-        const listePiecesLangue = {
-            en: ['P', 'R', 'B', 'N', 'Q', 'K'],
-            fr: ['P', 'T', 'F', 'C', 'D', 'R'],
-            es: ['P', 'T', 'A', 'C', 'D', 'R'],
-            de: ['B', 'S', 'L', 'T', 'D', 'K'],
-            it: ['P', 'T', 'A', 'C', 'D', 'R'],
-            ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
-            cn: ['卒', '马', '象', '车', '后', '帅'],
+        if (this.pieceMangee) {
+            this.languageCoup = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0))];
         }
-        if (this.languageCoup.charAt(0) === this.languageCoup.charAt(0).toUpperCase()) {
-            const index = listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0));
-            const piece = listePiecesLangue[event.target.value][index];
+        else {
+            this.languageCoup = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0))]
+                + "x" +
+                this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(2))];
+        }
+        this.setState({ selectedLanguage: event.target.value, piecesLanguage: this.listePiecesLangue[event.target.value] });
+    }
 
-            this.languageCoup = piece + this.languageCoup.slice(1);
+    resetVariable = () => {
+        clearInterval(this.intervalRefaire);
+        clearInterval(this.intervalRefaire);
+        this.showPiece = false;
+        this.text = 'Deplacement en cours...';
+        this.option = '';
+        this.piece1 = '';
+        this.piece2 = '';
+        this.historicMove = [];
+        this.pieceMangee = false;
+        this.nbCoupAFaire = 16;
+        if (Math.random() < 0.5) {
+            this.nbCoupAFaire++;
         }
-        this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
+        this.nbCoupEffecutes = 0;
+        this.interval = 0;
+        this.intervalRefaire = 0;
+        this.currentIndexRejouer = this.nbCoupAFaire;
+
+        this.setState({
+            showCorrect: false,
+            showIncorrect: false,
+            message: '',
+            coloredSquares: {},
+        })
     }
 
     handleClick = () => {
@@ -300,10 +333,10 @@ class PuzzleCache3 extends React.Component {
         this.soundUp.play();
         const { inputValue, chess } = this.state;
 
-        if (inputValue === this.languageCoup || (this.piece === 'p' && inputValue === 'p' + this.coup)) {
+        if (inputValue === this.languageCoup) {
             Howler.volume(0.2);
             this.soundWin.play();
-            const message = `Bonne réponse ! Vous gagné ${this.pointsGagne} points.`;
+            const message = `Bonne réponse ! La réponse était bien ${inputValue}. Vous gagné ${this.pointsGagne} points.`;
             this.points = this.pointsGagne;
             this.setState({
                 message: message,
@@ -312,16 +345,12 @@ class PuzzleCache3 extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
-            if (inputValue.length >= 3) {
-                chess.move(this.coup);
-            }
+            chess.move(this.coup);
+
             setTimeout(() => {
-                this.text = 'Deplacement en cours...';
-                this.pos = '';
-                this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
+                this.resetVariable();
 
                 this.handleUpdate();
-
                 this.genererMouvement();
             }, 3000); // Génerer le plateau 3 secondes
         }
@@ -330,11 +359,13 @@ class PuzzleCache3 extends React.Component {
             this.soundWrong.play();
             let message = '';
             if (this.props.exerciceElo <= 0) {
-                message = `Mauvaise réponse ! Vous perdez 0 points. Tentez une autre réponse.`;
+                message = `Mauvaise réponse ! Vous perdez 0 points. 
+                Les pièce se dévoile. Tentez une autre réponse.`;
                 this.points = 0;
             }
             else {
-                message = `Mauvaise réponse ! Vous perdez ${this.pointsPerdu} points. Tentez une autre réponse.`;
+                message = `Mauvaise réponse ! Vous perdez ${this.pointsPerdu} points. 
+                Les pièce se dévoile. Tentez une autre réponse.`;
                 this.points = -(this.pointsPerdu);
             }
             this.setState({
@@ -345,8 +376,9 @@ class PuzzleCache3 extends React.Component {
                 showIncorrect: true
             });
             setTimeout(() => {
+                this.showPiece = true;
                 this.handleUpdate();
-            }, 1000);
+            }, 2000);
         }
     }
 
@@ -386,29 +418,24 @@ class PuzzleCache3 extends React.Component {
     }
 
     customPieces = () => {
-        const piecesBlanche = ["wN", "wB", "wR", "wQ", "wP"];
-        const roi = ["wK", "bK"];
-        const piecesNoire = ["bN", "bB", "bR", "bQ", "bP"];
-        const returnPieces = {};
-        piecesBlanche.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://i.imgur.com/Br9K7hP.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        piecesNoire.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://i.imgur.com/DqZkC4h.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        roi.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://i.imgur.com/70jzGYv.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        return returnPieces;
+        if (!this.showPiece) {
+            const piecesBlanche = ["wN", "wB", "wR", "wQ", "wK", "wP"];
+            const piecesNoire = ["bN", "bB", "bR", "bQ", "bK", "bP"];
+            const returnPieces = {};
+            piecesBlanche.map((p) => {
+                returnPieces[p] = ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/Br9K7hP.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
+                );
+                return null;
+            });
+            piecesNoire.map((p) => {
+                returnPieces[p] = ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/DqZkC4h.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
+                );
+                return null;
+            });
+            return returnPieces;
+        }
     };
 
     MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
@@ -516,6 +543,46 @@ class PuzzleCache3 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
+                    <div className="option">
+                        <FormControlLabel
+                            control={<this.MaterialUISwitch
+                                checked={this.state.orientation === 'white'}
+                                color="secondary"
+                            />}
+                            label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
+                            onChange={this.handleOrientation}
+                        />
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnées'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                        <div className="slider">
+                            <Typography id="input-slider" color="white" align="left">
+                                Vitesse des pièces :
+                            </Typography>
+                            <Slider
+                                aria-label="Timer"
+                                defaultValue={1}
+                                label={'Temps'}
+                                valueLabelDisplay="auto"
+                                step={0.1}
+                                marks
+                                min={0.1}
+                                max={2}
+                                color="secondary"
+                                onChange={this.handleSliderChange}
+                            />
+                        </div>
+                    </div>
                     <Chessboard
                         key="board"
                         position={this.state.chess.fen()}
@@ -527,44 +594,13 @@ class PuzzleCache3 extends React.Component {
                     />
                 </div>
                 <div className="elements-droite">
-                    <i className="consigne">
-                        {this.text} <span style={{ color: `${this.couleurM}` }}> {this.pos} </span>
+                    {this.piece2 ? <i className="consigne">
+                        {this.text} <span style={{ color: `${this.couleurP}` }}> {this.piece1} </span> {this.option} <span style={{ color: `${this.couleurM}` }}> {this.piece2} </span>
                     </i>
-                    <div className="option">
-                        <FormControlLabel
-                            control={<this.MaterialUISwitch
-                                checked={this.state.orientation === 'white'}
-                                color="secondary"
-                            />}
-                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
-                            onChange={this.handleOrientation}
-                        />
-                        <ThemeProvider theme={this.theme}>
-                            <FormControlLabel
-                                control={<this.Android12Switch
-                                    checked={this.state.coordonnees === true}
-                                    color="secondary"
-                                />}
-                                label={'Coordonnée'}
-                                onChange={this.handleCoordonnees}
-                                style={{
-                                    textDecoration: this.state.coordonnees === false && 'line-through'
-                                }}
-                            />
-                        </ThemeProvider>
-                        <select className="language-selector"
-                            value={this.state.selectedLanguage}
-                            onMouseDown={() => this.handlePieceDown()}
-                            onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
-                    </div>
+                        :
+                        <i className="consigne">
+                            {this.text} <span style={{ color: `${this.couleurM}` }}> {this.piece1} </span>
+                        </i>}
                     {this.pieceMangee ?
                         <div className="boutons">
                             <div className="groupe-butons" >
@@ -652,10 +688,20 @@ class PuzzleCache3 extends React.Component {
                             </div>
                         </div>}
                     <div className="input">
+
                         <Stack spacing={2} direction="row" alignItems="center">
+                            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="es">🇪🇸</option>
+                                <option value="de">🇩🇪</option>
+                                <option value="it">🇮🇹</option>
+                                <option value="ru">🇷🇺</option>
+                                <option value="cn">🇨🇳</option>
+                            </select>
                             <input className="reponse-input"
                                 type="text"
-                                placeholder="Entrez la position..."
+                                placeholder="Réponse..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange}
                                 onKeyDown={this.handleKeyPress}
@@ -665,7 +711,7 @@ class PuzzleCache3 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick} >
-                                <span className="texte-3D texte-clean">
+                                <span className="texte-3D-red">
                                     ✘
                                 </span>
                             </button>
@@ -674,7 +720,7 @@ class PuzzleCache3 extends React.Component {
                         <Stack className="stack" spacing={2} direction="row" alignItems="center">
                             <button className="bouton-3D"
                                 title="Valider"
-                                {...(this.state.inputValue.length < 1 && { disabled: true })}
+                                {...((this.state.inputValue.length < 1 || !this.piece1) && { disabled: true })}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClick}
                                 onMouseDown={() => this.handlePieceDown()}>
@@ -684,6 +730,7 @@ class PuzzleCache3 extends React.Component {
                             </button>
                             <button className="bouton-3D button-replay"
                                 title="Refaire"
+                                {...(!this.piece1 && { disabled: true })}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.rejouer}
                                 onMouseDown={() => this.handlePieceDown()}>
@@ -691,13 +738,13 @@ class PuzzleCache3 extends React.Component {
                                     Refaire
                                 </span>
                             </button>
-                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
-                                title="Nouveau ↺"
+                            {this.state.showIncorrect && <button className="bouton-3D"
+                                title="Nouveau"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D texte-replay">
-                                    Nouveau ↺
+                                <span className="texte-3D">
+                                    ↺
                                 </span>
                             </button>}
                         </Stack>

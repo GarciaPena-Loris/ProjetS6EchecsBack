@@ -3,19 +3,21 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: 100vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .show-password-connexion {
-    width: 10%;
-    height: 45%;
+    width: 30px;
+    height: 30px;
     margin-top: 6%;
     margin-left: 2%;
     border-radius: 50%;
     background-color: transparent;
     color: #ffffff;
     cursor: pointer;
-
 }
 
 .show-password-connexion:hover {
@@ -24,7 +26,6 @@
 }
 
 .form-connexion {
-    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     background-color: #262421;
     width: 23em;
     border-radius: 30px;
@@ -32,7 +33,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 2%;
 }
 
 .input-connexion {
@@ -55,9 +55,17 @@
 
 .errors {
     font-size: 20px;
+    margin-top: 5%;
     background-color: #ffffff;
     border: 1px solid #ece9ea;
     color: #a31927;
     padding: 8px;
     border-radius: 20px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .form-connexion {
+        width: 15em;
+    }
 }

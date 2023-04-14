@@ -105,7 +105,6 @@ router.put('/signin', (req, res) => {
       try {
         // If the name and password are correct, return a JWT to the client
         const token = jwt.sign({ name: user.name, role: user.role, imageProfil: user.imageProfil }, process.env.JWT_SECRET, { expiresIn: '24h' });
-        console.log(token);
         res.json({ token });
       }
       catch (error) {

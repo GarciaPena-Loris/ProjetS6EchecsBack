@@ -41,7 +41,6 @@ export default function SelectionExercices() {
         axios(config)
             .then(response => {
                 setDataExo(response.data);
-                console.log(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -49,7 +48,7 @@ export default function SelectionExercices() {
     }, [token]);
 
     return (
-        <div>
+        <div className="selection-exercice-container">
             <h1> Selectionnez un exercice :</h1>
             <div className="image-container">
                 {dataExo.map((exercice, index) => (

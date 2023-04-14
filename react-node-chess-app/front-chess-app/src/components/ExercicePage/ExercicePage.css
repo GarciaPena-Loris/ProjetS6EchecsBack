@@ -1,23 +1,16 @@
 .exercice-page {
-  margin: 0 30em;
-  font-weight: 600;
+  margin: 0 10vw;
   color: #fff;
-}
-
-.bouton-retour {
-  display: flex;
-  justify-content: flex-start;
 }
 
 .exercice-title {
   font-size: 4em;
-  margin-top: -5%;
+  margin: 0;
 }
 
 .exercice-description {
   font-size: 1.5em;
   margin: 0;
-  margin-top: 1%;
 }
 
 .levels-container {
@@ -27,9 +20,10 @@
   flex-direction: column;
   color: #fff;
   background-color: #282522;
+  margin-bottom: 5%;
 }
 
-.level-header {
+.level-title-header {
   display: flex;
   justify-content: space-evenly;
 }
@@ -48,7 +42,8 @@
   margin-bottom: 4%;
 }
 
-.level-name, .level-description {
+.level-name,
+.level-description {
   letter-spacing: 1.3px;
 }
 
@@ -88,10 +83,52 @@
 .barxp-div-exo {
   display: flex;
   flex-direction: column;
-  margin-left: 200px;
-  margin-right: 200px;
+  margin: 0 20%;
 }
 
-.progression-xp{
+.progression-xp {
   font-size: large;
+}
+
+.solid {
+  width: 200px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .exercice-page {
+    margin: 0 0;
+  }
+
+  .barxp-div-exo {
+    margin: 0 0;
+  }
+
+  .exercice-description {
+    font-size: 1em;
+    margin: 5% 0;
+  }
+
+
+  .level-title-header {
+    display: none;
+  }
+
+  .level-row {
+    flex-direction: column;
+  }
+
+  .level-name {
+    margin-bottom: 2%;
+  }
+
+  .level-name-container {
+    margin-top: 3%;
+    width: 95%;
+  }
+
+  .level-description {
+    padding: 0 1%;
+  }
+
 }

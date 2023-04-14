@@ -30,6 +30,8 @@ class Bombe1 extends React.Component {
         this.points = 0;
         this.idExercice = props.idExercice;
 
+        this.couleurP = '#af80dc';
+        this.couleurM = '#ff555f';
         this.nomPiece = ''
         this.pos = ''
         this.positionActuelle = '';
@@ -502,27 +504,13 @@ class Bombe1 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
-                    <Chessboard
-                        key="board"
-                        position={this.state.chess.fen()}
-                        arePiecesDraggable={false}
-                        customPieces={this.customPieces()}
-                        customSquareStyles={this.state.coloredSquares}
-                        boardOrientation={this.state.orientation}
-                        showBoardNotation={this.state.coordonnees}
-                    />
-                </div>
-                <div className="elements-droite">
-                    <i className="consigne">
-                        Ecrivez le coup pour que {this.nomPiece} mange le drapeau en {this.pos} sans toucher les bombes
-                    </i>
                     <div className="option">
                         <FormControlLabel
                             control={<this.MaterialUISwitch
                                 checked={this.state.orientation === 'white'}
                                 color="secondary"
                             />}
-                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
                             onChange={this.handleOrientation}
                         />
                         <ThemeProvider theme={this.theme}>
@@ -531,38 +519,49 @@ class Bombe1 extends React.Component {
                                     checked={this.state.coordonnees === true}
                                     color="secondary"
                                 />}
-                                label={'Coordonnée'}
+                                label={'Coordonnées'}
                                 onChange={this.handleCoordonnees}
                                 style={{
                                     textDecoration: this.state.coordonnees === false && 'line-through'
                                 }}
                             />
                         </ThemeProvider>
-                        <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
                     </div>
+                    <Chessboard
+                        key="board"
+                        position={this.state.chess.fen()}
+                        arePiecesDraggable={false}
+                        customPieces={this.customPieces()}
+                        customSquareStyles={this.state.coloredSquares}
+                        boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
+                        areArrowsAllowed={false}
+                    />
+                </div>
+                <div className="elements-droite">
+                    <i className="consigne">
+                        Ecrivez la suite de coup pour que <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}  </span> atteigne le <span style={{ color: `${this.couleurM}` }}> drapeau en {this.pos} </span> sans toucher les bombes
+                    </i>
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={piecesBlanchesNom[index]}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
+                                else {
+                                    return null;
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">
@@ -616,9 +615,18 @@ class Bombe1 extends React.Component {
                     </div>
                     <div className="input">
                         <Stack spacing={2} direction="row" alignItems="center">
+                            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="es">🇪🇸</option>
+                                <option value="de">🇩🇪</option>
+                                <option value="it">🇮🇹</option>
+                                <option value="ru">🇷🇺</option>
+                                <option value="cn">🇨🇳</option>
+                            </select>
                             <input className="reponse-input"
                                 type="text"
-                                placeholder="Entrez la position..."
+                                placeholder="Réponse..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange}
                                 onKeyDown={this.handleKeyPress}
@@ -628,7 +636,7 @@ class Bombe1 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick} >
-                                <span className="texte-3D texte-clean">
+                                <span className="texte-3D-red">
                                     ✘
                                 </span>
                             </button>

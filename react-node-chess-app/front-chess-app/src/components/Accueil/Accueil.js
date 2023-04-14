@@ -40,14 +40,14 @@ export default function Accueil() {
   }
 
   return (
-    <div>
+    <div className="accueil">
       <div>
-        <h1 className="titre">Bienvenue sur MentalChess !</h1>
+        <h1 className="bienvenue">Bienvenue sur MentalChess</h1>
         <img className="img" src="https://i.imgur.com/0EKRDDl.png" alt="imgAcceuil"></img>
       </div>
-      <div className="divMargin">
+      <div>
         {!sessionStorage.getItem('token') ? (
-          <>
+          <div className="boutons-connexion">
             <button onClick={handleClickConnexion} onMouseDown={handlePieceDown} className="bouton-3D">
               <span className="texte-3D">
                 Se connecter
@@ -59,7 +59,7 @@ export default function Accueil() {
                 S'inscrire
               </span>
             </button>
-          </>
+          </div>
         ) : (
           <button onClick={handleClickEntrainement} onMouseDown={handlePieceDown} className="bouton-3D">
             <span className="texte-3D">

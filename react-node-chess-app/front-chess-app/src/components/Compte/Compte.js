@@ -44,10 +44,6 @@ export default function Compte() {
         Howler.volume(0.3);
         soundDown.play();
     };
-    const handleClickCound = () => {
-        Howler.volume(0.3);
-        soundUp.play();
-    };
 
     const handleLogout = () => {
         Howler.volume(0.3);
@@ -95,7 +91,6 @@ export default function Compte() {
 
         axios(config)
             .then(function (response) {
-                console.log(response.data);
                 setSelectedImageUrl(newImageUrl);
                 updateGlobalAvatar(newImageUrl);
             })
@@ -129,7 +124,6 @@ export default function Compte() {
         axios(config)
             .then(function (response) {
                 setDataCompte(response.data);
-                //console.log(response.data);
                 setSelectedImageUrl(response.data.imageProfil);
             })
             .catch(function (error) {
@@ -153,7 +147,6 @@ export default function Compte() {
             .then(response => {
                 setDataExos(response.data);
                 setNbExo(response.data.length);
-                //console.log(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -181,10 +174,9 @@ export default function Compte() {
 
             const EloProvisoire = EloResponses.map(response => response.data.eloMax);
             setDataElo(EloProvisoire);
-            //console.log(EloProvisoire);
 
             for (let i = 1; i <= nbExo; i++) {
-                var config = {
+                var config2 = {
                     method: 'get',
                     maxBodyLength: Infinity,
                     url: 'http://localhost:3001/eloExercise/elo/' + name + '/' + i,
@@ -192,14 +184,12 @@ export default function Compte() {
                         'Authorization': `Bearer ${token}`
                     }
                 };
-                EloJoueur.push(axios(config));
+                EloJoueur.push(axios(config2));
             }
             const EloJoueurRep = await Promise.all(EloJoueur);
 
             const EloJoueurProvisoire = EloJoueurRep.map(response => response.data.exerciceElo);
             setDataEloJoueur(EloJoueurProvisoire);
-            console.log(EloJoueurProvisoire);
-
         };
 
         fetchElo();
@@ -215,7 +205,7 @@ export default function Compte() {
 
 
     return (
-        <div>
+        <div className="comptePage">
             <h1 className="name_display">{name}</h1>
             <AvatarCompte
                 imageProfil={selectedImageUrl}
@@ -223,8 +213,9 @@ export default function Compte() {
                 setShowPopup={setShowPopup}
             />
             <h1>
-                {eloUndefined(dataCompte.global_elo) + " "}
                 <FontAwesomeIcon icon={whitePawn} size="lg" />
+                {" " + eloUndefined(dataCompte.global_elo) + " "}
+                points <FontAwesomeIcon icon={whitePawn} size="lg" />
             </h1>
             {showPopup && (
                 <div className="avatar-popup" onClick={handleClosePopup}>
@@ -241,8 +232,20 @@ export default function Compte() {
                         />
                     ))}
                 </div>)}
+            <button className="bouton-3D-red"
+                onClick={() => {
+                    Howler.volume(0.3);
+                    soundUp.play();
+                    navigate('/selectionExercices');
+                }}
+                onMouseEnter={() => handlePieceHover()}
+                onMouseDown={() => handlePieceDown()}>
+                <span className="texte-3D-red"> {/* Retourne à la page précédente */}
+                    ← Retour
+                </span>
+            </button>
             <div className="image-container-compte">
-                <p className="titre">Progression des exercices :</p>
+                <h1 className="titre">Progression :</h1>
                 {dataExos.map((exercice) => (
                     <div className="img-wrapper-compte" key={exercice.id}>
                         <img
@@ -258,7 +261,7 @@ export default function Compte() {
                                     key={exercice.id}
                                     className="barxp"
                                     completed={eloUndefined(dataEloJoueur[exercice.id - 1])}
-                                    customLabel={eloUndefined(dataEloJoueur[exercice.id - 1])+""}
+                                    customLabel={eloUndefined(dataEloJoueur[exercice.id - 1]) + ""}
                                     maxCompleted={dataElo[exercice.id - 1]}
                                     bgColor='#7e9d4e'
                                 />
@@ -267,12 +270,12 @@ export default function Compte() {
                     </div>
                 ))}
             </div>
-            <button className="bouton-3D deconnexion"
+            <button className="bouton-3D-red deconnexion"
                 title="Deconnexion"
                 onMouseEnter={handlePieceHover}
                 onMouseUp={handleLogout}
                 onMouseDown={handlePieceDown}>
-                <span className="texte-3D deconnexion">
+                <span className="texte-3D-red deconnexion">
                     Déconnexion
                 </span>
             </button>

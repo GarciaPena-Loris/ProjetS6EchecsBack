@@ -1,5 +1,6 @@
 import React from "react";
 import './Notation.css';
+import '../Exercices.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
@@ -22,7 +23,7 @@ class Notation extends React.Component {
       orientation: "white",
       coordonnees: true,
       selectedLanguage: 'fr',
-      piecesLanguage: ['P', 'T', 'F', 'C', 'D', 'R'],
+      piecesLanguage: ['T', 'F', 'C', 'D', 'R'],
       coloredSquares: {},
       chess: new Chess(),
     };
@@ -75,7 +76,7 @@ class Notation extends React.Component {
   genererPieceAleatoire = () => {
     const { chess } = this.state;
     const alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-    const pieces = ['P', 'R', 'B', 'N', 'Q', 'K'];
+    const pieces = ['R', 'B', 'N', 'Q', 'K'];
     chess.clear(); // Vide le plateau
     let colonneP = Math.floor(Math.random() * 8) + 1;
     let ligneP = Math.floor(Math.random() * 8) + 1;
@@ -171,13 +172,13 @@ class Notation extends React.Component {
     this.soundUp.play();
 
     const listePiecesLangue = {
-      en: ['P', 'R', 'B', 'N', 'Q', 'K'],
-      fr: ['P', 'T', 'F', 'C', 'D', 'R'],
-      es: ['P', 'T', 'A', 'C', 'D', 'R'],
-      de: ['B', 'S', 'L', 'T', 'D', 'K'],
-      it: ['P', 'T', 'A', 'C', 'D', 'R'],
-      ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
-      cn: ['卒', '马', '象', '车', '后', '帅'],
+      en: ['R', 'B', 'N', 'Q', 'K'],
+      fr: ['T', 'F', 'C', 'D', 'R'],
+      es: ['T', 'A', 'C', 'D', 'R'],
+      de: ['S', 'L', 'T', 'D', 'K'],
+      it: ['T', 'A', 'C', 'D', 'R'],
+      ru: ['К', 'С', 'Л', 'Ф', 'Кр'],
+      cn: ['马', '象', '车', '后', '帅'],
     }
     this.coup = listePiecesLangue[event.target.value][this.indexPiece] + this.position;
     this.setState({ selectedLanguage: event.target.value, piecesLanguage: listePiecesLangue[event.target.value] });
@@ -351,7 +352,7 @@ class Notation extends React.Component {
 
   render() {
     const piecesBlanchesNom = [
-      "Pion", "Tour", "Fou", "Cavalier", "Dame", "Roi"
+      "Tour", "Fou", "Cavalier", "Dame", "Roi"
     ]
     let lignes = this.state.orientation === 'white'
       ? ["8", "7", "6", "5", "4", "3", "2", "1"]
@@ -370,6 +371,28 @@ class Notation extends React.Component {
     return (
       <div className="container-general">
         <div className="plateau-gauche">
+          <div className="option">
+            <FormControlLabel
+              control={<this.MaterialUISwitch
+                checked={this.state.orientation === 'white'}
+              />}
+              label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
+              onChange={this.handleOrientation}
+            />
+            <ThemeProvider theme={this.theme}>
+              <FormControlLabel
+                control={<this.Android12Switch
+                  checked={this.state.coordonnees === true}
+                  color="secondary"
+                />}
+                label={'Coordonnées'}
+                onChange={this.handleCoordonnees}
+                style={{
+                  textDecoration: this.state.coordonnees === false && 'line-through'
+                }}
+              />
+            </ThemeProvider>
+          </div>
           <Chessboard
             key="board"
             position={this.state.chess.fen()}
@@ -381,43 +404,10 @@ class Notation extends React.Component {
         </div>
         <div className="elements-droite">
           <i className="consigne">
-            Ecrivez la pièce et sa position
+            Ecrivez la position de la pièce
           </i>
-          <div className="option">
-            <FormControlLabel
-              control={<this.MaterialUISwitch
-                checked={this.state.orientation === 'white'}
-                color="secondary"
-              />}
-              label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
-              onChange={this.handleOrientation}
-            />
-            <ThemeProvider theme={this.theme}>
-              <FormControlLabel
-                control={<this.Android12Switch
-                  checked={this.state.coordonnees === true}
-                  color="secondary"
-                />}
-                label={'Coordonnée'}
-                onChange={this.handleCoordonnees}
-                style={{
-                  textDecoration: this.state.coordonnees === false && 'line-through'
-                }}
-              />
-            </ThemeProvider>
-            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-              <option value="fr">Français 🇫🇷</option>
-              <option value="en">English 🇬🇧</option>
-              <option value="es">Español 🇪🇸</option>
-              <option value="de">Deutsch 🇩🇪</option>
-              <option value="it">Italiano 🇮🇹</option>
-              <option value="ru">Русский 🇷🇺</option>
-              <option value="cn">中文 🇨🇳</option>
-            </select>
-          </div>
           <div className="boutons">
             <div className="groupe-butons" >
-              <h3 className="titre-boutons">Pièce</h3>
               {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -434,7 +424,6 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons">
-            <h3 className="titre-boutons">Colonnes</h3>
               {colonnes.map((line, index) => { // a b c d e f g h
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -451,7 +440,6 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons" >
-            <h3 className="titre-boutons">Lignes</h3>
               {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
@@ -468,7 +456,6 @@ class Notation extends React.Component {
               })}
             </div>
             <div className="groupe-butons" >
-            <h3 className="titre-boutons">Autres</h3>
               {custom.map((line, index) => { // x O-O O-O-O = e.p. +
                 return (
                   <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
@@ -487,19 +474,28 @@ class Notation extends React.Component {
           </div>
           <div className="input">
             <Stack spacing={2} direction="row" alignItems="center">
+              <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                <option value="fr">🇫🇷</option>
+                <option value="en">🇬🇧</option>
+                <option value="es">🇪🇸</option>
+                <option value="de">🇩🇪</option>
+                <option value="it">🇮🇹</option>
+                <option value="ru">🇷🇺</option>
+                <option value="cn">🇨🇳</option>
+              </select>
               <input className="reponse-input"
                 type="text"
-                placeholder="Entrez la position..."
+                placeholder="Réponse..."
                 value={this.state.inputValue}
                 onChange={this.handleInputChange}
                 onKeyDown={this.handleKeyPress}
                 ref={this.monInputRef} />
-              <button className="bouton-3D button-clean"
+              <button className="bouton-3D-red"
                 title="supprimer"
                 onMouseDown={() => this.handlePieceDown()}
                 onMouseEnter={() => this.handlePieceHover()}
                 onClick={this.handleClearButtonClick} >
-                <span className="texte-3D texte-clean">
+                <span className="texte-3D-red">
                   ✘
                 </span>
               </button>
@@ -516,13 +512,13 @@ class Notation extends React.Component {
                   Valider
                 </span>
               </button>
-              {this.state.showIncorrect && <button className="bouton-3D button-replay"
-                title="Nouveau ↺"
+              {this.state.showIncorrect && <button className="bouton-3D"
+                title="Nouveau"
                 onMouseEnter={() => this.handlePieceHover()}
                 onMouseUp={this.handleClickNouveau}
                 onMouseDown={() => this.handlePieceDown()}>
-                <span className="texte-3D texte-replay">
-                  Nouveau ↺
+                <span className="texte-3D">
+                  ↺
                 </span>
               </button>}
             </Stack>

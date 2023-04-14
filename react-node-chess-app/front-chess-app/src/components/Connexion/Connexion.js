@@ -76,14 +76,12 @@ export default function Connexion() {
                         navigate('/selectionExercices');
                     })
                     .catch(function (error) {
-                        console.log(error.response);
                         console.log(error);
 
                     });
             })
             .catch(function (error) {
                 if (error.response) {
-                    console.log(error.response.data);
                     if (error.response.data.error) {
                         setReponseServeur(error.response.data.error);
                     }
@@ -119,14 +117,13 @@ export default function Connexion() {
                     <button
                         className="show-password-connexion"
                         type="button"
-                        onMouseDown={toggleShowPassword}
-                        onMouseUp={toggleShowPassword}>
+                        onClick={toggleShowPassword}>
                         {showPassword ? <FontAwesomeIcon icon={OpenedEye} size="sm" /> : <FontAwesomeIcon icon={ClosedEye} size="sm" />}
                     </button>
                 </div>
                 <button
                     className="bouton-3D"
-                    {...((nomCompte === "" || motDePasse.length < 0) && { disabled: true })}
+                    {...((nomCompte === "" || motDePasse.length < 8) && { disabled: true })}
                     onMouseDown={handlePieceDown}>
                     <span className="texte-3D">
                         Se connecter

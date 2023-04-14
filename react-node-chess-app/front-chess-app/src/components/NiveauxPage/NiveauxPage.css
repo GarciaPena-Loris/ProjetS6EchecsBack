@@ -1,9 +1,11 @@
 .level-container {
-    margin: 0 20vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    padding: 0 20rem;
+    color: #fff;
 }
 
 .level-header {
@@ -11,37 +13,60 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    margin: 1% 0;
 }
 
 .level-label {
-    font-size: 2vw;
+    font-size: 3rem;
     font-weight: bold;
-    color: #fff;
-}
-
-.back-button {
-    width: 13%;
-    padding: 0.7% 0;
-    font-size: 1vw;
-    font-weight: 600;
 }
 
 .level-elo {
-    font-size: 0.8vw;
-    color: #fff;
+    font-size: 1rem;
 }
 
 .level-jeux {
-    display: flex;
     width: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
-@media only screen and (max-width: 1400px) {
+@media (max-width: 1800px) {
     .level-container {
-        margin: 0 15vw;
+        padding: 0 1rem;
     }
+
+}
+
+
+@media screen and (max-width: 768px) {
+    .level-container {
+        padding: 0 0;
+    }
+
+    .level-header {
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin: 3% 0;
+    }
+
+    .level-header>.level-label {
+        order: 1;
+        /* élément 2 */
+    }
+
+    .level-header>.level-elo {
+        order: 3;
+        /* élément 3 */
+    }
+
+    .level-header>*:first-child,
+    .level-header>*:last-child {
+        order: 2;
+        /* éléments 1 et 4 */
+    }
+
+
+    .level-label {
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+
 }

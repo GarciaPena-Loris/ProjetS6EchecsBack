@@ -63,7 +63,6 @@ export default function ExercicePage() {
 
         axios(config)
             .then(function (response) {
-                //console.log(JSON.stringify(response.data));
                 setDataLevels(response.data.sort((a, b) => a.id - b.id));
                 setMaxElo(response.data[(response.data.length) - 1].required_elo);
             })
@@ -86,9 +85,7 @@ export default function ExercicePage() {
 
         axios.request(config)
             .then((response) => {
-                //console.log(JSON.stringify(response.data));
                 setDataEloJoueur(response.data.exerciceElo);
-                //console.log(response.data.exerciceElo);
             })
             .catch((error) => {
                 console.log(error);
@@ -108,7 +105,6 @@ export default function ExercicePage() {
 
         axios.request(config)
             .then((response) => {
-                //console.log(JSON.stringify(response.data));
                 setDataUnlock(response.data.map(obj => obj.id_level));
             })
             .catch((error) => {
@@ -119,9 +115,6 @@ export default function ExercicePage() {
 
     //fonction qui vérifie si tu as l'élo requis pour acceder aux niveaux
     function eloRequired(id) {
-        //console.log(id);
-        //console.log(dataUnlock);
-        //console.log(dataUnlock.includes(id))
         return dataUnlock.includes(id);
     }
 
@@ -135,7 +128,10 @@ export default function ExercicePage() {
 
     return (
         <div className="exercice-page">
-            <button className="bouton-3D bouton-retour"
+            <h1 className="exercice-title">
+                {exercice.name}
+            </h1>
+            <button className="bouton-3D-red"
                 onClick={() => {
                     Howler.volume(0.3);
                     soundUp.play();
@@ -143,26 +139,23 @@ export default function ExercicePage() {
                 }}
                 onMouseEnter={() => handlePieceHover()}
                 onMouseDown={() => handlePieceDown()}>
-                <span className="texte-3D"> {/* Retourne à la page précédente */}
+                <span className="texte-3D-red"> {/* Retourne à la page précédente */}
                     ← Retour
                 </span>
             </button>
-            <h1 className="exercice-title">
-                {exercice.name}
-            </h1>
             <p className="exercice-description">{exercice.description}</p>
             <div className="barxp-div-exo">
                 <p className="progression-xp">Progression:</p>
                 <ProgressBar
                     className="barxp"
                     completed={eloUndefined(dataEloJoueur)}
-                    customLabel={eloUndefined(dataEloJoueur) + " points"}
+                    customLabel={eloUndefined(dataEloJoueur)}
                     maxCompleted={maxElo}
                     bgColor='#7e9d4e'
                 />
             </div>
             <div className="levels-container">
-                <div className="level-header">
+                <div className="level-title-header">
                     <div className="level-title"> Niveaux </div>
                     <div className="level-title">Description</div>
                     <div className="level-title">Élo requis</div>
@@ -171,7 +164,6 @@ export default function ExercicePage() {
                     <React.Fragment key={level.id}>
                         <div className="level-row">
                             <div className="level-name-container">
-                                <div className="level-name">{level.name}</div>
                                 <button className="bouton-3D"
                                     onClick={() => handleLevelClick((index + 1))}
                                     onMouseEnter={() => handlePieceHover()}
@@ -181,12 +173,13 @@ export default function ExercicePage() {
                                         Niveau {index + 1}
                                     </span>
                                 </button>
+                                <div className="level-name"><strong> {level.name}</strong></div>
                             </div>
                             <div className="level-name-container">
                                 <div className="level-description">{level.rules}</div>
                             </div>
                             <div className="level-name-container">
-                                <div className="level-description">{level.required_elo}</div>
+                                <div className="level-description"><i><b>{level.required_elo}</b> points requis</i></div>
                             </div>
                         </div>
                         {index !== dataLevels.length - 1 && (

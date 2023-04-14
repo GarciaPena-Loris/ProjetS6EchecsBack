@@ -1,5 +1,6 @@
 import React from "react";
 import './Notation.css';
+import '../Exercices.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
@@ -112,17 +113,17 @@ class Notation6 extends React.Component {
             b: 'fou',
             n: 'cavalier',
             r: 'tour',
-            q: 'queen',
-            k: 'king',
+            q: 'dame',
+            k: 'roi',
         }
 
         // Choisi entre coup avec x et coup sans x
         let nbCoups = 0;
-        let x = Math.floor(Math.random() * 3);
+        let proba = Math.random();
         let coups = '';
         let verboseCoups = '';
         let index = 0;
-        if (x === 0) { // coup avec sans x
+        if (proba < 0.2) { // coup avec sans x
             nbCoups = Math.floor(Math.random() * 15) + 4;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
@@ -138,7 +139,7 @@ class Notation6 extends React.Component {
             verboseCoups = newChess.moves({ verbose: true });
             index = Math.floor(Math.random() * coups.length);
         }
-        else if (x === 1) { // coup avec x
+        else if (proba >= 0.2 && proba < 0.6) { // coup avec x
             nbCoups = Math.floor(Math.random() * 10) + 4;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
@@ -157,7 +158,7 @@ class Notation6 extends React.Component {
             const coupAvecX = coups.find(coup => coup.includes('x'));
             index = coups.indexOf(coupAvecX);
         }
-        else {
+        else { // echec ou mat
             nbCoups = Math.floor(Math.random() * 10) + 4;
             for (let i = 0; i < nbCoups; i++) {
                 const coups = newChess.moves();
@@ -520,6 +521,30 @@ class Notation6 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
+                    <div className="option">
+                        <FormControlLabel
+                            control={<this.MaterialUISwitch
+                                checked={this.state.orientation === 'white'}
+                            />}
+                            label={
+                                this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'
+                            }
+                            onChange={this.handleOrientation}
+                        />
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnées'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                    </div>
                     <Chessboard
                         key="board"
                         position={this.state.chess.fen()}
@@ -535,57 +560,23 @@ class Notation6 extends React.Component {
                         Ecrivez le coup réalisé par <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
                         </span>
                     </i>
-                    <div className="option">
-                        <FormControlLabel
-                            control={<this.MaterialUISwitch
-                                checked={this.state.orientation === 'white'}
-                            />}
-                            label={
-                                this.state.orientation === 'white' ? 'Plateau côté Blancs' : 'Plateau côté Noirs'
-                            }
-                            onChange={this.handleOrientation}
-                        />
-                        <ThemeProvider theme={this.theme}>
-                            <FormControlLabel
-                                control={<this.Android12Switch
-                                    checked={this.state.coordonnees === true}
-                                    color="secondary"
-                                />}
-                                label={'Coordonnée'}
-                                onChange={this.handleCoordonnees}
-                                style={{
-                                    textDecoration: this.state.coordonnees === false && 'line-through'
-                                }}
-                            />
-                        </ThemeProvider>
-                        <select className="language-selector"
-                            value={this.state.selectedLanguage}
-                            onMouseDown={() => this.handlePieceDown()}
-                            onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
-                    </div>
                     <div className="boutons">
                         <div className="groupe-butons" >
                             {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier dame roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
+                                if (index !== 0) {
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={line}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                }
                             })}
                         </div>
                         <div className="groupe-butons">
@@ -639,9 +630,18 @@ class Notation6 extends React.Component {
                     </div>
                     <div className="input">
                         <Stack spacing={2} direction="row" alignItems="center">
+                            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="es">🇪🇸</option>
+                                <option value="de">🇩🇪</option>
+                                <option value="it">🇮🇹</option>
+                                <option value="ru">🇷🇺</option>
+                                <option value="cn">🇨🇳</option>
+                            </select>
                             <input className="reponse-input"
                                 type="text"
-                                placeholder="Entrez la position..."
+                                placeholder="Réponse..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange}
                                 onKeyDown={this.handleKeyPress}
@@ -651,7 +651,7 @@ class Notation6 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick}>
-                                <span className="texte-3D texte-clean">
+                                <span className="texte-3D-red">
                                     ✘
                                 </span>
                             </button>
@@ -677,13 +677,13 @@ class Notation6 extends React.Component {
                                     Rejouer
                                 </span>
                             </button>
-                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
-                                title="Nouveau ↺"
+                            {this.state.showIncorrect && <button className="bouton-3D"
+                                title="Nouveau"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D texte-replay">
-                                    Nouveau ↺
+                                <span className="texte-3D">
+                                    ↺
                                 </span>
                             </button>}
                         </Stack>

@@ -1,6 +1,7 @@
 import React from "react";
 import './Notation.css';
 import '../../Components.css';
+import '../Exercices.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import axios from "axios";
@@ -371,6 +372,25 @@ class Notation8 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
+                    <div className="option">
+                        {this.state.orientation === 'white' ?
+                            <h3><i>Trait aux <b>Blancs</b> </i></h3> :
+                            <h3><i>Trait aux <b>Noirs</b> </i></h3>
+                        }
+                        <ThemeProvider theme={this.theme}>
+                            <FormControlLabel
+                                control={<this.Android12Switch
+                                    checked={this.state.coordonnees === true}
+                                    color="secondary"
+                                />}
+                                label={'Coordonnées'}
+                                onChange={this.handleCoordonnees}
+                                style={{
+                                    textDecoration: this.state.coordonnees === false && 'line-through'
+                                }}
+                            />
+                        </ThemeProvider>
+                    </div>
                     <Chessboard
                         key="board"
                         position={this.state.chess.fen()}
@@ -384,36 +404,17 @@ class Notation8 extends React.Component {
                 </div>
                 <div className="elements-droite">
                     <i className="consigne">
-                        Faite le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
-                    </i>
-                    <div className="option">
-                        {this.state.orientation === 'white' ?
-                            <h2 className="titre-boutons"><i>Vous jouez les Blancs </i>⚪</h2> :
-                            <h2 className="titre-boutons"><i>Vous jouez les Noirs </i>⚫</h2>
-                        }
-                        <ThemeProvider theme={this.theme}>
-                            <FormControlLabel
-                                control={<this.Android12Switch
-                                    checked={this.state.coordonnees === true}
-                                    color="secondary"
-                                />}
-                                label={'Coordonnée'}
-                                onChange={this.handleCoordonnees}
-                                style={{
-                                    textDecoration: this.state.coordonnees === false && 'line-through'
-                                }}
-                            />
-                        </ThemeProvider>
+                        Faites le coup <span style={{ color: `${this.couleurO}` }}> {this.languageCoup} </span>
                         <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
+                            <option value="fr">🇫🇷</option>
+                            <option value="en">🇬🇧</option>
+                            <option value="es">🇪🇸</option>
+                            <option value="de">🇩🇪</option>
+                            <option value="it">🇮🇹</option>
+                            <option value="ru">🇷🇺</option>
+                            <option value="cn">🇨🇳</option>
                         </select>
-                    </div>
+                    </i>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}
                     </div>
