@@ -43,7 +43,7 @@ function Navbar() {
 
     return (
         <nav className='nav-bar'>
-            <ul Name="nav-menu">
+            <ul className="nav-menu">
                 <li><Link to="/" onMouseEnter={handlePieceHover} onClick={handleClickCound}>Accueil</Link></li>
                 <li>|</li>
                 {token ? (

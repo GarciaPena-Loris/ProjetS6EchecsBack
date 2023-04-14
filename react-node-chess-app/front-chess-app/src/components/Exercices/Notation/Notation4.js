@@ -785,7 +785,7 @@ class Notation4 extends React.Component {
                                 checked={this.state.orientation === 'white'}
                             />}
                             label={
-                                this.state.orientation === 'white' ? 'Trait aux Blancs' : 'Trait aux Noirs'
+                                this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'
                             }
                             onChange={this.handleOrientation}
                         />

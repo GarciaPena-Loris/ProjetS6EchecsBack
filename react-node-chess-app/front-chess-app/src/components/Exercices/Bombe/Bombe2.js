@@ -556,7 +556,7 @@ class Bombe2 extends React.Component {
                                 checked={this.state.orientation === 'white'}
                                 color="secondary"
                             />}
-                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
                             onChange={this.handleOrientation}
                         />
                         <ThemeProvider theme={this.theme}>

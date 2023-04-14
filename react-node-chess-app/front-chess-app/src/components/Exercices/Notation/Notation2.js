@@ -642,7 +642,7 @@ class Notation2 extends React.Component {
                             control={<this.MaterialUISwitch
                                 checked={this.state.orientation === 'white'}
                             />}
-                            label={this.state.orientation === 'white' ? 'Trait aux Blancs' : 'Trait aux Noirs'}
+                            label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
                             onChange={this.handleOrientation}
                         />
                         <ThemeProvider theme={this.theme}>

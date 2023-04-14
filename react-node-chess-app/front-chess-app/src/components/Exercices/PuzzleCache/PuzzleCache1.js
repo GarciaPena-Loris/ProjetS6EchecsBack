@@ -3,9 +3,9 @@ import './PuzzleCache.css';
 import '../Exercices.css';
 import '../../Components.css';
 import { Chessboard } from 'react-chessboard'
-import { Chess, SQUARES } from 'chess.js'
+import { Chess } from 'chess.js'
 import FormControlLabel from '@mui/material/FormControlLabel';
-//import { decodeToken } from "react-jwt";
+import { decodeToken } from "react-jwt";
 import { Stack } from '@mui/material';
 import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
@@ -31,9 +31,7 @@ class PuzzleCache1 extends React.Component {
             coloredSquares: {},
             chess: new Chess(),
             timerInterval: 1,
-            timerId: null
         };
-        this.currentIndex = 0
 
         // validation réponse
         this.pointsGagne = props.pointsGagnes;
@@ -49,12 +47,14 @@ class PuzzleCache1 extends React.Component {
             ru: ['П', 'К', 'С', 'Л', 'Ф', 'Кр'],
             cn: ['卒', '马', '象', '车', '后', '帅'],
         }
+        this.showPiece = false;
+
         this.coup = '';
         this.languageCoup = '';
-        this.pos = '';
         this.text = 'Deplacement en cours...';
+        this.option = '';
         this.piece1 = '';
-        this.piece2= '';
+        this.piece2 = '';
 
         this.idExercice = props.idExercice;
         this.couleurP = '#af80dc';
@@ -62,17 +62,17 @@ class PuzzleCache1 extends React.Component {
         this.historicMove = [];
         this.pieceMangee = false;
         this.nbCoupAFaire = 10;
-        this.nbCoupEffecutes = 0;
         if (Math.random() < 0.5) {
             this.nbCoupAFaire++;
         }
+        this.nbCoupEffecutes = 0;
         this.interval = 0;
         this.intervalRefaire = 0;
-        this.currentIndexRejouer = 0;
+        this.currentIndexRejouer = this.nbCoupAFaire;
 
         // decode token
-        //const decoded = decodeToken(sessionStorage.token);
-        //this.name = decoded.name;
+        const decoded = decodeToken(sessionStorage.token);
+        this.name = decoded.name;
 
         this.monInputRef = React.createRef();
 
@@ -109,12 +109,7 @@ class PuzzleCache1 extends React.Component {
         this.interval = setInterval(() => {
             let possibleMoves = newChess.moves();
             let possibleXMoves;
-            if (Math.random() < 0.2) {
-                possibleXMoves = possibleMoves.filter(element => !element.includes("+") && !element.includes("#"));
-            }
-            else {
-                possibleXMoves = possibleMoves.filter(element => element.includes("x") && !element.includes("+") && !element.includes("#"));
-            }
+            possibleXMoves = possibleMoves.filter(element => element.includes("x") && !element.includes("+") && !element.includes("#"));
             if (possibleXMoves.length >= 1) {
                 possibleMoves = possibleXMoves;
             }
@@ -124,12 +119,13 @@ class PuzzleCache1 extends React.Component {
             this.historicMove.push(possibleMoves[randomIndex]);
             this.setState({ chess: newChess });
             this.nbCoupEffecutes++;
-            console.log("faire coup, num Coup:", this.nbCoupEffecutes);
-            console.log("faire coup, nb Coup:", this.nbCoupAFaire);
             if (this.nbCoupEffecutes >= this.nbCoupAFaire && possibleMoves.some(move => move.includes("x"))) {
                 clearInterval(this.interval);
-                const coupUndo = this.state.chess.undo();
+                const coupUndo = newChess.undo();
+                console.log("🚀 ~ file: PuzzleCache1.js:127 ~ PuzzleCache1 ~ this.interval=setInterval ~ coupUndo:", coupUndo)
+                this.setState({ chess: newChess });
                 this.definirCoup(coupUndo);
+                return;
             }
 
         }, this.state.timerInterval * 1000);
@@ -143,30 +139,43 @@ class PuzzleCache1 extends React.Component {
     };
 
     definirCoup = (coupUndo) => {
+        console.log(coupUndo);
         // Apres les coups
         if (coupUndo.color === "w") {
-            this.text = 'Ecrivez le coup pour que la piece en ' + coupUndo.from + ' prenne la pièce en ' + coupUndo.to;
+            this.text = 'Ecrivez la pièce qui prend en ';
+            this.option = " 'x' la pièce prise en ";
             this.coup = coupUndo.san;
             this.piece1 = coupUndo.from;
             this.piece2 = coupUndo.to;
 
-            if (this.coup.charAt(0) === this.coup.charAt(0).toUpperCase()) {
-                const index = this.listePiecesLangue['en'].indexOf(this.coup.charAt(0));
-                const piece = this.listePiecesLangue[this.state.selectedLanguage][index];
+            this.setState({
+                coloredSquares: {
+                    [this.piece1]: { backgroundColor: this.couleurP },
+                    [this.piece2]: { backgroundColor: this.couleurM },
+                },
+            });
 
-                this.languageCoup = piece + this.coup.slice(1);
-            }
-            else {
-                this.languageCoup = this.coup;
-            }
+            this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf(coupUndo.piece.toUpperCase())]
+                + "x" +
+                this.listePiecesLangue[this.state.selectedLanguage][this.listePiecesLangue['en'].indexOf(coupUndo.captured.toUpperCase())];
+            console.log("🚀 ~ file: PuzzleCache1.js:158 ~ PuzzleCache1 ~ this.languageCoup:", this.languageCoup)
+
         }
         else {
-            this.text = 'Ecrivez la piece qui va être mangé en  ' + coupUndo.to;
-            this.piece = coupUndo.to;
+            this.text = 'Ecrivez la piece qui va être prise en  ';
+            this.piece1 = coupUndo.to;
             const piece = coupUndo.captured;
+            this.coup = coupUndo.san;
+
             const indexPiece = this.listePiecesLangue['en'].indexOf(piece.toUpperCase());
             this.languageCoup = this.listePiecesLangue[this.state.selectedLanguage][indexPiece];
             this.pieceMangee = true;
+
+            this.setState({
+                coloredSquares: {
+                    [this.piece1]: { backgroundColor: this.couleurM },
+                },
+            });
         }
     }
 
@@ -174,12 +183,13 @@ class PuzzleCache1 extends React.Component {
     rejouer = (event) => {
         this.setState({ chess: new Chess() });
         this.currentIndexRejouer = 0;
+        clearInterval(this.intervalRefaire);
         this.refaireCoup();
     };
 
     refaireCoup = () => {
         this.intervalRefaire = setInterval(() => {
-            if (this.currentIndexRejouer < this.historicMove.length - 1) {
+            if (this.currentIndexRejouer < this.nbCoupAFaire) {
                 this.state.chess.move(this.historicMove[this.currentIndexRejouer]);
                 this.setState({ chess: this.state.chess });
                 this.currentIndexRejouer++;
@@ -204,6 +214,19 @@ class PuzzleCache1 extends React.Component {
                 this.handleClick();
             }
         }
+    }
+
+    handleSliderChange = (event, newValue) => {
+        this.setState({ timerInterval: newValue }, async () => {
+            if (this.nbCoupEffecutes < this.nbCoupAFaire) {
+                clearInterval(this.interval);
+                this.faireCoup(this.state.chess);
+            }
+            else if (this.currentIndexRejouer < this.nbCoupAFaire) {
+                clearInterval(this.intervalRefaire);
+                this.refaireCoup();
+            }
+        });
     }
 
     handleClearButtonClick = () => {
@@ -233,7 +256,6 @@ class PuzzleCache1 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
         this.text = 'Deplacement en cours...';
-        this.pos = '';
         this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
         this.genererMouvement();
     };
@@ -267,26 +289,43 @@ class PuzzleCache1 extends React.Component {
         Howler.volume(0.3);
         this.soundUp.play();
 
-        if (this.languageCoup.charAt(0) === this.languageCoup.charAt(0).toUpperCase()) {
-            const index = this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0));
-            const piece = this.listePiecesLangue[event.target.value][index];
-
-            this.languageCoup = piece + this.languageCoup.slice(1);
+        if (this.pieceMangee) {
+            this.languageCoup = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0))];
         }
+        else {
+            this.languageCoup = this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(0))]
+                + "x" +
+                this.listePiecesLangue[event.target.value][this.listePiecesLangue[this.state.selectedLanguage].indexOf(this.languageCoup.charAt(2))];
+        }
+        console.log("🚀 ~ file: PuzzleCache1.js:297 ~ PuzzleCache1 ~ this.languageCoup:", this.languageCoup)
         this.setState({ selectedLanguage: event.target.value, piecesLanguage: this.listePiecesLangue[event.target.value] });
     }
 
-    handleSliderChange = (event, newValue) => {
-        this.setState({ timerInterval: newValue }, async () => {
-            if (this.nbCoupEffecutes < this.nbCoupAFaire) {
-                clearInterval(this.interval);
-                this.faireCoup(this.state.chess);
-            }
-            else if (this.currentIndexRejouer < this.nbCoupAFaire) {
-                clearInterval(this.intervalRefaire);
-                this.refaireCoup();
-            }
-        });
+    resetVariable = () => {
+        clearInterval(this.intervalRefaire);
+        clearInterval(this.intervalRefaire);
+        this.showPiece = false;
+        this.text = 'Deplacement en cours...';
+        this.option = '';
+        this.piece1 = '';
+        this.piece2 = '';
+        this.historicMove = [];
+        this.pieceMangee = false;
+        this.nbCoupAFaire = 10;
+        if (Math.random() < 0.5) {
+            this.nbCoupAFaire++;
+        }
+        this.nbCoupEffecutes = 0;
+        this.interval = 0;
+        this.intervalRefaire = 0;
+        this.currentIndexRejouer = this.nbCoupAFaire;
+
+        this.setState({
+            showCorrect: false,
+            showIncorrect: false,
+            message: '',
+            coloredSquares: {},
+        })
     }
 
     handleClick = () => {
@@ -297,7 +336,7 @@ class PuzzleCache1 extends React.Component {
         if (inputValue === this.languageCoup) {
             Howler.volume(0.2);
             this.soundWin.play();
-            const message = `Bonne réponse ! Vous gagné ${this.pointsGagne} points.`;
+            const message = `Bonne réponse ! La réponse était bien ${inputValue}. Vous gagné ${this.pointsGagne} points.`;
             this.points = this.pointsGagne;
             this.setState({
                 message: message,
@@ -306,18 +345,12 @@ class PuzzleCache1 extends React.Component {
                 showCorrect: true,
                 showIncorrect: false
             });
-            if (inputValue.length >= 3) {
-                chess.move(this.coup);
-            }
-            this.pieceMangee = false;
-            this.historicMove = [];
+            chess.move(this.coup);
+
             setTimeout(() => {
-                this.text = 'Deplacement en cours...';
-                this.pos = '';
-                this.setState({ showCorrect: false, showIncorrect: false, message: '', coloredSquares: {} });
+                this.resetVariable();
 
                 this.handleUpdate();
-
                 this.genererMouvement();
             }, 3000); // Génerer le plateau 3 secondes
         }
@@ -326,11 +359,13 @@ class PuzzleCache1 extends React.Component {
             this.soundWrong.play();
             let message = '';
             if (this.props.exerciceElo <= 0) {
-                message = `Mauvaise réponse ! Vous perdez 0 points. Tentez une autre réponse.`;
+                message = `Mauvaise réponse ! Vous perdez 0 points. 
+                Les pièce se dévoile. Tentez une autre réponse.`;
                 this.points = 0;
             }
             else {
-                message = `Mauvaise réponse ! Vous perdez ${this.pointsPerdu} points. Tentez une autre réponse.`;
+                message = `Mauvaise réponse ! Vous perdez ${this.pointsPerdu} points. 
+                Les pièce se dévoile. Tentez une autre réponse.`;
                 this.points = -(this.pointsPerdu);
             }
             this.setState({
@@ -341,8 +376,9 @@ class PuzzleCache1 extends React.Component {
                 showIncorrect: true
             });
             setTimeout(() => {
+                this.showPiece = true;
                 this.handleUpdate();
-            }, 1000);
+            }, 2000);
         }
     }
 
@@ -382,30 +418,32 @@ class PuzzleCache1 extends React.Component {
     }
 
     customPieces = () => {
-        const piecesBlanche = ["wN", "wB", "wR", "wQ"];
-        const roiBlanc = ["wK"];
-        const pionBlanc = ["wP"];
+        if (!this.showPiece) {
+            const piecesBlanche = ["wN", "wB", "wR", "wQ"];
+            const roiBlanc = ["wK"];
+            const pionBlanc = ["wP"];
 
-        const returnPieces = {};
-        piecesBlanche.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://i.imgur.com/DqZkC4h.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        pionBlanc.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://i.imgur.com/Br9K7hP.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        roiBlanc.map((p) => {
-            returnPieces[p] = ({ squareWidth }) => (
-                <img src="https://i.imgur.com/70jzGYv.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
-            );
-            return null;
-        });
-        return returnPieces;
+            const returnPieces = {};
+            piecesBlanche.map((p) => {
+                returnPieces[p] = ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/DqZkC4h.png" alt="piece" style={{ width: squareWidth, height: squareWidth }}></img>
+                );
+                return null;
+            });
+            pionBlanc.map((p) => {
+                returnPieces[p] = ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/Br9K7hP.png" alt="pions" style={{ width: squareWidth, height: squareWidth }}></img>
+                );
+                return null;
+            });
+            roiBlanc.map((p) => {
+                returnPieces[p] = ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/70jzGYv.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
+                );
+                return null;
+            });
+            return returnPieces;
+        }
     };
 
     MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
@@ -513,27 +551,13 @@ class PuzzleCache1 extends React.Component {
         return (
             <div className="container-general">
                 <div className="plateau-gauche">
-                    <Chessboard
-                        key="board"
-                        position={this.state.chess.fen()}
-                        arePiecesDraggable={false}
-                        customPieces={this.customPieces()}
-                        customSquareStyles={this.state.coloredSquares}
-                        boardOrientation={this.state.orientation}
-                        showBoardNotation={this.state.coordonnees}
-                    />
-                </div>
-                <div className="elements-droite">
-                    <i className="consigne">
-                        {this.text} <span style={{ color: `${this.couleurP}` }}> {this.piece1} </span> <span style={{ color: `${this.couleurM}` }}> {this.piece2} </span>
-                    </i>
                     <div className="option">
                         <FormControlLabel
                             control={<this.MaterialUISwitch
                                 checked={this.state.orientation === 'white'}
                                 color="secondary"
                             />}
-                            label={this.state.orientation === 'white' ? 'Plateau coté Blancs' : 'Plateau coté Noirs'}
+                            label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
                             onChange={this.handleOrientation}
                         />
                         <ThemeProvider theme={this.theme}>
@@ -549,34 +573,42 @@ class PuzzleCache1 extends React.Component {
                                 }}
                             />
                         </ThemeProvider>
-                        <select className="language-selector"
-                            value={this.state.selectedLanguage}
-                            onMouseDown={() => this.handlePieceDown()}
-                            onChange={this.handleLanguageChange}>
-                            <option value="fr">Français 🇫🇷</option>
-                            <option value="en">English 🇬🇧</option>
-                            <option value="es">Español 🇪🇸</option>
-                            <option value="de">Deutsch 🇩🇪</option>
-                            <option value="it">Italiano 🇮🇹</option>
-                            <option value="ru">Русский 🇷🇺</option>
-                            <option value="cn">中文 🇨🇳</option>
-                        </select>
-                        <Typography id="input-slider" color="white" align="left" style={{ margintop: '1%' }} gutterBottom>
-                            Vitesse de déplacement des pièces: {this.state.timerInterval}s
-                        </Typography>
-                        <Slider
-                            aria-label="Timer"
-                            defaultValue={1}
-                            label={'Temps'}
-                            valueLabelDisplay="auto"
-                            step={0.1}
-                            marks
-                            min={0.5}
-                            max={2}
-                            color="secondary"
-                            onChange={this.handleSliderChange}
-                        />
+                        <div className="slider">
+                            <Typography id="input-slider" color="white" align="left">
+                                Vitesse des pièces :
+                            </Typography>
+                            <Slider
+                                aria-label="Timer"
+                                defaultValue={1}
+                                label={'Temps'}
+                                valueLabelDisplay="auto"
+                                step={0.1}
+                                marks
+                                min={0.1}
+                                max={2}
+                                color="secondary"
+                                onChange={this.handleSliderChange}
+                            />
+                        </div>
                     </div>
+                    <Chessboard
+                        key="board"
+                        position={this.state.chess.fen()}
+                        arePiecesDraggable={false}
+                        customPieces={this.customPieces()}
+                        customSquareStyles={this.state.coloredSquares}
+                        boardOrientation={this.state.orientation}
+                        showBoardNotation={this.state.coordonnees}
+                    />
+                </div>
+                <div className="elements-droite">
+                    {this.piece2 ? <i className="consigne">
+                        {this.text} <span style={{ color: `${this.couleurP}` }}> {this.piece1} </span> {this.option} <span style={{ color: `${this.couleurM}` }}> {this.piece2} </span>
+                    </i>
+                        :
+                        <i className="consigne">
+                            {this.text} <span style={{ color: `${this.couleurM}` }}> {this.piece1} </span>
+                        </i>}
                     {this.pieceMangee ?
                         <div className="boutons">
                             <div className="groupe-butons" >
@@ -664,10 +696,20 @@ class PuzzleCache1 extends React.Component {
                             </div>
                         </div>}
                     <div className="input">
+
                         <Stack spacing={2} direction="row" alignItems="center">
+                            <select className="language-selector" value={this.state.selectedLanguage} onMouseDown={() => this.handlePieceDown()} onChange={this.handleLanguageChange}>
+                                <option value="fr">🇫🇷</option>
+                                <option value="en">🇬🇧</option>
+                                <option value="es">🇪🇸</option>
+                                <option value="de">🇩🇪</option>
+                                <option value="it">🇮🇹</option>
+                                <option value="ru">🇷🇺</option>
+                                <option value="cn">🇨🇳</option>
+                            </select>
                             <input className="reponse-input"
                                 type="text"
-                                placeholder="Entrez la position..."
+                                placeholder="Réponse..."
                                 value={this.state.inputValue}
                                 onChange={this.handleInputChange}
                                 onKeyDown={this.handleKeyPress}
@@ -677,7 +719,7 @@ class PuzzleCache1 extends React.Component {
                                 onMouseDown={() => this.handlePieceDown()}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.handleClearButtonClick} >
-                                <span className="texte-3D texte-clean">
+                                <span className="texte-3D-red">
                                     ✘
                                 </span>
                             </button>
@@ -686,7 +728,7 @@ class PuzzleCache1 extends React.Component {
                         <Stack className="stack" spacing={2} direction="row" alignItems="center">
                             <button className="bouton-3D"
                                 title="Valider"
-                                {...(this.state.inputValue.length < 1 && { disabled: true })}
+                                {...((this.state.inputValue.length < 1 || !this.piece1) && { disabled: true })}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClick}
                                 onMouseDown={() => this.handlePieceDown()}>
@@ -696,6 +738,7 @@ class PuzzleCache1 extends React.Component {
                             </button>
                             <button className="bouton-3D button-replay"
                                 title="Refaire"
+                                {...(!this.piece1 && { disabled: true })}
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onClick={this.rejouer}
                                 onMouseDown={() => this.handlePieceDown()}>
@@ -703,13 +746,13 @@ class PuzzleCache1 extends React.Component {
                                     Refaire
                                 </span>
                             </button>
-                            {this.state.showIncorrect && <button className="bouton-3D button-replay"
-                                title="Nouveau ↺"
+                            {this.state.showIncorrect && <button className="bouton-3D"
+                                title="Nouveau"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D texte-replay">
-                                    Nouveau ↺
+                                <span className="texte-3D">
+                                    ↺
                                 </span>
                             </button>}
                         </Stack>
