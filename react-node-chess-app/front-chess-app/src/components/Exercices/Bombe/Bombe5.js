@@ -496,7 +496,7 @@ class Bombe5 extends React.Component {
             this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + bombeEntre);
             await this.refaireAllMouvements();
 
-            setTimeout(() => { // regere plateau apres 0.5 sec
+            setTimeout(() => {
                 // transforme en Q et affiche le message
                 chess.remove(bombeEntre);
                 chess.put({ type: 'q', color: 'b' }, bombeEntre);
@@ -555,7 +555,6 @@ class Bombe5 extends React.Component {
                         } else {
                             this.pieceJoue = 'n'; // Cavalier
                         }
-
                         this.genererPlateau();
                     }, 3000);
                 }
