@@ -24,6 +24,7 @@ class Bombe1 extends React.Component {
             selectedLanguage: 'fr',
             piecesLanguage: ['T', 'F', 'C', 'D'],
             coloredSquares: {},
+            imageCase: 'https://i.gifer.com/YQDj.gif',
             chess: new Chess(),
         };
         this.pointsGagnes = props.pointsGagnes;
@@ -51,12 +52,13 @@ class Bombe1 extends React.Component {
         this.pieceJoue = 'r';
         this.startPosition = '';
         this.endPosition = '';
-        this.pos = ''
         this.positionActuelle = '';
-        this.explosion = false;
-        
+
+        this.gifExplosion = "https://i.gifer.com/YQDj.gif";
+        this.gifFeu = "https://i.imgur.com/83wrGOi.gif";
+        this.isFiring = 0;
         this.monInputRef = React.createRef();
-        
+
         this.soundExplosion = new Howl({
             src: ['/sons/explosion.wav']
         });
@@ -84,7 +86,9 @@ class Bombe1 extends React.Component {
         this.pieceDrop = new Howl({
             src: ['/sons/wood.wav']
         });
-
+        this.feu = new Howl({
+            src: ['/sons/feu.flac']
+        });
     }
 
     generateRandomStartPosition = (chess, piece, color, position) => {
@@ -264,32 +268,48 @@ class Bombe1 extends React.Component {
     }
 
     verifPasTraverserBombe = (realCoup) => {
-        const ligneActuelle = this.positionActuelle.slice(-1);
+        const ligneActuelle = parseInt(this.positionActuelle.slice(-1));
         const colonneActuelle = this.alpha.indexOf(this.positionActuelle.slice(-2, -1)) + 1;
-        const ligneFuture = realCoup.slice(-1);
+        const ligneFuture = parseInt(realCoup.slice(-1));
         const colonneFuture = this.alpha.indexOf(realCoup.slice(-2, -1)) + 1;
 
         if (ligneActuelle === ligneFuture) { // Même ligne
-            const minCol = Math.min(colonneActuelle, colonneFuture);
-            const maxCol = Math.max(colonneActuelle, colonneFuture);
-            for (let col = minCol; col < maxCol; col++) {
-                const position = this.alpha[col - 1] + ligneActuelle;
-                if (this.tabBomb.includes(position)) {
-                    return position;
+            if (colonneActuelle > colonneFuture) { // Deplacement vers la gauche
+                for (let col = colonneActuelle - 1; col >= colonneFuture; col--) {
+                    const position = this.alpha[col - 1] + ligneActuelle;
+                    if (this.tabBomb.includes(position)) {
+                        return position;
+                    }
+                }
+            }
+            else { // Deplacement vers la droite
+                for (let col = (colonneActuelle + 1); col <= colonneFuture; col++) {
+
+                    const position = this.alpha[col - 1] + ligneActuelle;
+                    if (this.tabBomb.includes(position)) {
+                        return position;
+                    }
                 }
             }
         } else if (colonneActuelle === colonneFuture) { // Même colonne
-            const minRow = Math.min(ligneActuelle, ligneFuture);
-            const maxRow = Math.max(ligneActuelle, ligneFuture);
-            for (let row = minRow; row < maxRow; row++) {
-                const position = this.alpha[colonneActuelle - 1] + row;
-                if (this.tabBomb.includes(position)) {
-                    return position;
+            if (ligneActuelle > ligneFuture) { // Deplacement vers le bas
+                for (let lig = ligneActuelle - 1; lig >= ligneFuture; lig--) {
+                    const position = this.alpha[colonneActuelle - 1] + lig;
+                    if (this.tabBomb.includes(position)) {
+                        return position;
+                    }
+                }
+            }
+            else {
+                for (let lig = (ligneActuelle + 1); lig <= ligneFuture; lig++) { // Deplacement vers le haut
+                    const position = this.alpha[colonneActuelle - 1] + lig;
+                    if (this.tabBomb.includes(position)) {
+                        return position;
+                    }
                 }
             }
         }
         return false;
-
     }
 
     handleClick = async () => {
@@ -302,21 +322,26 @@ class Bombe1 extends React.Component {
         if (bombeEntre) {
             this.faireMouvementChess(this.pieceJoue.toUpperCase() + 'x' + bombeEntre);
 
-            setTimeout(() => { // regere plateau apres 3 sec
-                this.explosion = true;
+            setTimeout(() => { // regere plateau apres 0.5 sec
                 // transforme en Q et affiche le message
                 chess.remove(bombeEntre);
                 chess.put({ type: 'q', color: 'b' }, bombeEntre);
-                let text = "EXPLOOSIIOOONN ! Vous avez perdu, il y avait une bombe sur votre chemin ! Vous perdez 10 points.";
+                let text = "EXPLOOSIIOOONN ! Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
                 Howler.volume(0.2);
                 this.soundExplosion.play();
                 this.points = -(this.pointsPerdus * 2);
                 this.setState({ chess: chess, showIncorrect: true, message: text });
-                
+                setTimeout(() => {
+                    this.setState({ imageCase: this.gifFeu });
+                    Howler.volume(0.5); // Changer le volume
+                    this.isFiring = this.feu.play(); // Jouer le son et enregistrer l'ID du son
+                }, 2000);
+
                 setTimeout(() => { // regere plateau apres 3 sec
-                    this.handleUpdate();
-                    this.setState({ message: '', showCorrect: false, showIncorrect: false, inputValue: '' });
-                    this.genererPlateau();
+                    if (this.points < 0) {
+                        this.handleUpdate();
+                    }
+                    this.setState({ inputValue: '' });
                 }, 5000);
                 return;
             }, 500);
@@ -405,31 +430,17 @@ class Bombe1 extends React.Component {
     }
 
     customPieces = () => {
-        let customBomb = {}
-        if (this.explosion) {
-            customBomb = {
-                bP: ({ squareWidth }) => (
-                    <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
-                ),
-                bQ: ({ squareWidth }) => (
-                    <img src="https://i.gifer.com/YQDj.gif" alt="explosion" style={{ width: squareWidth, height: squareWidth }}></img>
-                ),
-                bN: ({ squareWidth }) => (
-                    <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
-                )
-            };
-        }
-        else {
-            customBomb = {
-                bP: ({ squareWidth }) => (
-                    <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
-                ),
-                bN: ({ squareWidth }) => (
-                    <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
-                )
-            };
-
-        }
+        let customBomb = {
+            bP: ({ squareWidth }) => (
+                <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
+            ),
+            bQ: ({ squareWidth }) => (
+                <img src={this.state.imageCase} alt="" style={{ width: squareWidth, height: squareWidth }}></img>
+            ),
+            bN: ({ squareWidth }) => (
+                <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
+            )
+        };
         return customBomb;
     };
 
@@ -470,10 +481,11 @@ class Bombe1 extends React.Component {
     };
 
     handleClickNouveau = () => {
+        this.feu.stop(this.isFiring); // Arrêter le son en utilisant l'ID enregistré
         Howler.volume(0.3);
         this.soundUp.play();
-        this.setState({ showCorrect: false, showIncorrect: false, message: '' });
-        this.genererPieceAleatoire();
+        this.setState({ showCorrect: false, showIncorrect: false, imageCase: this.gifExplosion, message: '' });
+        this.genererPlateau();
     };
 
 
@@ -725,16 +737,27 @@ class Bombe1 extends React.Component {
                             </button>
                         </Stack>
 
-                        <button className="bouton-3D"
-                            title="Valider"
-                            {...(this.state.inputValue.length < 3 && { disabled: true })}
-                            onMouseEnter={() => this.handlePieceHover()}
-                            onMouseUp={this.handleClick}
-                            onMouseDown={() => this.handlePieceDown()}>
-                            <span className="texte-3D">
-                                Valider
-                            </span>
-                        </button>
+                        <Stack className="stack" spacing={2} direction="row" alignItems="center">
+                            <button className="bouton-3D"
+                                title="Valider"
+                                {...(this.state.inputValue.length < 3 && { disabled: true })}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClick}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D">
+                                    Valider
+                                </span>
+                            </button>
+                            {this.state.showIncorrect && <button className="bouton-3D"
+                                title="Rejouer"
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickNouveau}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D">
+                                    Rejouer ↺
+                                </span>
+                            </button>}
+                        </Stack>
                     </div>
                     <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
                         {this.state.message}
