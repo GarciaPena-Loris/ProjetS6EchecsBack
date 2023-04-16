@@ -367,7 +367,7 @@ class Bombe4 extends React.Component {
                 // transforme en Q et affiche le message
                 chess.remove(bombeEntre);
                 chess.put({ type: 'q', color: 'b' }, bombeEntre);
-                let text = "EXPLOOSIIOOONN ! Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                let text = "EXPLOOSIIOOONN !";
                 Howler.volume(0.2);
                 this.soundExplosion.play();
                 this.points = -(this.pointsPerdus * 2);

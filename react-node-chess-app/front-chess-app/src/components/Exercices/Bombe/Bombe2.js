@@ -57,6 +57,7 @@ class Bombe2 extends React.Component {
         this.positionActuelleBis = '';
         this.historiqueMoves = [];
 
+        this.isBlowed = false;
         this.gifExplosion = "https://i.gifer.com/YQDj.gif";
         this.gifFeu = "https://i.imgur.com/83wrGOi.gif";
         this.isFiring = 0;
@@ -227,6 +228,7 @@ class Bombe2 extends React.Component {
     genererPlateau = () => {
         let newChess = new Chess();
         newChess.clear();
+        this.isBlowed = false;
         this.historiqueMoves = [];
         let ligneP, colonneP, position, ligneA, colonneA;
         [ligneP, colonneP, position] = this.generateRandomStartPosition(newChess, this.pieceJoue, 'w', position);
@@ -386,27 +388,27 @@ class Bombe2 extends React.Component {
             this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + bombeEntre);
             await this.refaireAllMouvements();
 
-            setTimeout(() => { // regere plateau apres 0.5 sec
+            setTimeout(() => {
                 // transforme en Q et affiche le message
                 chess.remove(bombeEntre);
                 chess.put({ type: 'q', color: 'b' }, bombeEntre);
-                let text = "EXPLOOSIIOOONN ! Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                let text = "EXPLOOSIIOOONN ! ";
                 Howler.volume(0.2);
                 this.soundExplosion.play();
                 this.points = -(this.pointsPerdus * 2);
-                this.setState({ chess: chess, showIncorrect: true, message: text });
+                this.setState({ chess: chess, showIncorrect: true, message: text, inputValue: '' });
                 setTimeout(() => {
-                    this.setState({imageCase: this.gifFeu});
+                    this.isBlowed = true;
+                    this.handleUpdate();
+                    this.setState({ message: '', showCorrect: false, showIncorrect: false, imageCase: this.gifFeu });
                     Howler.volume(0.5); // Changer le volume
                     this.isFiring = this.feu.play(); // Jouer le son et enregistrer l'ID du son
-                }, 2000);
+                    setTimeout(() => {
+                        let text = "Vous avec marché sur une bombe. Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                        this.setState({ showIncorrect: true, message: text });
+                    }, 2000);
 
-                setTimeout(() => { // regere plateau apres 3 sec
-                    if (this.points < 0) {
-                        this.handleUpdate();
-                    }
-                    this.setState({ inputValue: ''});
-                }, 3000);
+                }, 2000);
                 return;
             }, 500);
 
@@ -423,7 +425,7 @@ class Bombe2 extends React.Component {
                         this.handleUpdate();
                     }
                     setTimeout(() => { // regere plateau apres 3 sec
-                        this.setState({ message: '', showCorrect: false, showIncorrect: false});
+                        this.setState({ message: '', showCorrect: false, showIncorrect: false });
                     }, 3000);
                 }
                 else {
@@ -456,7 +458,7 @@ class Bombe2 extends React.Component {
                         if (this.points < 0) {
                             this.handleUpdate();
                         }
-                        this.setState({ message: '', showCorrect: false, showIncorrect: false});
+                        this.setState({ message: '', showCorrect: false, showIncorrect: false });
                     }, 3000);
                 }
             }
@@ -555,6 +557,14 @@ class Bombe2 extends React.Component {
         this.soundUp.play();
         this.setState({ showCorrect: false, showIncorrect: false, imageCase: this.gifExplosion, message: '' });
         this.genererPlateau();
+    };
+
+    handleClickVoir = async () => {
+        this.removeBombe(this.state.chess, this.tabBomb);
+        this.setState({ chess: this.state.chess });
+        await this.refaireAllMouvements();
+        this.historiqueMoves = [];
+        this.placeBombe(this.state.chess, this.tabBomb);
     };
 
 
@@ -817,7 +827,17 @@ class Bombe2 extends React.Component {
                                     Valider
                                 </span>
                             </button>
-                            {this.state.showIncorrect && <button className="bouton-3D"
+                            {!this.isBlowed && <button className="bouton-3D button-replay"
+                                title="Montrer"
+                                {...(this.historiqueMoves.length < 1 && { disabled: true })}
+                                onMouseEnter={() => this.handlePieceHover()}
+                                onMouseUp={this.handleClickVoir}
+                                onMouseDown={() => this.handlePieceDown()}>
+                                <span className="texte-3D texte-replay">
+                                    Actualiser position
+                                </span>
+                            </button>}
+                            {this.isBlowed && <button className="bouton-3D"
                                 title="Rejouer"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}

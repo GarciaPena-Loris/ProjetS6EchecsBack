@@ -278,24 +278,18 @@ class Bombe5 extends React.Component {
         [ligneP, colonneP, position] = this.generateRandomStartPosition(newChess, this.pieceJoue, 'w', position);
         [ligneA, colonneA] = this.generateRandomEndPosition(newChess, 'n', 'b', position);
         const startPosition = `${this.alpha[colonneP - 1]}${ligneP}`;
-        const endPosition = `${this.alpha[colonneA - 1]}${ligneA}`;
-        console.log("🚀 ~ file: Bombe5.js:282 ~ Bombe5 ~ newChess.squareColor(startPosition):", newChess.squareColor(startPosition))
-        console.log("🚀 ~ file: Bombe5.js:282 ~ Bombe5 ~ newChess.squareColor(startPosition):", newChess.squareColor(endPosition))
-        if (this.pieceJoue === 'b' && newChess.squareColor(startPosition) !== newChess.squareColor(endPosition)) {
+        const endPosition = `${this.alpha[colonneA - 1]}${ligneA}`;if (this.pieceJoue === 'b' && newChess.squareColor(startPosition) !== newChess.squareColor(endPosition)) {
             this.genererPlateau();
         }
         else {
-            console.log("pas la meme case");
             this.nombreBombesReel = this.nombreBombes + Math.floor(Math.random() * 5) + 1;
             const bombPositions = this.generateRandomBombPositions(newChess, this.nombreBombesReel, startPosition, startPosition, endPosition);
-            console.log("🚀 ~ file: Bombe5.js:290 ~ Bombe5 ~ bombPositions:", bombPositions)
             const possibleMoves = newChess.moves();
             if (possibleMoves.includes(this.pieceJoue.toUpperCase() + 'x' + endPosition)) {
                 this.genererPlateau();
             }
             else {
                 const isValid = this.verifCheminPossibleEtPasDirect(newChess, startPosition, endPosition, bombPositions);
-                console.log("🚀 ~ file: Bombe5.js:297 ~ Bombe5 ~ const isValid:", isValid)
                 if (!isValid) {
                     this.genererPlateau();
                 }
@@ -500,7 +494,7 @@ class Bombe5 extends React.Component {
                 // transforme en Q et affiche le message
                 chess.remove(bombeEntre);
                 chess.put({ type: 'q', color: 'b' }, bombeEntre);
-                let text = "EXPLOOSIIOOONN ! Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                let text = "EXPLOOSIIOOONN !";
                 Howler.volume(0.2);
                 this.soundExplosion.play();
                 this.points = -(this.pointsPerdus * 2);
