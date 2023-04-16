@@ -194,7 +194,7 @@ class Bombe2 extends React.Component {
                     <img src="https://i.gifer.com/YQDj.gif" alt="explosion" style={{ width: squareWidth, height: squareWidth }}></img>
                 ),
                 bN: ({ squareWidth }) => (
-                    <img src="https://cdn-icons-png.flaticon.com/128/4394/4394611.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
+                    <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
                 )
             };
         }
@@ -204,7 +204,7 @@ class Bombe2 extends React.Component {
                     <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
                 ),
                 bN: ({ squareWidth }) => (
-                    <img src="https://cdn-icons-png.flaticon.com/128/4394/4394611.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
+                    <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
                 )
             };
 

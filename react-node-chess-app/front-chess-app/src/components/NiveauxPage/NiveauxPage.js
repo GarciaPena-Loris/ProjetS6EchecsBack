@@ -171,7 +171,7 @@ export default function NiveauxPage() {
             1: <Bombe1
                 {...sharedProps}
                 pointsGagnes="5"
-                pointsPerdus="2"
+                pointsPerdus="5"
             />,
             2: <Bombe2
                 {...sharedProps}
