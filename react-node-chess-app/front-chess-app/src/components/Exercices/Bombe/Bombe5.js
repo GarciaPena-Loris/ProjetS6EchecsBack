@@ -69,6 +69,7 @@ class Bombe5 extends React.Component {
         this.positionActuelleBis = '';
         this.tabBomb = [];
         this.historiqueMoves = [];
+        this.showedPosition = false;
 
         this.isBlowed = false;
         this.gifExplosion = "https://i.gifer.com/YQDj.gif";
@@ -533,7 +534,11 @@ class Bombe5 extends React.Component {
                 else {
                     this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + this.endPosition);
                     await this.refaireAllMouvements();
-                    var text = "Bravo, vous êtes arrivé sans exploser ! Vous gagnez " + this.pointsGagnes + " points.";
+                    this.points = this.pointsGagnes;
+                    if (this.showedPosition) {
+                        this.points = Math.floor(this.pointsGagnes / 2);
+                    }
+                    var text = "Bravo, vous êtes arrivé sans exploser ! Vous gagnez " + this.points + " points.";
                     Howler.volume(1);
                     this.soundWin.play();
                     this.points = this.pointsGagnes;
@@ -686,12 +691,25 @@ class Bombe5 extends React.Component {
         this.genererPlateau();
     };
 
-    handleClickVoir = async () => {
+    handleClickVoir = () => {
+        let text;
+        if (this.showedPosition) {
+            text = "Actualisation en cours...";
+        }
+        else {
+            text = "Actualisation en cours... Vous ne gagnerez que la moitié des points.";
+        }
+        this.showedPosition = true;
         this.removeBombe(this.state.chess, this.tabBomb);
-        this.setState({ chess: this.state.chess });
-        await this.refaireAllMouvements();
-        this.historiqueMoves = [];
-        this.placeBombe(this.state.chess, this.tabBomb);
+        this.setState({ chess: this.state.chess, message: text, showCorrect: true });
+        setTimeout(async () => { // regere plateau apres 3 sec
+            await this.refaireAllMouvements();
+            this.historiqueMoves = [];
+            this.placeBombe(this.state.chess, this.tabBomb);
+            setTimeout(async () => { // efface le message apres 3 sec
+                this.setState({ showCorrect: false, message: '' });
+            }, 3000);
+        }, 800);
     };
 
 

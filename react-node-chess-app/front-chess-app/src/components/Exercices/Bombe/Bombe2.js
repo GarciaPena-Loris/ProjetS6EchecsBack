@@ -601,7 +601,6 @@ class Bombe2 extends React.Component {
         }, 800);
     };
 
-
     handleOrientation = (event) => {
         Howler.volume(0.3);
         if (event.target.checked) {
