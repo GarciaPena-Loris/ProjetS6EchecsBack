@@ -56,6 +56,7 @@ class Bombe2 extends React.Component {
         this.positionActuelle = '';
         this.positionActuelleBis = '';
         this.historiqueMoves = [];
+        this.showedPosition = false;
 
         this.isBlowed = false;
         this.gifExplosion = "https://i.gifer.com/YQDj.gif";
@@ -89,6 +90,9 @@ class Bombe2 extends React.Component {
         });
         this.pieceDrop = new Howl({
             src: ['/sons/wood.wav']
+        });
+        this.feu = new Howl({
+            src: ['/sons/feu.flac']
         });
 
     }
@@ -140,13 +144,25 @@ class Bombe2 extends React.Component {
         return bombPositions;
     }
 
+    placeBombe = (chess, bombPosition) => {
+        bombPosition.forEach((bomb) => {
+            chess.put({ type: 'p', color: 'b' }, bomb);
+        });
+    }
+
+    removeBombe = (chess, bombPositions) => {
+        for (let i = 0; i < bombPositions.length; i++) {
+            chess.remove(bombPositions[i]);
+        }
+    }
+
     verifCheminPossibleEtPasDirect = (chess, startPosition, endPosition, bombPositions) => {
         // Vérifier si pas de chemin direct
         const possibleMoves = chess.moves();
         if (possibleMoves.length === 0) {
             return false;
         }
-        else if (possibleMoves.includes(this.pieceJoue.toUpperCase() + 'x' + endPosition)) {
+        else if (possibleMoves.some(item => item.replace(/[#+]$/, '') === (this.pieceJoue.toUpperCase() + 'x' + endPosition))) {
             return false;
         }
 
@@ -229,6 +245,7 @@ class Bombe2 extends React.Component {
         let newChess = new Chess();
         newChess.clear();
         this.isBlowed = false;
+        this.showedPosition = false;
         this.historiqueMoves = [];
         let ligneP, colonneP, position, ligneA, colonneA;
         [ligneP, colonneP, position] = this.generateRandomStartPosition(newChess, this.pieceJoue, 'w', position);
@@ -262,6 +279,10 @@ class Bombe2 extends React.Component {
 
     componentDidMount() {
         this.genererPlateau();
+    }
+
+    componentWillUnmount() {
+        this.feu.stop(this.isFiring); // Arrêter le son en utilisant l'ID enregistré
     }
 
     faireMouvementChess = (newPosition) => {
@@ -387,6 +408,7 @@ class Bombe2 extends React.Component {
         if (bombeEntre) { // Si bombe
             this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + bombeEntre);
             await this.refaireAllMouvements();
+            this.historiqueMoves = [];
 
             setTimeout(() => {
                 // transforme en Q et affiche le message
@@ -400,18 +422,13 @@ class Bombe2 extends React.Component {
                 setTimeout(() => {
                     this.isBlowed = true;
                     this.handleUpdate();
-                    this.setState({ message: '', showCorrect: false, showIncorrect: false, imageCase: this.gifFeu });
+                    this.setState({ imageCase: this.gifFeu });
                     Howler.volume(0.5); // Changer le volume
                     this.isFiring = this.feu.play(); // Jouer le son et enregistrer l'ID du son
-                    setTimeout(() => {
-                        let text = "Vous avec marché sur une bombe. Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
-                        this.setState({ showIncorrect: true, message: text });
-                    }, 2000);
-
+                    let newText = "Vous avec marché sur une bombe. Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                    this.setState({ showIncorrect: true, message: newText });
                 }, 2000);
-                return;
             }, 500);
-
         }
         else {
             if (realCoup === (this.pieceJoue.toUpperCase() + this.endPosition) || realCoup === (this.pieceJoue.toUpperCase() + 'x' + this.endPosition)) { // si case arrive
@@ -431,10 +448,14 @@ class Bombe2 extends React.Component {
                 else {
                     this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + this.endPosition);
                     await this.refaireAllMouvements();
-                    var text = "Bravo, vous êtes arrivé sans exploser ! Vous gagnez " + this.pointsGagnes + " points.";
+                    this.historiqueMoves = [];
+                    this.points = this.pointsGagnes;
+                    if (this.showedPosition) {
+                        this.points = Math.floor(this.pointsGagnes / 2);
+                    }
+                    var text = "Bravo, vous êtes arrivé sans exploser ! Vous gagnez " + this.points + " points.";
                     Howler.volume(1);
                     this.soundWin.play();
-                    this.points = this.pointsGagnes;
                     this.setState({ message: text, showCorrect: true });
                     setTimeout(() => { // regere plateau apres 3 sec
                         this.handleUpdate();
@@ -559,12 +580,25 @@ class Bombe2 extends React.Component {
         this.genererPlateau();
     };
 
-    handleClickVoir = async () => {
+    handleClickVoir = () => {
+        let text;
+        if (this.showedPosition) {
+            text = "Actualisation en cours...";
+        }
+        else {
+            text = "Actualisation en cours... Vous ne gagnerez que la moitié des points.";
+        }
+        this.showedPosition = true;
         this.removeBombe(this.state.chess, this.tabBomb);
-        this.setState({ chess: this.state.chess });
-        await this.refaireAllMouvements();
-        this.historiqueMoves = [];
-        this.placeBombe(this.state.chess, this.tabBomb);
+        this.setState({ chess: this.state.chess, message: text, showCorrect: true });
+        setTimeout(async () => { // regere plateau apres 3 sec
+            await this.refaireAllMouvements();
+            this.historiqueMoves = [];
+            this.placeBombe(this.state.chess, this.tabBomb);
+            setTimeout(async () => { // efface le message apres 3 sec
+                this.setState({ showCorrect: false, message: '' });
+            }, 3000);
+        }, 800);
     };
 
 
