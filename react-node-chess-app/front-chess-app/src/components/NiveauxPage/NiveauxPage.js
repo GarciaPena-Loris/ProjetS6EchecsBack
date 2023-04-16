@@ -26,6 +26,7 @@ import Bombe1 from '../Exercices/Bombe/Bombe1';
 import Bombe2 from '../Exercices/Bombe/Bombe2';
 import Bombe3 from '../Exercices/Bombe/Bombe3';
 import Bombe4 from '../Exercices/Bombe/Bombe4';
+import Bombe5 from '../Exercices/Bombe/Bombe5';
 
 // Puzzle Cache
 import PuzzleCache1 from '../Exercices/PuzzleCache/PuzzleCache1';
@@ -171,7 +172,7 @@ export default function NiveauxPage() {
             1: <Bombe1
                 {...sharedProps}
                 pointsGagnes="5"
-                pointsPerdus="2"
+                pointsPerdus="5"
             />,
             2: <Bombe2
                 {...sharedProps}
@@ -187,6 +188,11 @@ export default function NiveauxPage() {
                 {...sharedProps}
                 pointsGagnes="20"
                 pointsPerdus="30"
+            />,
+            5: <Bombe5
+                {...sharedProps}
+                pointsGagnes="30"
+                pointsPerdus="50"
             />,
         },
         3: { // Puzzle Cache
