@@ -244,6 +244,10 @@ class Bombe1 extends React.Component {
         this.genererPlateau();
     }
 
+    componentWillUnmount() {
+        this.feu.stop(this.isFiring); // Arrêter le son en utilisant l'ID enregistré
+    }
+
     faireMouvementChess = (newPosition) => {
         const { chess } = this.state;
         // Si le mouvement est valide
@@ -322,28 +326,24 @@ class Bombe1 extends React.Component {
         if (bombeEntre) {
             this.faireMouvementChess(this.pieceJoue.toUpperCase() + 'x' + bombeEntre);
 
-            setTimeout(() => { // regere plateau apres 0.5 sec
+            setTimeout(() => {
                 // transforme en Q et affiche le message
                 chess.remove(bombeEntre);
                 chess.put({ type: 'q', color: 'b' }, bombeEntre);
-                let text = "EXPLOOSIIOOONN ! Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                let text = "EXPLOOSIIOOONN ! ";
                 Howler.volume(0.2);
                 this.soundExplosion.play();
                 this.points = -(this.pointsPerdus * 2);
-                this.setState({ chess: chess, showIncorrect: true, message: text });
+                this.setState({ chess: chess, showIncorrect: true, message: text, inputValue: '' });
                 setTimeout(() => {
+                    this.isBlowed = true;
+                    this.handleUpdate();
                     this.setState({ imageCase: this.gifFeu });
                     Howler.volume(0.5); // Changer le volume
                     this.isFiring = this.feu.play(); // Jouer le son et enregistrer l'ID du son
+                    let newText = "Vous avec marché sur une bombe. Vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus * 2) + " points.";
+                    this.setState({ showIncorrect: true, message: newText });
                 }, 2000);
-
-                setTimeout(() => { // regere plateau apres 3 sec
-                    if (this.points < 0) {
-                        this.handleUpdate();
-                    }
-                    this.setState({ inputValue: '' });
-                }, 5000);
-                return;
             }, 500);
 
         }
