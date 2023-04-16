@@ -49,8 +49,8 @@ class Bombe5 extends React.Component {
             ru: ['К', 'С', 'Л', 'Ф'],
             cn: ['马', '象', '车', '后'],
         }
-        this.nombreBombes = 15;
         this.nombreBombesReel = 15;
+        this.nombreBombes = 15;
         this.pieceJoue = '';
         const rand = Math.floor(Math.random() * 5);
         if (rand < 2) {
@@ -279,7 +279,7 @@ class Bombe5 extends React.Component {
         [ligneP, colonneP, position] = this.generateRandomStartPosition(newChess, this.pieceJoue, 'w', position);
         [ligneA, colonneA] = this.generateRandomEndPosition(newChess, 'n', 'b', position);
         const startPosition = `${this.alpha[colonneP - 1]}${ligneP}`;
-        const endPosition = `${this.alpha[colonneA - 1]}${ligneA}`;if (this.pieceJoue === 'b' && newChess.squareColor(startPosition) !== newChess.squareColor(endPosition)) {
+        const endPosition = `${this.alpha[colonneA - 1]}${ligneA}`; if (this.pieceJoue === 'b' && newChess.squareColor(startPosition) !== newChess.squareColor(endPosition)) {
             this.genererPlateau();
         }
         else {
@@ -490,6 +490,7 @@ class Bombe5 extends React.Component {
         if (bombeEntre) { // Si bombe
             this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + bombeEntre);
             await this.refaireAllMouvements();
+            this.historiqueMoves = [];
 
             setTimeout(() => {
                 // transforme en Q et affiche le message
@@ -533,475 +534,480 @@ class Bombe5 extends React.Component {
                 }
                 else {
                     this.historiqueMoves.push(this.pieceJoue.toUpperCase() + 'x' + this.endPosition);
-                    await this.refaireAllMouvements();
-                    this.points = this.pointsGagnes;
-                    if (this.showedPosition) {
-                        this.points = Math.floor(this.pointsGagnes / 2);
-                    }
-                    var text = "Bravo, vous êtes arrivé sans exploser ! Vous gagnez " + this.points + " points.";
-                    Howler.volume(1);
-                    this.soundWin.play();
-                    this.points = this.pointsGagnes;
-                    this.setState({ message: text, showCorrect: true });
-                    setTimeout(() => { // regere plateau apres 3 sec
-                        this.handleUpdate();
-                        this.setState({ message: '', showCorrect: false, showIncorrect: false, inputValue: '' });
-                        const rand = Math.floor(Math.random() * 5);
-                        if (rand < 2) {
-                            this.pieceJoue = 'r'; // Tour
-                        } else if (rand < 4) {
-                            this.pieceJoue = 'b'; // Fou
-                        } else {
-                            this.pieceJoue = 'n'; // Cavalier
+                    this.removeBombe(this.state.chess, this.tabBomb);
+                    this.setState({ chess: this.state.chess, });
+                    setTimeout(async () => { // enleve les bombes
+                        await this.refaireAllMouvements();
+                        this.historiqueMoves = [];
+                        this.points = this.pointsGagnes;
+                        if (this.showedPosition) {
+                            this.points = Math.floor(this.pointsGagnes / 2);
                         }
-                        this.genererPlateau();
-                    }, 3000);
+                        var text = "Bravo, vous êtes arrivé sans exploser ! Vous gagnez " + this.points + " points.";
+                        Howler.volume(1);
+                        this.soundWin.play();
+                        this.points = this.pointsGagnes;
+                        this.setState({ message: text, showCorrect: true });
+                        setTimeout(() => { // regere plateau apres 3 sec
+                            this.handleUpdate();
+                            this.setState({ message: '', showCorrect: false, showIncorrect: false, inputValue: '' });
+                            const rand = Math.floor(Math.random() * 5);
+                            if (rand < 2) {
+                                this.pieceJoue = 'r'; // Tour
+                            } else if (rand < 4) {
+                                this.pieceJoue = 'b'; // Fou
+                            } else {
+                                this.pieceJoue = 'n'; // Cavalier
+                            }
+                            this.genererPlateau();
+                        }, 3000);
+                    }, 800);
                 }
             } // Si pas case arrivé.
             else {
-                if (this.faireMouvementChessBis(realCoup)) { // Mouvement possible
-                    this.historiqueMoves.push(realCoup);
-                    this.removeBombe(chess, this.tabBomb);
-                    this.removeBombe(chessBis, this.tabBomb);
-                    this.tabBomb = [];
-                    const bombPosition = this.regenerateBombPositionsChessBis(chessBis, this.nombreBombesReel, this.positionActuelleBis, this.endPosition);
-                    this.placeBombe(chess, bombPosition);
-                    this.placeBombe(chessBis, bombPosition);
-                    this.tabBomb = bombPosition;
+                    if (this.faireMouvementChessBis(realCoup)) { // Mouvement possible
+                        this.historiqueMoves.push(realCoup);
+                        this.removeBombe(chess, this.tabBomb);
+                        this.removeBombe(chessBis, this.tabBomb);
+                        this.tabBomb = [];
+                        const bombPosition = this.regenerateBombPositionsChessBis(chessBis, this.nombreBombesReel, this.positionActuelleBis, this.endPosition);
+                        this.placeBombe(chess, bombPosition);
+                        this.placeBombe(chessBis, bombPosition);
+                        this.tabBomb = bombPosition;
 
-                    this.setState({ inputValue: '' });
-                }
-                else { // Mouvement impossible
-                    Howler.volume(0.3);
-                    this.soundWrong.play();
-                    this.setState({ inputValue: '', showIncorrect: true, message: "Mouvement impossible, vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus) + " points." });
-                    // enlever des points.
-                    this.points = -Math.min(this.props.exerciceElo, this.pointsPerdus);
-                    setTimeout(() => { // regere plateau apres 3 sec
-                        if (this.points < 0) {
-                            this.handleUpdate();
-                        }
-                        this.setState({ message: '', showCorrect: false, showIncorrect: false });
-                    }, 3000);
+                        this.setState({ inputValue: '' });
+                    }
+                    else { // Mouvement impossible
+                        Howler.volume(0.3);
+                        this.soundWrong.play();
+                        this.setState({ inputValue: '', showIncorrect: true, message: "Mouvement impossible, vous perdez " + Math.min(this.props.exerciceElo, this.pointsPerdus) + " points." });
+                        // enlever des points.
+                        this.points = -Math.min(this.props.exerciceElo, this.pointsPerdus);
+                        setTimeout(() => { // regere plateau apres 3 sec
+                            if (this.points < 0) {
+                                this.handleUpdate();
+                            }
+                            this.setState({ message: '', showCorrect: false, showIncorrect: false });
+                        }, 3000);
+                    }
                 }
             }
-        }
-    };
-
-    handleUpdate = () => {
-        try {
-            // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
-            const CryptoJS = require("crypto-js");
-            const message = this.idExercice + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
-            const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
-
-            const formData = {
-                'points': this.points,
-                'encrypted': encrypted
-            };
-            var config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: `http://localhost:3001/unlockLevel/save/${this.name}/${this.idExercice}`,
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.token}`,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: formData
-            };
-            axios(config)
-                .then((response) => {
-                    // maj de l'elo
-                    this.props.setExerciceElo(response.data.newEloExercise);
-                    this.props.updateGlobalElo(response.data.newEloUser);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    customPieces = () => {
-        let customBomb = {
-            bP: ({ squareWidth }) => (
-                <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
-            ),
-            bQ: ({ squareWidth }) => (
-                <img src={this.state.imageCase} alt="" style={{ width: squareWidth, height: squareWidth }}></img>
-            ),
-            bN: ({ squareWidth }) => (
-                <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
-            )
         };
-        return customBomb;
-    };
 
-    handleInputChange = (event) => {
-        this.setState({ inputValue: event.target.value });
-    };
+        handleUpdate = () => {
+            try {
+                // chiffre un code crypte du type id_level/name/eloExerciceActuel/newelo(- or +)
+                const CryptoJS = require("crypto-js");
+                const message = this.idExercice + "/" + this.name + "/" + this.props.exerciceElo + "/" + this.points;
+                const encrypted = CryptoJS.AES.encrypt(message, process.env.REACT_APP_CRYPTO_SECRET).toString();
 
-    handleKeyPress = (event) => {
-        if (this.state.inputValue.length >= 3) {
-            if (event.key === "Enter") {
-                // Appeler la fonction de vérification
-                this.handleClick();
+                const formData = {
+                    'points': this.points,
+                    'encrypted': encrypted
+                };
+                var config = {
+                    method: 'put',
+                    maxBodyLength: Infinity,
+                    url: `http://localhost:3001/unlockLevel/save/${this.name}/${this.idExercice}`,
+                    headers: {
+                        'Authorization': `Bearer ${sessionStorage.token}`,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: formData
+                };
+                axios(config)
+                    .then((response) => {
+                        // maj de l'elo
+                        this.props.setExerciceElo(response.data.newEloExercise);
+                        this.props.updateGlobalElo(response.data.newEloUser);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            } catch (error) {
+                console.error(error);
             }
         }
-    }
 
-    handleClearButtonClick = () => {
-        Howler.volume(0.3);
-        this.soundUp.play();
-        this.setState({ inputValue: '' });
-    };
+        customPieces = () => {
+            let customBomb = {
+                bP: ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/z82FgxP.png" alt="piont noir" style={{ width: squareWidth, height: squareWidth }}></img>
+                ),
+                bQ: ({ squareWidth }) => (
+                    <img src={this.state.imageCase} alt="" style={{ width: squareWidth, height: squareWidth }}></img>
+                ),
+                bN: ({ squareWidth }) => (
+                    <img src="https://i.imgur.com/2KLmBRX.png" alt="arrivé" style={{ width: squareWidth, height: squareWidth }}></img>
+                )
+            };
+            return customBomb;
+        };
 
-    handlePieceHover = () => {
-        Howler.volume(0.1);
-        this.soundHover.play();
-    };
+        handleInputChange = (event) => {
+            this.setState({ inputValue: event.target.value });
+        };
 
-    handlePieceUp = (event) => {
-        Howler.volume(0.3);
-        this.soundUp.play();
-        this.setState({ inputValue: this.state.inputValue + event });
-        this.monInputRef.current.focus();
-    };
-
-    handlePieceDown = () => {
-        Howler.volume(0.3);
-        this.soundDown.play();
-    };
-
-    handleClickNouveau = () => {
-        this.feu.stop(this.isFiring); // Arrêter le son en utilisant l'ID enregistré
-        Howler.volume(0.3);
-        this.soundUp.play();
-        this.setState({ showCorrect: false, showIncorrect: false, imageCase: this.gifExplosion, message: '' });
-        const rand = Math.floor(Math.random() * 5);
-        if (rand < 2) {
-            this.pieceJoue = 'r'; // Tour
-        } else if (rand < 4) {
-            this.pieceJoue = 'b'; // Fou
-        } else {
-            this.pieceJoue = 'n'; // Cavalier
+        handleKeyPress = (event) => {
+            if (this.state.inputValue.length >= 3) {
+                if (event.key === "Enter") {
+                    // Appeler la fonction de vérification
+                    this.handleClick();
+                }
+            }
         }
 
-        this.genererPlateau();
-    };
+        handleClearButtonClick = () => {
+            Howler.volume(0.3);
+            this.soundUp.play();
+            this.setState({ inputValue: '' });
+        };
 
-    handleClickVoir = () => {
-        let text;
-        if (this.showedPosition) {
-            text = "Actualisation en cours...";
-        }
-        else {
-            text = "Actualisation en cours... Vous ne gagnerez que la moitié des points.";
-        }
-        this.showedPosition = true;
-        this.removeBombe(this.state.chess, this.tabBomb);
-        this.setState({ chess: this.state.chess, message: text, showCorrect: true });
-        setTimeout(async () => { // regere plateau apres 3 sec
-            await this.refaireAllMouvements();
-            this.historiqueMoves = [];
-            this.placeBombe(this.state.chess, this.tabBomb);
-            setTimeout(async () => { // efface le message apres 3 sec
-                this.setState({ showCorrect: false, message: '' });
-            }, 3000);
-        }, 800);
-    };
+        handlePieceHover = () => {
+            Howler.volume(0.1);
+            this.soundHover.play();
+        };
+
+        handlePieceUp = (event) => {
+            Howler.volume(0.3);
+            this.soundUp.play();
+            this.setState({ inputValue: this.state.inputValue + event });
+            this.monInputRef.current.focus();
+        };
+
+        handlePieceDown = () => {
+            Howler.volume(0.3);
+            this.soundDown.play();
+        };
+
+        handleClickNouveau = () => {
+            this.feu.stop(this.isFiring); // Arrêter le son en utilisant l'ID enregistré
+            Howler.volume(0.3);
+            this.soundUp.play();
+            this.setState({ showCorrect: false, showIncorrect: false, imageCase: this.gifExplosion, message: '' });
+            const rand = Math.floor(Math.random() * 5);
+            if (rand < 2) {
+                this.pieceJoue = 'r'; // Tour
+            } else if (rand < 4) {
+                this.pieceJoue = 'b'; // Fou
+            } else {
+                this.pieceJoue = 'n'; // Cavalier
+            }
+
+            this.genererPlateau();
+        };
+
+        handleClickVoir = () => {
+            let text;
+            if (this.showedPosition) {
+                text = "Actualisation en cours...";
+            }
+            else {
+                text = "Actualisation en cours... Vous ne gagnerez que la moitié des points.";
+            }
+            this.showedPosition = true;
+            this.removeBombe(this.state.chess, this.tabBomb);
+            this.setState({ chess: this.state.chess, message: text, showCorrect: true });
+            setTimeout(async () => { 
+                await this.refaireAllMouvements();
+                this.historiqueMoves = [];
+                this.placeBombe(this.state.chess, this.tabBomb);
+                setTimeout(async () => { // efface le message apres 3 sec
+                    this.setState({ showCorrect: false, message: '' });
+                }, 3000);
+            }, 800);
+        };
 
 
-    handleOrientation = (event) => {
-        Howler.volume(0.3);
-        if (event.target.checked) {
-            this.switchOff.play();
-            this.setState({ orientation: 'white' });
+        handleOrientation = (event) => {
+            Howler.volume(0.3);
+            if (event.target.checked) {
+                this.switchOff.play();
+                this.setState({ orientation: 'white' });
+            }
+            else {
+                this.switchOn.play();
+                this.setState({ orientation: 'black' });
+            }
         }
-        else {
-            this.switchOn.play();
-            this.setState({ orientation: 'black' });
-        }
-    }
 
-    handleLanguageChange = (event) => {
-        Howler.volume(0.3);
-        this.soundUp.play();
-        this.setState({ selectedLanguage: event.target.value, piecesLanguage: this.listePiecesLangue[event.target.value] });
-    }
-
-    handleCoordonnees = (event) => {
-        Howler.volume(0.3);
-        if (event.target.checked) {
-            this.switchOff.play();
-            this.setState({ coordonnees: true });
+        handleLanguageChange = (event) => {
+            Howler.volume(0.3);
+            this.soundUp.play();
+            this.setState({ selectedLanguage: event.target.value, piecesLanguage: this.listePiecesLangue[event.target.value] });
         }
-        else {
-            this.switchOn.play();
-            this.setState({ coordonnees: false });
-        }
-    }
 
-    MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
-        width: 62,
-        height: 34,
-        padding: 7,
-        cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
-        '& .MuiSwitch-switchBase': {
-            margin: 1,
-            padding: 0,
-            transform: 'translateX(6px)',
-            '&.Mui-checked': {
-                color: '#fff',
-                transform: 'translateX(22px)',
-                '& .MuiSwitch-thumb:before': {
-                    backgroundColor: "white",
+        handleCoordonnees = (event) => {
+            Howler.volume(0.3);
+            if (event.target.checked) {
+                this.switchOff.play();
+                this.setState({ coordonnees: true });
+            }
+            else {
+                this.switchOn.play();
+                this.setState({ coordonnees: false });
+            }
+        }
+
+        MaterialUISwitch = styled(Switch)(({ theme, disabled }) => ({
+            width: 62,
+            height: 34,
+            padding: 7,
+            cursor: disabled ? 'not-allowed' : 'pointer', // ajout de la propriété cursor
+            '& .MuiSwitch-switchBase': {
+                margin: 1,
+                padding: 0,
+                transform: 'translateX(6px)',
+                '&.Mui-checked': {
+                    color: '#fff',
+                    transform: 'translateX(22px)',
+                    '& .MuiSwitch-thumb:before': {
+                        backgroundColor: "white",
+                        borderRadius: '50%',
+                    },
+                    '& + .MuiSwitch-track': {
+                        opacity: 1,
+                        backgroundColor: disabled ? 'rgba(255, 255, 255, 0.5)' : '#cccccc',
+                    },
+                },
+            },
+            '& .MuiSwitch-thumb': {
+                backgroundColor: '#001e3c',
+                width: 32,
+                height: 32,
+                '&:before': {
+                    content: "''",
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    left: 0,
+                    top: 0,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundColor: disabled ? '#c7c7c7' : 'black',
                     borderRadius: '50%',
                 },
-                '& + .MuiSwitch-track': {
-                    opacity: 1,
-                    backgroundColor: disabled ? 'rgba(255, 255, 255, 0.5)' : '#cccccc',
+            },
+            '& .Mui-disabled': {
+                opacity: 0.5,
+            },
+        }));
+
+        Android12Switch = styled(Switch)(({ theme }) => ({
+            padding: 8,
+            '& .MuiSwitch-track': {
+                borderRadius: 22 / 2,
+                '&:before, &:after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 16,
+                    height: 16,
+                },
+                '&:before': {
+                    backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                        theme.palette.getContrastText(theme.palette.primary.main),
+                    )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+                    left: 12,
+                },
+                '&:after': {
+                    backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+                        theme.palette.getContrastText(theme.palette.primary.main),
+                    )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+                    right: 12,
                 },
             },
-        },
-        '& .MuiSwitch-thumb': {
-            backgroundColor: '#001e3c',
-            width: 32,
-            height: 32,
-            '&:before': {
-                content: "''",
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                left: 0,
-                top: 0,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundColor: disabled ? '#c7c7c7' : 'black',
-                borderRadius: '50%',
-            },
-        },
-        '& .Mui-disabled': {
-            opacity: 0.5,
-        },
-    }));
-
-    Android12Switch = styled(Switch)(({ theme }) => ({
-        padding: 8,
-        '& .MuiSwitch-track': {
-            borderRadius: 22 / 2,
-            '&:before, &:after': {
-                content: '""',
-                position: 'absolute',
-                top: '50%',
-                transform: 'translateY(-50%)',
+            '& .MuiSwitch-thumb': {
+                boxShadow: 'none',
                 width: 16,
                 height: 16,
+                margin: 2,
             },
-            '&:before': {
-                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
-                    theme.palette.getContrastText(theme.palette.primary.main),
-                )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
-                left: 12,
+        }));
+        theme = createTheme({
+            palette: {
+                secondary: {
+                    main: '#af80dc',
+                },
             },
-            '&:after': {
-                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
-                    theme.palette.getContrastText(theme.palette.primary.main),
-                )}" d="M19,13H5V11H19V13Z" /></svg>')`,
-                right: 12,
-            },
-        },
-        '& .MuiSwitch-thumb': {
-            boxShadow: 'none',
-            width: 16,
-            height: 16,
-            margin: 2,
-        },
-    }));
-    theme = createTheme({
-        palette: {
-            secondary: {
-                main: '#af80dc',
-            },
-        },
-    });
+        });
 
 
-    render() {
-        const piecesBlanchesNom = [
-            "Tour", "Fou", "Cavalier", "Dame"
-        ]
-        let lignes = this.state.orientation === 'white'
-            ? ["8", "7", "6", "5", "4", "3", "2", "1"]
-            : ["1", "2", "3", "4", "5", "6", "7", "8"];
-        let colonnes = this.state.orientation === 'white'
-            ? ["a", "b", "c", "d", "e", "f", "g", "h"]
-            : ["h", "g", "f", "e", "d", "c", "b", "a"];
-        return (
-            <div className="container-general">
-                <div className="plateau-gauche">
-                    <div className="option">
-                        <FormControlLabel
-                            control={<this.MaterialUISwitch
-                                checked={this.state.orientation === 'white'}
-                                color="secondary"
-                            />}
-                            label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
-                            onChange={this.handleOrientation}
-                        />
-                        <ThemeProvider theme={this.theme}>
+        render() {
+            const piecesBlanchesNom = [
+                "Tour", "Fou", "Cavalier", "Dame"
+            ]
+            let lignes = this.state.orientation === 'white'
+                ? ["8", "7", "6", "5", "4", "3", "2", "1"]
+                : ["1", "2", "3", "4", "5", "6", "7", "8"];
+            let colonnes = this.state.orientation === 'white'
+                ? ["a", "b", "c", "d", "e", "f", "g", "h"]
+                : ["h", "g", "f", "e", "d", "c", "b", "a"];
+            return (
+                <div className="container-general">
+                    <div className="plateau-gauche">
+                        <div className="option">
                             <FormControlLabel
-                                control={<this.Android12Switch
-                                    checked={this.state.coordonnees === true}
+                                control={<this.MaterialUISwitch
+                                    checked={this.state.orientation === 'white'}
                                     color="secondary"
                                 />}
-                                label={'Coordonnées'}
-                                onChange={this.handleCoordonnees}
-                                style={{
-                                    textDecoration: this.state.coordonnees === false && 'line-through'
-                                }}
+                                label={this.state.orientation === 'white' ? 'Coté Blancs' : 'Coté Noirs'}
+                                onChange={this.handleOrientation}
                             />
-                        </ThemeProvider>
+                            <ThemeProvider theme={this.theme}>
+                                <FormControlLabel
+                                    control={<this.Android12Switch
+                                        checked={this.state.coordonnees === true}
+                                        color="secondary"
+                                    />}
+                                    label={'Coordonnées'}
+                                    onChange={this.handleCoordonnees}
+                                    style={{
+                                        textDecoration: this.state.coordonnees === false && 'line-through'
+                                    }}
+                                />
+                            </ThemeProvider>
+                        </div>
+                        <Chessboard
+                            key="board"
+                            position={this.state.chess.fen()}
+                            arePiecesDraggable={false}
+                            customPieces={this.customPieces()}
+                            customSquareStyles={this.state.coloredSquares}
+                            boardOrientation={this.state.orientation}
+                            showBoardNotation={this.state.coordonnees}
+                            areArrowsAllowed={false}
+                        />
                     </div>
-                    <Chessboard
-                        key="board"
-                        position={this.state.chess.fen()}
-                        arePiecesDraggable={false}
-                        customPieces={this.customPieces()}
-                        customSquareStyles={this.state.coloredSquares}
-                        boardOrientation={this.state.orientation}
-                        showBoardNotation={this.state.coordonnees}
-                        areArrowsAllowed={false}
-                    />
-                </div>
-                <div className="elements-droite">
-                    <i className="consigne">
-                        Ecrivez la suite de coup pour que
-                        <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
-                        </span> atteigne le <span style={{ color: `${this.couleurM}` }}> drapeau en {this.endPosition}
-                        </span> sans toucher les bombes
-                    </i>
-                    <div className="boutons">
-                        <div className="groupe-butons" >
-                            {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={piecesBlanchesNom[index]}
-                                        title={piecesBlanchesNom[index]}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                )
-                            })}
+                    <div className="elements-droite">
+                        <i className="consigne">
+                            Ecrivez la suite de coup pour que
+                            <span style={{ color: `${this.couleurP}` }}> {this.nomPiece}
+                            </span> atteigne le <span style={{ color: `${this.couleurM}` }}> drapeau en {this.endPosition}
+                            </span> sans toucher les bombes
+                        </i>
+                        <div className="boutons">
+                            <div className="groupe-butons" >
+                                {this.state.piecesLanguage.map((line, index) => { // pion tour fou cavalier reine roi
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={piecesBlanchesNom[index]}
+                                            title={piecesBlanchesNom[index]}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(this.state.piecesLanguage[index])}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                            <div className="groupe-butons">
+                                {colonnes.map((line, index) => { // a b c d e f g h
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
+                                            key={line}
+                                            title={line}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(line)}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className="groupe-butons" >
+                                {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
+                                    return (
+                                        <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
+                                            key={line}
+                                            title={line}
+                                            onMouseEnter={() => this.handlePieceHover()}
+                                            onMouseUp={() => this.handlePieceUp(line)}
+                                            onMouseDown={() => this.handlePieceDown()}>
+                                            <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
+                                                {line}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        <div className="groupe-butons">
-                            {colonnes.map((line, index) => { // a b c d e f g h
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-clair' : 'pushable-fonce'}`}
-                                        key={line}
-                                        title={line}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(line)}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-clair' : 'fronts-fonce'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                        <div className="groupe-butons" >
-                            {lignes.map((line, index) => { // 1 2 3 4 5 6 7 8
-                                return (
-                                    <button className={`pushable ${(index % 2) ? 'pushable-fonce' : 'pushable-clair'}`}
-                                        key={line}
-                                        title={line}
-                                        onMouseEnter={() => this.handlePieceHover()}
-                                        onMouseUp={() => this.handlePieceUp(line)}
-                                        onMouseDown={() => this.handlePieceDown()}>
-                                        <span className={`front ${(index % 2) ? 'fronts-fonce' : 'fronts-clair'}`}>
-                                            {line}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <div className="input">
-                        <Stack spacing={2} direction="row" alignItems="center">
-                            <select className="language-selector" defaultValue={this.state.selectedLanguage} onChange={this.handleLanguageChange} onMouseDown={() => this.handlePieceDown()} >
-                                <option value="fr">🇫🇷</option>
-                                <option value="en">🇬🇧</option>
-                                <option value="es">🇪🇸</option>
-                                <option value="de">🇩🇪</option>
-                                <option value="it">🇮🇹</option>
-                                <option value="ru">🇷🇺</option>
-                                <option value="cn">🇨🇳</option>
-                            </select>
-                            <input className="reponse-input"
-                                type="text"
-                                placeholder="Réponse..."
-                                value={this.state.inputValue}
-                                onChange={this.handleInputChange}
-                                onKeyDown={this.handleKeyPress}
-                                ref={this.monInputRef} />
-                            <button className="bouton-3D button-clean"
-                                title="supprimer"
-                                onMouseDown={() => this.handlePieceDown()}
-                                onMouseEnter={() => this.handlePieceHover()}
-                                onClick={this.handleClearButtonClick} >
-                                <span className="texte-3D-red">
-                                    ✘
-                                </span>
-                            </button>
-                        </Stack>
+                        <div className="input">
+                            <Stack spacing={2} direction="row" alignItems="center">
+                                <select className="language-selector" defaultValue={this.state.selectedLanguage} onChange={this.handleLanguageChange} onMouseDown={() => this.handlePieceDown()} >
+                                    <option value="fr">🇫🇷</option>
+                                    <option value="en">🇬🇧</option>
+                                    <option value="es">🇪🇸</option>
+                                    <option value="de">🇩🇪</option>
+                                    <option value="it">🇮🇹</option>
+                                    <option value="ru">🇷🇺</option>
+                                    <option value="cn">🇨🇳</option>
+                                </select>
+                                <input className="reponse-input"
+                                    type="text"
+                                    placeholder="Réponse..."
+                                    value={this.state.inputValue}
+                                    onChange={this.handleInputChange}
+                                    onKeyDown={this.handleKeyPress}
+                                    ref={this.monInputRef} />
+                                <button className="bouton-3D button-clean"
+                                    title="supprimer"
+                                    onMouseDown={() => this.handlePieceDown()}
+                                    onMouseEnter={() => this.handlePieceHover()}
+                                    onClick={this.handleClearButtonClick} >
+                                    <span className="texte-3D-red">
+                                        ✘
+                                    </span>
+                                </button>
+                            </Stack>
 
-                        <Stack className="stack" spacing={2} direction="row" alignItems="center">
-                            <button className="bouton-3D"
-                                title="Valider"
-                                {...(this.state.inputValue.length < 3 && { disabled: true })}
-                                onMouseEnter={() => this.handlePieceHover()}
-                                onMouseUp={this.handleClick}
-                                onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D">
-                                    Valider
-                                </span>
-                            </button>
-                            {!this.isBlowed && <button className="bouton-3D button-replay"
-                                title="Montrer"
-                                {...(this.historiqueMoves.length < 1 && { disabled: true })}
-                                onMouseEnter={() => this.handlePieceHover()}
-                                onMouseUp={this.handleClickVoir}
-                                onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D texte-replay">
-                                    Actualiser position
-                                </span>
-                            </button>}
-                            {this.isBlowed && <button className="bouton-3D"
-                                title="Rejouer"
-                                onMouseEnter={() => this.handlePieceHover()}
-                                onMouseUp={this.handleClickNouveau}
-                                onMouseDown={() => this.handlePieceDown()}>
-                                <span className="texte-3D">
-                                    Rejouer ↺
-                                </span>
-                            </button>}
-                        </Stack>
+                            <Stack className="stack" spacing={2} direction="row" alignItems="center">
+                                <button className="bouton-3D"
+                                    title="Valider"
+                                    {...(this.state.inputValue.length < 3 && { disabled: true })}
+                                    onMouseEnter={() => this.handlePieceHover()}
+                                    onMouseUp={this.handleClick}
+                                    onMouseDown={() => this.handlePieceDown()}>
+                                    <span className="texte-3D">
+                                        Valider
+                                    </span>
+                                </button>
+                                {!this.isBlowed && <button className="bouton-3D button-replay"
+                                    title="Montrer"
+                                    {...(this.historiqueMoves.length < 1 && { disabled: true })}
+                                    onMouseEnter={() => this.handlePieceHover()}
+                                    onMouseUp={this.handleClickVoir}
+                                    onMouseDown={() => this.handlePieceDown()}>
+                                    <span className="texte-3D texte-replay">
+                                        Actualiser
+                                    </span>
+                                </button>}
+                                {this.isBlowed && <button className="bouton-3D"
+                                    title="Rejouer"
+                                    onMouseEnter={() => this.handlePieceHover()}
+                                    onMouseUp={this.handleClickNouveau}
+                                    onMouseDown={() => this.handlePieceDown()}>
+                                    <span className="texte-3D">
+                                        Rejouer ↺
+                                    </span>
+                                </button>}
+                            </Stack>
 
-                    </div>
-                    <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
-                        {this.state.message}
+                        </div>
+                        <div className={`response ${this.state.showCorrect ? 'show' : this.state.showIncorrect ? 'show incorrect' : ''}`}>
+                            {this.state.message}
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
-}
 
 
 export default Bombe5;

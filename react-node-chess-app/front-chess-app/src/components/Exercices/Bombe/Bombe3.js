@@ -860,7 +860,7 @@ class Bombe3 extends React.Component {
                                 onMouseUp={this.handleClickVoir}
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D texte-replay">
-                                    Actualiser position
+                                    Actualiser
                                 </span>
                             </button>}
                             {this.isBlowed && <button className="bouton-3D"
