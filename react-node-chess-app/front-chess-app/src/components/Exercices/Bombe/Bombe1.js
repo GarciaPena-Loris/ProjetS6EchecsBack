@@ -251,7 +251,6 @@ class Bombe1 extends React.Component {
     faireMouvementChess = (newPosition) => {
         const { chess } = this.state;
         // Si le mouvement est valide
-        console.log(newPosition);
         if (chess.moves().some(item => item.replace(/[#+]$/, '') === newPosition ||
             chess.moves().some(item => item.replace(/[#+]$/, '') === (newPosition[0] + 'x' + newPosition.slice(1))))) {
             // Effectue le mouvemenet
@@ -348,7 +347,6 @@ class Bombe1 extends React.Component {
 
         }
         else {
-            console.log("Pas de bombe ici");
             if (realCoup === (this.pieceJoue.toUpperCase() + this.endPosition) || realCoup === (this.pieceJoue.toUpperCase() + 'x' + this.endPosition)) { // si case arrive
                 if (!this.faireMouvementChess(this.pieceJoue.toUpperCase() + 'x' + this.endPosition)) { // Essaye d'aller sur la case d'arriver directement
                     Howler.volume(0.3);
@@ -416,10 +414,10 @@ class Bombe1 extends React.Component {
             };
             axios(config)
                 .then((response) => {
-                    console.log("🚀 ~ file: Bombe1.js:392 ~ Bombe1 ~ .then ~ response:", response)
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
+                    this.props.getUnlockLevel();
                 })
                 .catch((error) => {
                     console.log(error);

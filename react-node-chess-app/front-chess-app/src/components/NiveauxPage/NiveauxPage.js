@@ -2,7 +2,6 @@ import { React, useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
 import { GlobalContext } from '../GlobalContext/GlobalContext';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from "axios";
 import { Howl, Howler } from 'howler';
 
@@ -49,7 +48,6 @@ export default function NiveauxPage() {
     const name = decoded.name;
     const [exerciceElo, setExerciceElo] = useState(null);
     const { updateGlobalElo } = useContext(GlobalContext); // Récupération de globalElo et setGlobalElo avec useContext
-    const matches = useMediaQuery("(min-width:1200px)");
     const soundHover = new Howl({
         src: ['/sons/hover.mp3']
     });
@@ -90,9 +88,7 @@ export default function NiveauxPage() {
         setActualExerciceElo();
     }, [exercice.id]);
 
-
-    //recupere la list des niveaux debloquées
-    useEffect(() => {
+    const getUnlockLevel = () => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -109,6 +105,11 @@ export default function NiveauxPage() {
             .catch((error) => {
                 console.log(error);
             });
+    }
+
+    // recupere la list des niveaux debloquées
+    useEffect(() => {
+        getUnlockLevel();
     }, [])
 
     const sharedProps = {
@@ -116,6 +117,9 @@ export default function NiveauxPage() {
         exerciceElo,
         setExerciceElo,
         updateGlobalElo,
+        getUnlockLevel,
+        pointsGagnes: dataLevels[index - 1].won_points,
+        pointsPerdus: dataLevels[index - 1].lost_points
     };
 
     // Créez une structure de données pour stocker les composants de chaque niveau
@@ -123,98 +127,62 @@ export default function NiveauxPage() {
         1: { // Notation
             1: <Notation1
                 {...sharedProps}
-                pointsGagnes="5"
-                pointsPerdus="2"
-                matches={matches} />,
+            />,
             2: <Notation2
                 {...sharedProps}
-                pointsGagnes="8"
-                pointsPerdus="3"
             />,
             3: <Notation3
                 {...sharedProps}
-                pointsGagnes="10"
-                pointsPerdus="5"
             />,
             4: <Notation4
                 {...sharedProps}
-                pointsGagnes="15"
-                pointsPerdus="5"
             />,
             5: <Notation5
                 {...sharedProps}
-                pointsGagnes="10"
-                pointsPerdus="8"
             />,
             6: <Notation6
                 {...sharedProps}
-                pointsGagnes="15"
-                pointsPerdus="10"
             />,
             7: <Notation7
                 {...sharedProps}
-                pointsGagnes="5"
-                pointsPerdus="15"
             />,
             8: <Notation8
                 {...sharedProps}
-                pointsGagnes="6"
-                pointsPerdus="20"
             />,
             9: <Notation9
                 {...sharedProps}
-                pointsGagnes="6"
-                pointsPerdus="20"
             />,
             // etc...
         },
         2: { // Bombes
             1: <Bombe1
                 {...sharedProps}
-                pointsGagnes="5"
-                pointsPerdus="5"
             />,
             2: <Bombe2
                 {...sharedProps}
-                pointsGagnes="10"
-                pointsPerdus="5"
             />,
             3: <Bombe3
                 {...sharedProps}
-                pointsGagnes="15"
-                pointsPerdus="10"
             />,
             4: <Bombe4
                 {...sharedProps}
-                pointsGagnes="20"
-                pointsPerdus="30"
             />,
             5: <Bombe5
                 {...sharedProps}
-                pointsGagnes="30"
-                pointsPerdus="50"
             />,
         },
         3: { // Puzzle Cache
             1: <PuzzleCache1
                 {...sharedProps}
-                pointsGagnes="6"
-                pointsPerdus="5"
             />,
             2: <PuzzleCache2
                 {...sharedProps}
-                pointsGagnes="10"
-                pointsPerdus="15"
             />,
             3: <PuzzleCache3
                 {...sharedProps}
-                pointsGagnes="15"
-                pointsPerdus="20"
             />,
             4: <PuzzleCache4
                 {...sharedProps}
-                pointsGagnes="15"
-                pointsPerdus="25"
             />,
         }  // etc...
     };
@@ -229,7 +197,7 @@ export default function NiveauxPage() {
         soundDown.play();
     };
 
-    const handleLevelClick = (index) => {
+    const handleLevelClickSuivant = (index) => {
         Howler.volume(0.3);
         soundUp.play();
         navigate('/niveaux', { state: { exercice: exercice, exerciceIndex: exerciceIndex, index: index, nxtLevel: dataLevels[index], dataLevels: dataLevels } });
@@ -237,11 +205,6 @@ export default function NiveauxPage() {
 
     // Récupérez le composant à afficher en fonction des id
     let NiveauComponent = niveaux[exerciceIndex][index];
-
-    function verifUnlock(id) {
-        return dataUnlock.includes(id);
-    }
-
 
     return (
         <div className="level-container">
@@ -263,11 +226,11 @@ export default function NiveauxPage() {
                 <span className="level-elo"><b>{exerciceElo} points</b> pour cet exercice</span>
                 {(index !== Object.keys(niveaux[exercice.id]).length) &&
                     <button className="bouton-3D"
-                        onClick={() => handleLevelClick((index + 1))}
+                        onClick={() => handleLevelClickSuivant((index + 1))}
                         onMouseEnter={() => handlePieceHover()}
                         onMouseDown={() => handlePieceDown()}
                         title={"Niveau " + (index + 1) + " : " + nxtLevel.rules}
-                        disabled={!verifUnlock(nxtLevel.id)}>
+                        disabled={!dataUnlock.includes(nxtLevel.id)}>
                         <span className="texte-3D"> {/* Retourne à la page précédente */}
                             Suivant →
                         </span>

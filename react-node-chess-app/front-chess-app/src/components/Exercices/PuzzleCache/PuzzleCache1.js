@@ -131,7 +131,7 @@ class PuzzleCache1 extends React.Component {
                 return;
             }
 
-        }, this.state.timerInterval * 1000);
+        }, 1000 / this.state.timerInterval);
     }
 
     genererMouvement = async () => {
@@ -198,7 +198,7 @@ class PuzzleCache1 extends React.Component {
                 clearInterval(this.intervalRefaire);
             }
 
-        }, this.state.timerInterval * 1000);
+        }, 1000 / this.state.timerInterval);
     }
     //#endregion
 
@@ -408,6 +408,7 @@ class PuzzleCache1 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
+                    this.props.getUnlockLevel();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -438,7 +439,7 @@ class PuzzleCache1 extends React.Component {
             });
             roiBlanc.map((p) => {
                 returnPieces[p] = ({ squareWidth }) => (
-                    <img src="https://i.imgur.com/70jzGYv.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
+                    <img src="https://i.imgur.com/Hphc0IL.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
                 );
                 return null;
             });
@@ -747,12 +748,12 @@ class PuzzleCache1 extends React.Component {
                                 </span>
                             </button>
                             {this.state.showIncorrect && <button className="bouton-3D"
-                                title="Nouveau"
+                                title="Rejouer"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D">
-                                    ↺
+                                    Rejouer ↺
                                 </span>
                             </button>}
                         </Stack>

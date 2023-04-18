@@ -118,7 +118,6 @@ class PuzzleCache4 extends React.Component {
                 possibleMoves = possibleXMoves;
             }
             const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-            console.log("🚀 ~ file: PuzzleCache4.js:116 ~ PuzzleCache4 ~ this.interval=setInterval ~ randomIndex:", randomIndex)
 
             newChess.move(possibleMoves[randomIndex]);
             this.historicMove.push(possibleMoves[randomIndex]);
@@ -132,7 +131,7 @@ class PuzzleCache4 extends React.Component {
                 return;
             }
 
-        }, this.state.timerInterval * 1000);
+        }, 1000 / this.state.timerInterval);
     }
 
     genererMouvement = async () => {
@@ -199,7 +198,7 @@ class PuzzleCache4 extends React.Component {
                 clearInterval(this.intervalRefaire);
             }
 
-        }, this.state.timerInterval * 1000);
+        }, 1000 / this.state.timerInterval);
     }
     //#endregion
 
@@ -409,6 +408,7 @@ class PuzzleCache4 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
+                    this.props.getUnlockLevel();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -733,12 +733,12 @@ class PuzzleCache4 extends React.Component {
                                 </span>
                             </button>
                             {this.state.showIncorrect && <button className="bouton-3D"
-                                title="Nouveau"
+                                title="Rejouer"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D">
-                                    ↺
+                                    Rejouer ↺
                                 </span>
                             </button>}
                         </Stack>

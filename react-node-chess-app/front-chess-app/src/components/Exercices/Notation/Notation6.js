@@ -325,7 +325,7 @@ class Notation6 extends React.Component {
             this.soundWin.play();
             this.points = this.pointsGagnes;
             if (this.showedCoordonnees) {
-                this.points -= 10;
+                this.points = this.points / 2;
             }
             if (this.state.showIncorrect)
                 this.points = 0;
@@ -390,6 +390,7 @@ class Notation6 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
+                    this.props.getUnlockLevel();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -678,12 +679,12 @@ class Notation6 extends React.Component {
                                 </span>
                             </button>
                             {this.state.showIncorrect && <button className="bouton-3D"
-                                title="Nouveau"
+                                title="Rejouer"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D">
-                                    ↺
+                                    Rejouer ↺
                                 </span>
                             </button>}
                         </Stack>
