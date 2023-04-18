@@ -420,6 +420,7 @@ class Bombe1 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
+                    this.props.getUnlockLevel();
                 })
                 .catch((error) => {
                     console.log(error);

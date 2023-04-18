@@ -408,6 +408,7 @@ class PuzzleCache1 extends React.Component {
                     // maj de l'elo
                     this.props.setExerciceElo(response.data.newEloExercise);
                     this.props.updateGlobalElo(response.data.newEloUser);
+                    this.props.getUnlockLevel();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -747,12 +748,12 @@ class PuzzleCache1 extends React.Component {
                                 </span>
                             </button>
                             {this.state.showIncorrect && <button className="bouton-3D"
-                                title="Nouveau"
+                                title="Rejouer"
                                 onMouseEnter={() => this.handlePieceHover()}
                                 onMouseUp={this.handleClickNouveau}
                                 onMouseDown={() => this.handlePieceDown()}>
                                 <span className="texte-3D">
-                                    ↺
+                                    Rejouer ↺
                                 </span>
                             </button>}
                         </Stack>

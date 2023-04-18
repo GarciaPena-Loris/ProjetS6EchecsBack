@@ -49,7 +49,18 @@
 
 .level-name-container {
   margin-top: 2%;
-  width: 50%;
+}
+
+.container1 {
+  width: 15%;
+}
+
+.container2 {
+  width: 55%;
+}
+
+.container3 {
+  width: 15%;
 }
 
 .level-description {
@@ -94,10 +105,20 @@
   width: 200px;
 }
 
+.points_phone {
+  display: none;
+    width: 2px;
+    margin-top: 5%;
+  }
+
 
 @media screen and (max-width: 768px) {
   .exercice-page {
     margin: 0 0;
+  }
+
+  .points_phone {
+    display: block;
   }
 
   .barxp-div-exo {
@@ -108,7 +129,6 @@
     font-size: 1em;
     margin: 5% 0;
   }
-
 
   .level-title-header {
     display: none;
