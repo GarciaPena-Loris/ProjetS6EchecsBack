@@ -75,9 +75,10 @@ function Navbar() {
                 )}
             </ul>
             <div className='element-droite'>
-                {globalElo && token && (
+                {globalElo && token ? (
                     <span className='elo'>{globalElo} points d'élo </span>
-                )}
+                ) :
+                    (null)}
                 {token && (
                     <>
                         <Link to="/compte" onMouseEnter={handlePieceHover} onClick={handleClickCound}><Avatar className='avatar-navbar' size='40' round={true} src={globalAvatar} /></Link>

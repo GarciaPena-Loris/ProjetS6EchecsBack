@@ -325,7 +325,7 @@ class Notation6 extends React.Component {
             this.soundWin.play();
             this.points = this.pointsGagnes;
             if (this.showedCoordonnees) {
-                this.points -= 10;
+                this.points = this.points / 2;
             }
             if (this.state.showIncorrect)
                 this.points = 0;

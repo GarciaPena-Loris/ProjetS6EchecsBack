@@ -143,7 +143,7 @@ export default function ExercicePage() {
                     ← Retour
                 </span>
             </button>
-            <p className="exercice-description">{exercice.description}</p>
+            <p className="exercice-description" dangerouslySetInnerHTML={{__html: exercice.description}}></p>
             <div className="barxp-div-exo">
                 <p className="progression-xp">Progression:</p>
                 <ProgressBar
@@ -156,8 +156,8 @@ export default function ExercicePage() {
             </div>
             <div className="levels-container">
                 <div className="level-title-header">
-                    <div className="level-title container1"> Niveaux </div>
-                    <div className="level-title container2">Description</div>
+                    <div className="level-title container1">Niveaux </div>
+                    <div className="level-title container2">Description </div>
                     <div className="level-title container3">Élo requis</div>
                 </div>
                 {dataLevels.map((level, index) => (
@@ -176,7 +176,7 @@ export default function ExercicePage() {
                                 <div className="level-name"><strong> {level.name}</strong></div>
                             </div>
                             <div className="level-name-container container2">
-                                <div className="level-description">{level.rules}</div>
+                                <div className="level-description" dangerouslySetInnerHTML={{__html: level.rules}}></div>
                             </div>
                             <hr className="points_phone" />
                             <div className="level-name-container container3">

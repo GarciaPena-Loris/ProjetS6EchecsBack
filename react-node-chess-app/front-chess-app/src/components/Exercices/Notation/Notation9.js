@@ -295,7 +295,7 @@ class Notation9 extends React.Component {
 
                 this.points = this.pointsGagnes;
                 if (this.showedCoordonnes) {
-                    this.points -= 3;
+                    this.points = this.points /2;
                 }
                 const text = `Bonne réponse ! Vous avez effecuté le bon mouvement, vous gagné ${this.points} points.`;
                 this.setState({
