@@ -131,7 +131,7 @@ class PuzzleCache3 extends React.Component {
                 return;
             }
 
-        }, this.state.timerInterval * 1000);
+        }, 1000 / this.state.timerInterval);
     }
 
     genererMouvement = async () => {
@@ -198,7 +198,7 @@ class PuzzleCache3 extends React.Component {
                 clearInterval(this.intervalRefaire);
             }
 
-        }, this.state.timerInterval * 1000);
+        }, 1000 / this.state.timerInterval);
     }
     //#endregion
 
