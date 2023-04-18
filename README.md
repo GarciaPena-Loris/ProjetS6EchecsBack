@@ -10,8 +10,8 @@ Pour démarrer un projet de site web d'échecs en utilisant Node.js pour le back
 
 -Cloner ce report git sur votre machine : 'git clone https://github.com/PaulMedout-Marere/ProjetS6Echecs'.
 
--Dans 'react-node-chess-app' : installez les dépendances nécessaires pour le back-end, telles que Express et Axios, à l'aide de la commande ‘npm install express axios’.
+-Dans 'react-node-chess-app' : installez les dépendances nécessaires pour le back-end, telles que Express et Axios, à l'aide de la commande ‘npm install’.
 
--Dans 'front-chess-app' : installez les dépendances nécessaires pour le front-end, telles que React, React-Router-DOM et React-DOM, à l'aide de la commande ‘npm install react react-router-dom react-dom’.
+-Dans 'front-chess-app' : installez les dépendances nécessaires pour le front-end, telles que React et React-DOM, à l'aide de la commande ‘npm install’.
 
 -Pret à coder !

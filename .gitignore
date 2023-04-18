@@ -2,7 +2,7 @@
 
 # dependencies
 react-node-chess-app/front-chess-app/node_modules
-react-node-chess-app/node_modules
+react-node-chess-app/back-chess-app/node_modules
 /.pnp
 .pnp.js
 
@@ -11,6 +11,9 @@ react-node-chess-app/node_modules
 
 # production
 /build
+
+# environnement
+.env
 
 # misc
 .DS_Store
