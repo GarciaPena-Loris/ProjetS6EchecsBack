@@ -118,7 +118,6 @@ class PuzzleCache4 extends React.Component {
                 possibleMoves = possibleXMoves;
             }
             const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-            console.log("🚀 ~ file: PuzzleCache4.js:116 ~ PuzzleCache4 ~ this.interval=setInterval ~ randomIndex:", randomIndex)
 
             newChess.move(possibleMoves[randomIndex]);
             this.historicMove.push(possibleMoves[randomIndex]);

@@ -149,7 +149,7 @@ export default function ExercicePage() {
                 <ProgressBar
                     className="barxp"
                     completed={eloUndefined(dataEloJoueur)}
-                    customLabel={eloUndefined(dataEloJoueur)}
+                    customLabel={eloUndefined(dataEloJoueur) + ""}
                     maxCompleted={maxElo}
                     bgColor='#7e9d4e'
                 />

@@ -60,7 +60,6 @@ class Bombe5 extends React.Component {
         } else {
             this.pieceJoue = 'n'; // Cavalier
         }
-        console.log("🚀 ~ file: Bombe5.js:61 ~ Bombe5 ~ constructor ~ this.pieceJoue:", this.pieceJoue)
 
         this.startPosition = '';
         this.startPosition = '';

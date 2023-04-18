@@ -439,7 +439,7 @@ class PuzzleCache2 extends React.Component {
             });
             roiBlanc.map((p) => {
                 returnPieces[p] = ({ squareWidth }) => (
-                    <img src="https://i.imgur.com/70jzGYv.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
+                    <img src="https://i.imgur.com/QrtQiLp.png" alt="roi" style={{ width: squareWidth, height: squareWidth }}></img>
                 );
                 return null;
             });
